@@ -1,0 +1,8 @@
+RewriteEngine On
+
+ErrorDocument 403 https://fiel.dev-webmurad.com.br/public/error
+
+<Files .env>
+ Order allow,deny
+ Deny from all
+</Files>

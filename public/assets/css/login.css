@@ -1,0 +1,96 @@
+main{
+    display: flex;
+    height: 100vh;
+}
+.left-area{
+    background-color: var(--azul);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 35%;
+    height: inherit;
+}
+.logo{
+    width: 50%;
+}
+.logo img{
+    width: 100%;
+}
+section{
+    display: flex;
+    height: inherit;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center ;
+    overflow-y: auto;
+}
+.cadastre{
+    width: 100%;
+    height: 70px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 30px;
+}
+.content-login{
+    height: calc(100vh - 70px);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    
+}
+.area-form{
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+
+}
+.field{
+    width: 100%;
+    margin-bottom: 10px;
+    padding:10px;
+}
+.area-form .field h2{
+    font-size: var(--size-tile-2);
+    font-family: Montserrat;
+}
+.input{
+    width: 100%;
+    padding:15px;
+    border-radius: 10px;
+    outline: 0;
+    outline-offset: 0;
+    box-shadow: var(--shadow-boxes);
+    border: 1px solid #dfdfdf;
+    background-color: var(--branco);
+}
+.label span{
+    font-family: MontserratMedium;
+    font-size: var(--size-tile-4);
+}
+.btn-submit{
+    width: 30%;
+    padding: 15px;
+    background-color: var(--azul);
+    color: var(--branco);
+    font-family: MontserratBold;
+    font-size: var(--size-tile-4);
+    border-radius: 10px;
+    border:none;
+    min-width: 110px;
+    display: block;
+    text-align: center;
+}
+.btn-submit:hover{
+background-color: #09114d;
+}
+.flash{
+    border: 2px solid var(--azul);
+    background-color: greenyellow;
+    margin: 0 10;
+    padding: 10px;
+    color: var(--azul);
+    font-family: MontserratBold;
+    font-size: 0.8em;
+}
