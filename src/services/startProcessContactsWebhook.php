@@ -30,7 +30,8 @@ $array = [
     'entity'=>'Contacts'
 ];
 $json = json_encode($array);
-$uri = 'https://fiel.bicorp.online/public/processNewContact';
+// $uri = 'https://gamatermic.bicorp.online/public/processNewContact';
+$uri = 'http://localhost/gamatermic/public/processNewContact';
 
 $curl = curl_init();
 

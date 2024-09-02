@@ -2,23 +2,14 @@
 namespace src\controllers;
 
 use core\Controller;
-use src\exceptions\ContactIdInexistentePloomesCRM;
-use src\exceptions\InteracaoNaoAdicionadaException;
-use src\exceptions\OrderControllerException;
-use src\exceptions\PedidoCanceladoException;
-use src\exceptions\PedidoDuplicadoException;
-use src\exceptions\PedidoInexistenteException;
-use src\exceptions\PedidoNaoExcluidoException;
 use src\exceptions\WebhookReadErrorException;
 use src\handlers\ClientHandler;
-use src\handlers\ClientPloomesHandler;
 use src\handlers\LoginHandler;
-use src\handlers\OmieOrderHandler;
 use src\services\DatabaseServices;
 use src\services\OmieServices;
 use src\services\PloomesServices;
 
-class ClientController extends Controller {
+class ContactController extends Controller {
     
     private $loggedUser;
     private $ploomesServices;
@@ -40,32 +31,31 @@ class ClientController extends Controller {
 
     }
 
-    public function index() {
-        //$total = Deal::select('id')->count();        
-        $data = [
-            'pagina' => 'Pedidos',
-            'loggedUser'=>$this->loggedUser,
-            //'total'=>$total
-        ];
-        $this->render('gerenciador.pages.index', $data);
-    }
+    // public function index() {
+    //     //$total = Deal::select('id')->count();        
+    //     $data = [
+    //         'pagina' => 'Pedidos',
+    //         'loggedUser'=>$this->loggedUser,
+    //         //'total'=>$total
+    //     ];
+    //     $this->render('gerenciador.pages.index', $data);
+    // }
 
-    public function newClientPloomes(){
+    public function ploomesContacts(){
         $message = [];
         $json = file_get_contents('php://input');
 
-        //ob_start();
-        //var_dump($json);
-        //$input = ob_get_contents();
-        //ob_end_clean();
-        //file_put_contents('./assets/contacts.log', $input . PHP_EOL . date('d/m/Y H:i:s') . PHP_EOL, FILE_APPEND);
+        ob_start();
+        var_dump($json);
+        $input = ob_get_contents();
+        ob_end_clean();
+        file_put_contents('./assets/contacts.log', $input . PHP_EOL . date('d/m/Y H:i:s') . PHP_EOL, FILE_APPEND);
 
         try{
             $clienteHandler = new ClientHandler($this->ploomesServices, $this->omieServices, $this->databaseServices);
             $response = $clienteHandler->saveClientHook($json);
             
             if ($response > 0) {
-
                 
                 $message =[
                     'status_code' => 200,
@@ -99,47 +89,41 @@ class ClientController extends Controller {
     }
 
     public function processNewContact(){
+
         $json = file_get_contents('php://input');
         $decoded = json_decode($json,true);
-        $message = [];
         $status = $decoded['status'];
         $entity = $decoded['entity'];
-        
-    
-        /**
-         * processa o webhook 
-         */
+        $message = [];
 
+        // processa o webhook 
         try{
             
             $clienteHandler = new ClientHandler($this->ploomesServices, $this->omieServices, $this->databaseServices);
             $response = $clienteHandler->startProcess($status, $entity);
 
-            
             $message =[
                 'status_code' => 200,
                 'status_message' => $response,
             ];
-                
              
             //grava log
-            /*ob_start();
+            ob_start();
             print_r($message);
             $input = ob_get_contents();
             ob_end_clean();
-            file_put_contents('./assets/logClient.log', $input . PHP_EOL, FILE_APPEND);*/
-            //return $message['status_message'];
+            file_put_contents('./assets/logClient.log', $input . PHP_EOL, FILE_APPEND);
         
         }catch(WebhookReadErrorException $e){
                 
         }
         finally{
             if(isset($e)){
-                /*ob_start();
+                ob_start();
                 var_dump($e->getMessage());
                 $input = ob_get_contents();
                 ob_end_clean();
-                file_put_contents('./assets/logClient.log', $input . PHP_EOL . date('d/m/Y H:i:s'), FILE_APPEND);*/
+                file_put_contents('./assets/logClient.log', $input . PHP_EOL . date('d/m/Y H:i:s'), FILE_APPEND);
                 //print $e->getMessage();
                 
                 $message =[

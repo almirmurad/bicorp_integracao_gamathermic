@@ -4,23 +4,15 @@ namespace src\handlers;
 
 use GuzzleHttp\Client;
 use PDOException;
-use src\exceptions\ContactIdInexistentePloomesCRM;
+
 use src\exceptions\InteracaoNaoAdicionadaException;
-use src\exceptions\OrderControllerException;
-use src\exceptions\PedidoCanceladoException;
-use src\exceptions\PedidoDuplicadoException;
-use src\exceptions\PedidoInexistenteException;
-use src\exceptions\PedidoNaoExcluidoException;
+
 use src\exceptions\WebhookReadErrorException;
 use src\models\Cliente;
 use src\models\Contact;
-use src\models\Homologacao_invoicing;
-use src\models\Homologacao_order;
-use src\models\Manospr_order;
-use src\models\Manossc_order;
+
 use src\models\Omie;
-use src\models\Omieorder;
-use src\models\User;
+
 use src\models\Webhook;
 use src\services\DatabaseServices;
 use src\services\OmieServices;
@@ -46,12 +38,9 @@ class ClientHandler
     //SALVA O WEBHOOK NO BANCO DE DADOS
     public function saveClientHook($json){
       
-
         $decoded = json_decode($json, true);
-
         $origem = (!isset($decoded['Entity']))?'Omie':'Ploomes';
      
-
         //infos do webhook
         $webhook = new Webhook();
         $webhook->json = $json; //webhook 
@@ -69,10 +58,7 @@ class ClientHandler
     //PROCESSA E CRIA O cliente. CHAMA O REPROCESS CASO DE ERRO
     public function startProcess($status, $entity)
     {   
-  
-        /*
-        * inicia o processo de crição de cliente, caso de certo retorna mensagem de ok pra gravar em log, e caso de erro retorna falso
-        */
+        //inicia o processo de crição de cliente, caso de certo retorna mensagem de ok pra gravar em log, e caso de erro retorna falso
         $hook = $this->databaseServices->getWebhook($status, $entity);
         
         $status = 2; //processando
@@ -103,42 +89,42 @@ class ClientHandler
                     
                     //return $reprocess['contactsCreate']['error'];
 
-                }
+                //}
                 
             }
         }
                  
     }
 
-    //REPROCESSA O CARD COM FALHA
-    public function reprocessWebhook($hook){
-        $status = 4;//falhou
-        //$hook = $this->databaseServices->getWebhook($status, 'Contacts');
-        //$json = $hook['json'];
-        $status = 2; //processando
-        $alterStatus = $this->databaseServices->alterStatusWebhook($hook['id'], $status);
+    //REPROCESSA O WEBHOOK COM FALHA
+    // public function reprocessWebhook($hook){
+    //     $status = 4;//falhou
+    //     //$hook = $this->databaseServices->getWebhook($status, 'Contacts');
+    //     //$json = $hook['json'];
+    //     $status = 2; //processando
+    //     $alterStatus = $this->databaseServices->alterStatusWebhook($hook['id'], $status);
         
-        if($alterStatus){
+    //     if($alterStatus){
             
-            $createClient = Self::newClient($hook);
+    //         $createClient = Self::newClient($hook);
             
             
-            if(!isset($createClient['contactsCreate']['error'])){
-                $status = 3; //Sucesso
-                $alterStatus = $this->databaseServices->alterStatusWebhook($hook['id'], $status);
-                if($alterStatus){
-                    return $createClient;//card processado pedido criado no Omie retorna mensagem winDeal para salvr no log
-                }
+    //         if(!isset($createClient['contactsCreate']['error'])){
+    //             $status = 3; //Sucesso
+    //             $alterStatus = $this->databaseServices->alterStatusWebhook($hook['id'], $status);
+    //             if($alterStatus){
+    //                 return $createClient;//card processado pedido criado no Omie retorna mensagem winDeal para salvr no log
+    //             }
 
-            }else{
-                $status = 4; //falhou com mensagem
-                $alterStatus = $this->databaseServices->alterStatusWebhook($hook['id'], $status);
+    //         }else{
+    //             $status = 4; //falhou com mensagem
+    //             $alterStatus = $this->databaseServices->alterStatusWebhook($hook['id'], $status);
                 
-                return $createClient;
-            }
-        }
+    //             return $createClient;
+    //         }
+    //     }
         
-    }
+    // }
     //recebe um novo cliente ploomes
     public function newClient($webhook){
         
@@ -149,43 +135,125 @@ class ClientHandler
         $json = $webhook['json'];
         $decoded = json_decode($json,true);
 
-        /**
-         * Lista de status de crédito base de testes
-         * Pendente = 410783393
-         * Aprovado = 410783395
-         * Reprovado = 410783394
-         * Pagamento Antecipado = 410807643
-         */
-         /**
-         * Lista de status de crédito base de Fiel
-         * Pendente = 411170343
-         * Aprovado = 411170346
-         * Reprovado = 411170345
-         * Pagamento Antecipado = 411170344
-         */
-        $statusCreditoOld = ($decoded['Old']['OtherProperties']['contact_7FBEF4F4-FEF3-4B4A-BB83-D109E7DAC801']) ?? null;
-        $statusCreditoNew = ($decoded['New']['OtherProperties']['contact_7FBEF4F4-FEF3-4B4A-BB83-D109E7DAC801']) ?? null;
-        
-        
-        $statusCredito = [];
-        $statusCredito['Pendente'] = 411170343;
-        $statusCredito['Aprovado'] = 411170346;
-        $statusCredito['Reprovado'] = 411170345;
-        $statusCredito['Pagamento Antecipado'] = 411170344;
-        
-        $statusAtual = match($statusCreditoNew){
-            411170343 => 'Pendente',
-            411170346 => 'Aprovado',
-            411170345 => 'Reprovado',
-            411170344 => 'Pagamento Antecipado',
-            default => 'Pendente'
-        };
 
-        
-        if(isset($decoded['Entity']) && $decoded['Entity'] == "Contacts" &&  isset($decoded['Action']) && $decoded['Action'] == "Create") 
+        //CRIA UM CONTATO NOVO
+        if(isset($decoded['Entity']) && $decoded['Entity'] === "Contacts" &&  isset($decoded['Action']) && $decoded['Action'] == "Create") 
         {
-            $status = 4;
-            $alterStatus = $this->databaseServices->alterStatusWebhook($webhook['id'], $status);
+            $cliente = $this->ploomesServices->getClientById($decoded['New']['Id']);
+
+            
+
+            //cria objeto contacts
+            $contact = new Contact();            
+            
+            /************************************************************
+             *                   Other Properties                        *
+             *                                                           *
+             * No webhook do Contact pegamos os campos de Other Properies*
+             * para encontrar a chave da base de faturamento do Omie     *
+             *                                                           *
+             *************************************************************/
+            $prop = [];
+            //contact_5D5A8D57-A98F-4857-9D11-FCB7397E53CB = inscrição estadual
+            //contact_D21FAEED-75B2-40E4-B169-503131EB3609 = inscrição municipal
+            //contact_3094AFFE-4263-43B6-A14B-8B0708CA1160 = inscrição suframa
+            //contact_9BB527FD-8277-4D1F-AF99-DD88D5064719 = Simples nacional?(s/n)  
+            //contact_3C521209-46BD-4EA5-9F41-34756621CCB4 = contato1
+            //contact_F9B60153-6BDF-4040-9C3A-E23B1469894A = Produtor Rural
+            //contact_FC16AEA5-E4BF-44CE-83DA-7F33B7D56453 = Contribuinte(s/n)
+            //contact_10D27B0F-F9EF-4378-B1A8-099319BAC0AD = limite de crédito
+            //contact_CED4CBAD-92C7-4A51-9985-B9010D27E1A4 = inativo (s/n)
+            //contact_C613A391-155B-42F5-9C92-20C3371CC3DE = bloqueia excusão (s/n)
+            //contact_77CCD2FB-53D7-4203-BE6B-14B671A06F33 = transportadora padrão
+            //contact_6BB80AEA-43D0-45E8-B9E4-28D89D9773B9 = codigo do banco
+            //contact_1F1E1F00-34CB-4356-B852-496D62A90E10 = Agência
+            //contact_38E58F93-1A6C-4E40-9F5B-45B5692D7C80 = Num conta corrente
+            //contact_FDFB1BE8-ECC8-4CFF-8A37-58DCF24CDB50 = CNPJ/CPF titular
+            //contact_DDD76E27-8EFA-416B-B7DF-321C1FB31066 = Nome di titular
+            //contact_847FE760-74D0-462D-B464-9E89C7E1C28E = chave pix
+            //contact_33015EDD-B3A7-464E-81D0-5F38D31F604A = transferencia como forma de pagamento padrão? (s/n)
+            foreach ($decoded['New']['OtherProperties'] as $key => $op) {
+                $prop[$key] = $op;
+            }
+            
+            $phones = [];
+            foreach($decoded['New']['Phones'] as $phone){
+                
+                $partes = explode(' ',$phone['PhoneNumber']);
+                $ddd = $partes[0];
+                $nPhone = $partes[1];
+                $phones[] = [
+                    'ddd'=>$ddd,
+                    'nPhone' => $nPhone
+                ];
+                
+            }
+
+            // Base de Faturamento para fiel não precisa pois integra e depois a automação distribui em todas as bases, em gamathermic precisa
+            // $base1 = $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'];
+            // $base2 = $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'];
+            // $base3 = $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'];
+            // $base4 = $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'];
+
+            // switch($op){
+
+            //     case $base1:
+            //         $contact->baseFaturamento = 'x';
+            //         break;
+            //     case $base2:
+            //         $contact->baseFaturamento = 'y';
+            //         break;
+            //     case $base3:
+            //         $contact->baseFaturamento = 'z';
+            //         break;
+            //     case $base4:
+            //         $contact->baseFaturamento = 'w';
+            //         break;
+
+            // }
+
+            // (!empty($contact->baseFaturamento))? $contact->baseFaturamento : $m[] = 'Base de faturamento inexistente';
+            
+            $contact->id = $cliente['Id']; //Id do Contact
+            $contact->name = $cliente['Name']; // Nome ou nome fantasia do contact
+            $contact->legalName = $cliente['LegalName'] ?? null; // Razão social do contact
+            $contact->cnpj = $cliente['CNPJ'] ?? null; // Contatos CNPJ
+            $contact->cpf = $cliente['CPF'] ?? null; // Contatos CPF
+            $contact->email = $cliente['Email']; // Contatos Email obrigatório
+            $contact->ddd1 = $phones[0]['ddd']; //"telefone1_ddd": "011",
+            $contact->phone1 = $phones[0]['nPhone']; //"telefone1_numero": "2737-2737",
+            $contact->contato1 = $prop['contact_E6008BF6-A43D-4D1C-813E-C6BD8C077F77'] ?? null;
+            $contact->streetAddress = $cliente['StreetAddress']; // Endereço Obrigatório
+            $contact->streetAddressNumber = $cliente['StreetAddressNumber']; // Número Endereço Obrigatório
+            $contact->streetAddressLine2 = $cliente['StreetAddressLine2'] ?? null; // complemento do Endereço 
+            $contact->neighborhood = $cliente['Neighborhood']; // bairro do Endereço é obrigatório
+            $contact->zipCode = $cliente['ZipCode']; // CEP do Endereço é obrigatório
+            $contact->cityId = $cliente['City']['IBGECode']; // Id da cidade é obrigatório
+            $contact->cityName = $cliente['City']['Name']; // Nome da cidade é obrigatório
+            $contact->cityLagitude = $cliente['City']['Latitude']; // Latitude da cidade é obrigatório
+            $contact->cityLongitude = $cliente['City']['Longitude']; // Longitude da cidade é obrigatório
+            $contact->stateShort = $cliente['State']['Short']; // Sigla do estado é obrigatório
+            $contact->stateName = $cliente['State']['Name']; // Nome do estado é obrigatório
+            $contact->countryId = $cliente['CountryId']; // Id do país é obrigatório
+            $contact->cnaeCode = $cliente['CnaeCode'] ?? null; // Id do cnae 
+            $contact->cnaeName = $cliente['CnaeName'] ?? null; // Name do cnae 
+            $contact->ownerId = $cliente['Owner']['Id'] ?? null; // Responsável (Vendedor)  
+      
+            $tags= [];
+            $tag=[];
+
+            if($cliente['Tags']){
+
+                foreach($cliente['Tags'] as $iTag){
+    
+                    $tag['tag']=$iTag['Tag']['Name'];
+                    
+                    $tags[]=$tag;
+                }
+            }
+            $contact->tags = $tags;
+
+
             $m[]= 'Cliente: '.$decoded['New']['Name'].', Id: '.$decoded['New']['Id'].', criado com status de crédito '.$statusAtual.'.';
             $log = $this->databaseServices->registerLog($webhook['id'], $m[0], $decoded['Entity']);
 
@@ -201,6 +269,7 @@ class ClientHandler
             throw new WebhookReadErrorException($m[0] ,500);
             
         }
+        //ALTERA UM CONTATO
         elseif(
             
                 (
@@ -229,7 +298,7 @@ class ClientHandler
                     )
             ) 
         {    
-           
+            //busca o cliente no ploomes pelo Id
             $cliente = $this->ploomesServices->getClientById($decoded['New']['Id']);
             
             //cria objeto contacts
@@ -495,11 +564,11 @@ class ClientHandler
             if (isset($criaClienteOmie['codigo_status']) && $criaClienteOmie['codigo_status'] == "0") {
                 
                 //monta a mensagem para atualizar o card do ploomes
-                $msg=[
-                    'ContactId' => $contact->id,
-                    'Content' => 'Cliente '.$contact->name.' criada no OMIE via API BICORP',
-                    'Title' => 'Pedido Criado'
-                ];
+                // $msg=[
+                //     'ContactId' => $contact->id,
+                //     'Content' => 'Cliente '.$contact->name.' criada no OMIE via API BICORP',
+                //     'Title' => 'Pedido Criado'
+                // ];
                
                 //cria uma interação no card
                 ($this->ploomesServices->createPloomesIteraction(json_encode($msg)))?$message['contactsCreate']['interactionMessage'] = 'Integração concluída com sucesso! Cliente Ploomes id: '.$contact->id.' gravados no Omie ERP com o numero: '.$criaClienteOmie['codigo_cliente_omie'].' e mensagem enviada com sucesso em: '.$current : throw new WebhookReadErrorException('Não foi possível gravar a mensagem na venda',500);
@@ -598,54 +667,6 @@ class ClientHandler
             throw new WebhookReadErrorException($m[0] ,500);
         }          
 
-    }
-
-    //start alter omie lote biscaia
-
-
-    public function startAlterClientOmieProcess($status)
-    {   
-
-        /*
-        * inicia o processo de crição de cliente, caso de certo retorna mensagem de ok pra gravar em log, e caso de erro retorna falso
-        */
-        $hook = $this->databaseServices->getClient($status);
-      
-        $status = 2; //processando
-        $alterStatus = $this->databaseServices->alterStatusWebhook($hook['id'], $status);
-        
-        if($alterStatus){
-            $alterClient = Self::alterClientOmie($hook);
-           
-            if(!isset($alterClient['alterClient']['error'])){
-                $status = 3; //Success
-                $alterStatus = $this->databaseServices->alterStatusWebhook($hook['id'], $status);
-                if($alterStatus){
-                    
-                    return $alterClient;//card processado cliente criado no Omie retorna mensagem winDeal para salvar no log
-                }
-
-            }else{
-                $status = 4; //falhou
-                $alterStatus = $this->databaseServices->alterStatusWebhook($hook['id'], $status);
-                
-                //$reprocess = Self::reprocessWebhook($hook);
-
-                //if($reprocess['alterClient']['error']){
-                    $hook['entity'] = 'Cliente';
-
-                    $log = $this->databaseServices->registerLog($hook['id'], $alterClient['alterClient']['error'], $hook['entity']); 
-
-                    
-                    throw new WebhookReadErrorException('Erro ao gravar cliente: '.$alterClient['alterClient']['error'].'Salvo em logs do sistema (log id: '.$log.')'. date('d/m/Y H:i:s'), 500);
-                    
-                    return $alterClient['alterClient']['error'];
-
-                //}
-                
-            }
-        }
-                 
     }
 
     public function alterClientOmie($hook){

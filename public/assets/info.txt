@@ -1,0 +1,7 @@
+- webhooks já existentes no ploomes 
+-- primeiro sicronismo com OMIE
+-- changeploomescontacts (contato) no ploomes (create, update, delete)
+--- cria edita e altera um contato no ploomes;
+--- 
+-- changeploomesorder (pedido) no ploomes (create, update, delete)
+-- 
