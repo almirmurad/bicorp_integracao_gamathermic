@@ -41,7 +41,8 @@ class ContactController extends Controller {
     //     $this->render('gerenciador.pages.index', $data);
     // }
 
-    public function ploomesContacts(){
+    public function ploomesContacts()
+    {
         $message = [];
         $json = file_get_contents('php://input');
 
@@ -88,8 +89,8 @@ class ContactController extends Controller {
             
     }
 
-    public function processNewContact(){
-
+    public function processNewContact()
+    {
         $json = file_get_contents('php://input');
         $decoded = json_decode($json,true);
         $status = $decoded['status'];
@@ -104,7 +105,7 @@ class ContactController extends Controller {
 
             $message =[
                 'status_code' => 200,
-                'status_message' => $response,
+                'status_message' => $response['success'],
             ];
              
             //grava log
@@ -131,10 +132,12 @@ class ContactController extends Controller {
                     'status_message' => $e->getMessage(),
                 ];
                
-                return print 'ERROR: '.$message['status_code'].' MENSAGEM: '.$message['status_message'];
+                // return print 'ERROR: '.$message['status_code'].' MENSAGEM: '.$message['status_message'];
+                return print_r($message);
                }
 
-            $message['status_message']['contactsCreate']['returnContactOmie'];
+               //return print 'SUCCESS: '.$message['status_code'].' MENSAGEM: '.$message['status_message'];
+               return print_r($message);
         }
 
     } 

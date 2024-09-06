@@ -1,7 +1,17 @@
-- webhooks já existentes no ploomes 
--- primeiro sicronismo com OMIE
--- changeploomescontacts (contato) no ploomes (create, update, delete)
---- cria edita e altera um contato no ploomes;
---- 
--- changeploomesorder (pedido) no ploomes (create, update, delete)
--- 
+Infos
+- step 1 Create contacts CRM to ERP
+-- Criar endpoints para receber os webhooks do Ploomes (CREATE, UPDATE, DELETE);
+-- ContactsController para recebe webhook do endpoint;
+--- Método ploomesContacts é responsável por receber um webhook e enviar ao clientHandler para ser tratado;
+--- Método processNewContact é responsável por iniciar o processo de tratamento, ele recebe um json com status(1) e entity(Contacts) e envia ao método startProcess do clientHandler;
+-- ClientHandler deve receber o webhook e trata-lo;
+--- Método saveWebhook, recebe o webhook distingue a entity(entidade), o status(1 - Recebido), a origem (Ploomes/Omie) e salva na base de dados. Retorna ao controller um mensagem de sucesso(200) com o id do registro do banco de dados.
+--- Método startProcess recebe o status atual (1 - Recebido) e a entidade (Contacts) a ser tratada, altera o status (2 - Processando). Após alterar o status recebe a action (CREATE,UPDATE,DELETE) através do metodo findAction. 
+Cria o objeto através do método createObj que recebe o webhook e destrincha todos os dados para criar o objeto contact, que entre todos os dados possui um array com todas as bases de faturamento para onde podem ser enviados os contatos.
+Após definir a action e criar o objeto, chama o metodo createContact de contactServices, que será responsável por receber o objeto de contato e salvar nas bases do Omie ERP. 
+Recebe de volta na variável process, um array com todas as mensagens de error e success do processo de cadastro da API do OMIE em todas as bases e chama o método response.
+O método response é responsável por tratar as mensagens de resposta do omie, gravar os logs na tabela do banco de dados e em caso de sucesso absoluto (cadastramento em todas as bases definidas), muda o status atual para (3 - Sucesso), em caso de falha absoluta, ou seja, não gravou em nenhuma base altera status para (4 - ERRO) ou se gravou em alguma base e falhou em outra, devolve (5 - Parcial). Por fim devolve ao startProcess a variável process para que envie ao controller.
+Obs.: só retorna ao método startProcess em caso de sucesso absoluto, caso haja ERRO ou Parcial, é lançada uma exception ao controller.
+-- ContactsController recebe em response o array process ou em catch o erro da exceção e printa o resultado para finalizar o processo de cadastro.  
+- Step 2 Alter contacts CRM to ERP
+

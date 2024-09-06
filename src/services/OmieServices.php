@@ -103,7 +103,9 @@ class OmieServices implements OmieManagerInterface{
     //PEGA O ID DO vendedor DO OMIE
     public function vendedorIdOmie($omie, $mailVendedor)
     {
-
+        // print_r($omie);
+        // print $mailVendedor;
+        // exit;
         $jsonOmieVendedor = [
             'app_key' => $omie->appKey,
             'app_secret' => $omie->appSecret,
@@ -389,6 +391,10 @@ class OmieServices implements OmieManagerInterface{
     //Cria cliente no Omie ERP
     public function criaClienteOmie(object $omie, object $contact)
     {
+        // print_r($omie);
+        // print 'estamos em omie services';
+        // print_r($contact);
+        // exit;
         $array = [
             'app_key'=>$omie->appKey,
             'app_secret'=>$omie->appSecret,
@@ -402,8 +408,11 @@ class OmieServices implements OmieManagerInterface{
         $clienteJson['nome_fantasia'] = $contact->legalName ?? null;
         $clienteJson['cnpj_cpf'] = $contact->cnpj ?? $contact->cpf;
         $clienteJson['email'] = $contact->email;
+        $clienteJson['homepage'] = $contact->website ?? null;
         $clienteJson['telefone1_ddd'] = $contact->ddd1;
-        $clienteJson['telefone1_numero'] = $contact->phone1;
+        $clienteJson['telefone1_numero'] = $contact->phone2 ?? null;
+        $clienteJson['telefone2_ddd'] = $contact->ddd2 ?? null;
+        $clienteJson['telefone2_numero'] = $contact->phone1;
         $clienteJson['contato'] = $contact->contato1;
         $clienteJson['endereco'] = $contact->streetAddress;
         $clienteJson['endereco_numero'] = $contact->streetAddressNumber;
@@ -414,20 +423,49 @@ class OmieServices implements OmieManagerInterface{
         $clienteJson['cidade_ibge'] = $contact->cityId;
         // $clienteJson['cep'] = $contact->streetAdress ?? null;
         $clienteJson['cep'] = $contact->zipCode ?? null;
-        $clienteJson['cnae'] = null;
+        $clienteJson['documento_exterior'] = $contact->documentoExterior ?? null;
+        $clienteJson['inativo'] = $contact->inativo ?? null;
+        $clienteJson['bloquear_exclusao'] = $contact->bloquearExclusao ?? null;
+        //inicio aba CNAE e Outros
+        $clienteJson['cnae'] = 3091102;//$contact->cnaeCode ?? null;
+        $clienteJson['inscricao_estadual'] = $contact->inscricaoEstadual ?? null;
+        $clienteJson['inscricao_municipal'] = $contact->inscricaoMunicipal ?? null;
+        $clienteJson['inscricao_suframa'] = $contact->inscricaoSuframa ?? null;
+        $clienteJson['optante_simples_nacional'] = $contact->simplesNacional ?? null;
+        $clienteJson['produtor_rural'] = $contact->produtorRural ?? null;
+        $clienteJson['contribuinte'] = $contact->contribuinte ?? null;
+        $clienteJson['tipo_atividade'] = '1';//$contact->segmento ?? null;
+        $clienteJson['valor_limite_credito'] = $contact->limiteCredito ?? null;
+        $clienteJson['observacao'] = $contact->observacao ?? null;
+        //fim aba CNAE e Outros
+        //inicio array dados bancários
+        $clienteJson['dadosBancarios'] =[];
+        $dadosBancarios =[];
+        $dadosBancarios['codigo_banco'] = $contact->cBanco ?? null;
+        $dadosBancarios['agencia'] = $contact->agencia ?? null;
+        $dadosBancarios['conta_corrente'] = $contact->nContaCorrente ?? null;
+        $dadosBancarios['doc_titular'] = $contact->docTitular ?? null;
+        $dadosBancarios['nome_titular'] = $contact->nomeTitular ?? null;
+        $dadosBancarios['transf_padrao'] = $contact->transferenciaPadrao ?? null;
+        $dadosBancarios['cChavePix'] = $contact->chavePix ?? null;
+        $clienteJson['dadosBancarios'][]=$dadosBancarios;
+        //fim array dados bancários
+        //inicio array recoja mendações
         $clienteJson['recomendacoes'] =[];
-        //$recomendacoes=[];//vendedor padrão
-        //$recomendacoes['codigo_vendedor'] = $contact->ownerId;
-        //$clienteJson['recomendacoes'][] = $recomendacoes;
+        $recomendacoes=[];//vendedor padrão
+        $recomendacoes['codigo_vendedor'] = $contact->cVendedorOmie ?? null;
+        $recomendacoes['codigo_transportadora'] = null;//6967396742;// $contact->ownerId ?? null;
+        $clienteJson['recomendacoes'][] = $recomendacoes;
+        //fim array recomendações
 
-        $caracteristicas = [];
-        //$caracteristicasCampo=[];
-        //$caracteristicasConteudo=[];
-        $caracteristicasCampo = 'Regiao';
-        $caracteristicasConteudo = $contact->regiao;
-        $caracteristicas['campo'] = $caracteristicasCampo;
-        $caracteristicas['conteudo']=$caracteristicasConteudo;
-        $clienteJson['caracteristicas'] = $caracteristicas;
+        // $caracteristicas = [];
+        // //$caracteristicasCampo=[];
+        // //$caracteristicasConteudo=[];
+        // $caracteristicasCampo = 'Regiao';
+        // $caracteristicasConteudo = $contact->regiao;
+        // $caracteristicas['campo'] = $caracteristicasCampo;
+        // $caracteristicas['conteudo']=$caracteristicasConteudo;
+        //$clienteJson['caracteristicas'] = $caracteristicas;
         //$clienteJson['tags']=[];
         $clienteJson['tags']=$contact->tags;
          

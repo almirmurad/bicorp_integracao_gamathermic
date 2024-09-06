@@ -64,6 +64,7 @@ class DatabaseServices implements DatabaseManagerInterface{
         $status[2] = 'Processando';
         $status[3] = 'Sucesso';
         $status[4] = 'ERRO';
+        $status[5] = 'Parcial';
         
 
         try{
