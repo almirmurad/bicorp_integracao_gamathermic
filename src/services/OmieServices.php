@@ -11,11 +11,10 @@ use src\exceptions\WebhookReadErrorException;
 
 class OmieServices implements OmieManagerInterface{
 
-
     public function clienteCnpjOmie($order)
     {
         $jsonOmieIdCliente = [
-            'app_key' => $order->appKey,
+            'app_key' => $order->appKey ,
             'app_secret' => $order->appSecret,
             'call' => 'ConsultarCliente',
             'param' => [
@@ -24,6 +23,7 @@ class OmieServices implements OmieManagerInterface{
                 ]
             ]
                 ];
+    
 
         $jsonCnpj = json_encode($jsonOmieIdCliente);
 
@@ -143,6 +143,9 @@ class OmieServices implements OmieManagerInterface{
         $vendedor = json_decode($response,true);
        
         $codigoVendedor = '';
+        if(!isset($vendedor['cadastro'])){
+            return null;
+        }
         $arrayVendedores = $vendedor['cadastro'];
         if(count($arrayVendedores) > 1){
             foreach($arrayVendedores as $itArrVend){
@@ -544,7 +547,7 @@ class OmieServices implements OmieManagerInterface{
 
 
     } 
-
+    //altera um cliente no OMIE com base nas difereças dos arrays Old e News do Ploomes
     public function alteraCliente(object $omie, array $diff)
     {
         $array = [
@@ -640,6 +643,48 @@ class OmieServices implements OmieManagerInterface{
         
         $cliente = json_decode($response, true);
 
+        return $cliente;
+
+    }
+    //Exclui um cliente no OMIE
+    public function deleteClienteOmie(object $omie, object $contact)
+    {   
+        $json = [
+            'app_key' => $omie->appKey,
+            'app_secret' => $omie->appSecret,
+            'call' => 'ExcluirCliente',
+            'param' => [
+                [
+                    'codigo_cliente_integracao'=>$contact->id
+                ]
+            ]
+                ];
+
+        $jsonDelete = json_encode($json);
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://app.omie.com.br/api/v1/geral/clientes/',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $jsonDelete,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        $cliente = json_decode($response, true);
+    
         return $cliente;
 
     }

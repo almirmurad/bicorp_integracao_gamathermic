@@ -32,6 +32,7 @@ $router->post('/alterOrderStage', 'OrderController@alterOrderStage');//Pedido Al
 
 //contacts ploomes
 $router->post('/ploomesContacts', 'ContactController@ploomesContacts');//Novo cliente no ploomes
+$router->post('/omieClients', 'ContactController@omieClients');//Novo cliente no ploomes
 $router->post('/processNewContact', 'ContactController@processNewContact'); //inicia o processo com cron job
 $router->post('/alterClientPloomes', 'ContactController@alterClientPloomes'); //recebe um webhhok de cliente alterado no ploomes
 //clientes Omie

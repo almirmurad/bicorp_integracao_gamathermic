@@ -195,7 +195,7 @@ class ContactController extends Controller {
 
     //Omie
 
-    public function newClientOmie(){
+    public function omieClients(){
 
         $json = file_get_contents('php://input');
         $message = [];
@@ -246,22 +246,18 @@ class ContactController extends Controller {
 
     }
 
-    public function proccessAlterClientOmie(){
-
-
-
+    public function proccessClientOmie(){
         
         $json = file_get_contents('php://input');
         $decoded = json_decode($json,true);
 
         $status = $decoded['status'];
         $message = [];
-       
 
         try{
             
             $clienteHandler = new ClientHandler($this->ploomesServices, $this->omieServices, $this->databaseServices);
-            $response = $clienteHandler->startAlterClientOmieProcess($status);
+            $response = $clienteHandler->startProcess($status);
 
             $message =[
                 'status_code' => 200,
