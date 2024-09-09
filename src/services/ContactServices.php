@@ -91,4 +91,64 @@ class ContactServices
         }   
         return $messages;
     }
+
+    public static function updateContact($diff, $contact){
+
+        $omieServices = new OmieServices();
+        $ploomesServices = new PloomesServices();
+        $messages = [
+            'success'=>[],
+            'error'=>[],
+        ];
+        $total = 0;
+   
+        $current = date('d/m/Y H:i:s');
+
+        foreach($contact->basesFaturamento as $k => $bf)
+        {
+            $omie[$k] = new stdClass();
+            
+            if($bf['integrar'] > 0){
+                $total ++;
+                $omie[$k]->baseFaturamentoTitle = $bf['title'];
+                $omie[$k]->target = $bf['sigla']; 
+                $omie[$k]->appSecret = $bf['appSecret'];
+                $omie[$k]->appKey = $bf['appKey'];
+                $diff['idIntegracao'] = $contact->id;
+                $contact->cVendedorOmie = $omieServices->vendedorIdOmie($omie[$k],$contact->ownerEmail);
+                $alterar = $omieServices->alteraCliente($omie[$k], $diff);
+
+                //verifica se criou o cliente no omie
+                if (isset($alterar['codigo_status']) && $alterar['codigo_status'] == "0") {
+                    //monta a mensagem para atualizar o cliente do ploomes
+                    $msg=[
+                        'ContactId' => $contact->id,
+                        'Content' => 'Cliente '.$contact->name.' alterado no OMIE via API BICORP na base '.$omie[$k]->baseFaturamentoTitle,
+                        'Title' => 'Pedido Criado'
+                    ];
+                    
+                    //cria uma interação no card
+                    ($ploomesServices->createPloomesIteraction(json_encode($msg)))?$message = 'Integração concluída com sucesso! Cliente Ploomes id: '.$contact->id.' alterado no Omie ERP ('.$omie[$k]->baseFaturamentoTitle.') com o numero: '.$alterar['codigo_cliente_omie'].' e mensagem enviada com sucesso em: '.$current : $message = 'Integração concluída com sucesso! Cliente Ploomes id: '.$contact->id.' alterado no Omie ERP com o numero: '.$alterar['codigo_cliente_omie'].' porém não foi possível gravar a mensagem no card do cliente do Ploomes: '.$current;
+
+                    //aqui atualizaria a base de dados com sql de update
+                 
+                    $messages['success'][] = $message;
+                    
+                }else{
+                    //monta a mensagem para atualizar o card do ploomes
+                    $msg=[
+                        'ContactId' => $contact->id,
+                        'Content' => 'Erro ao alterar cliente no Omie: '. $alterar['faultstring'].' na base '.$omie[$k]->baseFaturamentoTitle.' Data = '.$current,
+                        'Title' => 'Erro ao alterar cliente'
+                    ];
+                    
+                    //cria uma interação no card
+                    ($ploomesServices->createPloomesIteraction(json_encode($msg)))?$message = 'Erro ao alterar cliente no Omie base '.$omie[$k]->baseFaturamentoTitle.': '. $alterar['faultstring'].' Data = '.$current: $message = 'Erro ao alterar cliente no Omie base '.$omie[$k]->baseFaturamentoTitle.': '. $alterar['faultstring'].' e erro ao enviar mensagem no card do cliente do Ploomes Data = '.$current;
+                    $messages['error'][]=$message;
+                }       
+            }
+        }   
+   
+        return $messages;       
+    }
 }

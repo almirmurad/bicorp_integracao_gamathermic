@@ -545,31 +545,77 @@ class OmieServices implements OmieManagerInterface{
 
     } 
 
-    public function alteraCliente(object $omie, object $contact){
-
-        
+    public function alteraCliente(object $omie, array $diff)
+    {
         $array = [
             'app_key'=>$omie->appKey,
             'app_secret'=>$omie->appSecret,
             'call'=>'AlterarCliente',
             'param'=>[]
         ];
-
+    
         $clienteJson = [];
-        $clienteJson['codigo_cliente_omie'] = $contact->codigoOmie;
-        $caracteristicas = [];
-        //$caracteristicasCampo=[];
-        //$caracteristicasConteudo=[];
-        $caracteristicasCampo = 'Região';
-        $caracteristicasConteudo = $contact->regiao;
-        $caracteristicas['campo'] = $caracteristicasCampo;
-        $caracteristicas['conteudo']=$caracteristicasConteudo;
-        $clienteJson['caracteristicas'] = $caracteristicas;
+        $clienteJson['codigo_cliente_integracao'] = $diff['idIntegracao'];
+        $clienteJson['razao_social'] = $diff['Name']['new'] ?? null; 
+        $clienteJson['nome_fantasia'] = $diff['legalName']['new'] ?? null;
+        $clienteJson['cnpj_cpf'] = $diff['cnpj']['new'] ?? $diff['cpf']['new'] ?? null;
+        $clienteJson['email'] = $diff['email']['new'] ?? null;
+        $clienteJson['homepage'] = $diff['website']['new'] ?? null;
+        $clienteJson['telefone1_ddd'] = $diff['ddd1']['new'] ?? null;
+        $clienteJson['telefone1_numero'] = $diff['phone2']['new'] ?? null;
+        $clienteJson['telefone2_ddd'] = $diff['ddd2']['new'] ?? null;
+        $clienteJson['telefone2_numero'] = $diff['phone1']['new'] ?? null;
+        $clienteJson['contato'] = $diff['contato1']['new'] ?? null;
+        $clienteJson['endereco'] = $diff['streetAddress']['new'] ?? null;
+        $clienteJson['endereco_numero'] = $diff['streetAddressNumber']['new'] ?? null;
+        $clienteJson['bairro'] = $diff['neighborhood']['new'] ?? null;
+        $clienteJson['complemento'] = $diff['streetAddressLine2']['new'] ?? null;
+        $clienteJson['estado'] = $diff['stateShort']['new'] ?? null;//usar null para teste precisa pegar o codigo da sigla do estado na api omie
+        //$clienteJson['cidade'] = $diff['cityName']['new'];
+        $clienteJson['cidade_ibge'] = $diff['cityId']['new'] ?? null;
+        // $clienteJson['cep'] = $diff['streetAdress']['new'] ?? null;
+        $clienteJson['cep'] = $diff['zipCode']['new'] ?? null;
+        $clienteJson['documento_exterior'] = $diff['documentoExterior']['new'] ?? null;
+        $clienteJson['inativo'] = $diff['inativo']['new'] ?? null;
+        $clienteJson['bloquear_exclusao'] = $diff['bloquearExclusao']['new'] ?? null;
+        //inicio aba CNAE e Outros
+        $clienteJson['cnae'] = 3091102 ?? null;//$diff['cnaeCode']['new'] ?? null;
+        $clienteJson['inscricao_estadual'] = $diff['inscricaoEstadual']['new'] ?? null;
+        $clienteJson['inscricao_municipal'] = $diff['inscricaoMunicipal']['new'] ?? null;
+        $clienteJson['inscricao_suframa'] = $diff['inscricaoSuframa']['new'] ?? null;
+        $clienteJson['optante_simples_nacional'] = $diff['simplesNacional']['new'] ?? null;
+        $clienteJson['produtor_rural'] = $diff['produtorRural']['new'] ?? null;
+        $clienteJson['contribuinte'] = $diff['contribuinte']['new'] ?? null;
+        $clienteJson['tipo_atividade'] = '1';//$diff['segmento ?? null;
+        $clienteJson['valor_limite_credito'] = $diff['limiteCredito']['new'] ?? null;
+        $clienteJson['observacao'] = $diff['observacao']['new'] ?? null;
+        //fim aba CNAE e Outros
+        //inicio array dados bancários
+        $clienteJson['dadosBancarios'] =[];
+        $dadosBancarios =[];
+        $dadosBancarios['codigo_banco'] = $diff['cBanco']['new'] ?? null;
+        $dadosBancarios['agencia'] = $diff['agencia']['new'] ?? null;
+        $dadosBancarios['conta_corrente'] = $diff['nContaCorrente']['new'] ?? null;
+        $dadosBancarios['doc_titular'] = $diff['docTitular']['new'] ?? null;
+        $dadosBancarios['nome_titular'] = $diff['nomeTitular']['new'] ?? null;
+        $dadosBancarios['transf_padrao'] = $diff['transferenciaPadrao']['new'] ?? null;
+        $dadosBancarios['cChavePix'] = $diff['chavePix']['new'] ?? null;
+        $clienteJson['dadosBancarios'][] =array_filter($dadosBancarios); 
+        //fim array dados bancários
+        //inicio array recoja mendações
+        $clienteJson['recomendacoes'] = [];
+        $recomendacoes = [];//vendedor padrão
+        $recomendacoes['codigo_vendedor'] = $diff['cVendedorOmie']['new'] ?? null;
+        $recomendacoes['codigo_transportadora']= null;//6967396742;// $diff['ownerId']['new'] ?? null;
+        $clienteJson['recomendacoes'][] = array_filter($recomendacoes);
         
-         
-        $array['param'][] = $clienteJson;
+        //fim array recomendações
 
-        $json = json_encode($array);     
+        $clienteJson['tags']= $diff['tags']['new'] ?? null;
+         
+        $array['param'][] = array_filter($clienteJson);
+
+        $json = json_encode($array);
 
         $curl = curl_init();
 
@@ -593,15 +639,8 @@ class OmieServices implements OmieManagerInterface{
         curl_close($curl);
         
         $cliente = json_decode($response, true);
-        $message = [];
-        if(!isset($cliente['faultstring'])){
-             $message['alterClient']['success'] = $cliente['descricao_status'];
-             return $message;
-        }else{
-            $message['alterClient']['error'] = $cliente['faultstring'];
-            return $message;
-        }
 
+        return $cliente;
 
     }
   
