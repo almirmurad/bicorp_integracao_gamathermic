@@ -103,9 +103,8 @@ class OmieServices implements OmieManagerInterface{
     //PEGA O ID DO vendedor DO OMIE
     public function vendedorIdOmie($omie, $mailVendedor)
     {
-        // print_r($omie);
-        // print $mailVendedor;
-        // exit;
+
+
         $jsonOmieVendedor = [
             'app_key' => $omie->appKey,
             'app_secret' => $omie->appSecret,
@@ -159,8 +158,55 @@ class OmieServices implements OmieManagerInterface{
                     $codigoVendedor = $itArrVend['codigo'];
             }
         }
-   
+
         return $codigoVendedor;
+    }
+
+    //PEGA O ID DO vendedor DO OMIE
+    public function getMailVendedorById($omie, $contact)
+    {
+        // print_r($omie);
+        // print $mailVendedor;
+        // exit;
+        $jsonOmieVendedor = [
+            'app_key' => $omie->appKey,
+            'app_secret' => $omie->appSecret,
+            'call' => 'ConsultarVendedor',
+            'param' => [
+                [
+                    'codigo'=>$contact->codigoVendedor,
+
+                ]
+            ]
+                ];
+
+        $jsonVendedor = json_encode($jsonOmieVendedor);
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://app.omie.com.br/api/v1/geral/vendedores/',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $jsonVendedor,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        
+        $vendedor = json_decode($response,true);
+        
+        
+        return $vendedor['email'];
     }
 
     //BUSCA O ID DE UM PRODUTO BASEADO NO CODIGO DO PRODUTO NO PLOOMES
@@ -391,6 +437,49 @@ class OmieServices implements OmieManagerInterface{
         $nfe = json_decode($response, true);
         return $nfe['ide']['nNF'];
     }
+    //busca cliente pelo ID
+    public function getClientById($omie, $contact)
+    {
+        
+        
+        $jsonOmieIdCliente = [
+            'app_key' => $omie->appKey,
+            'app_secret' => $omie->appSecret,
+            'call' => 'ConsultarCliente',
+            'param' => [
+                [
+                    'codigo_cliente_omie'=>$contact->codigoClienteOmie
+                ]
+            ]
+                ];
+
+        $jsonCnpj = json_encode($jsonOmieIdCliente);
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://app.omie.com.br/api/v1/geral/clientes/',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $jsonCnpj,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        return json_decode($response, true);
+        
+        
+    }
     //Cria cliente no Omie ERP
     public function criaClienteOmie(object $omie, object $contact)
     {
@@ -608,7 +697,8 @@ class OmieServices implements OmieManagerInterface{
         //inicio array recoja mendações
         $clienteJson['recomendacoes'] = [];
         $recomendacoes = [];//vendedor padrão
-        $recomendacoes['codigo_vendedor'] = $diff['cVendedorOmie']['new'] ?? null;
+
+        $recomendacoes['codigo_vendedor'] = $diff['cVendedorOmie'] ?? null;
         $recomendacoes['codigo_transportadora']= null;//6967396742;// $diff['ownerId']['new'] ?? null;
         $clienteJson['recomendacoes'][] = array_filter($recomendacoes);
         
@@ -617,6 +707,10 @@ class OmieServices implements OmieManagerInterface{
         $clienteJson['tags']= $diff['tags']['new'] ?? null;
          
         $array['param'][] = array_filter($clienteJson);
+
+        // print_r($array);
+        // print_r($diff);
+        // exit;
 
         $json = json_encode($array);
 

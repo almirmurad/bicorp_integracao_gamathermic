@@ -92,4 +92,49 @@ class DiverseFunctions{
         return $intervalo[$parcelamento];       
     }
 
+    public static function achatarArray($array, $prefixo = ''){
+
+        
+        $resultado = array();
+        
+        foreach ($array as $chave => $valor) {
+            // Cria a nova chave adicionando o prefixo se existir
+            $novaChave = $prefixo ? $prefixo . '_' . $chave : $chave;
+            
+            if (is_array($valor)) {
+                // Se o valor for um array, chama a função recursivamente
+                $resultado = array_merge($resultado, self::achatarArray($valor, $novaChave));
+            } else {
+                // Caso contrário, adiciona o valor ao resultado com a nova chave
+                $resultado[$novaChave] = $valor;
+            }
+        }
+
+        return $resultado;
+
+    }
+
+    public static function compararArrays($old, $new, $path = '') {
+        $diferencas = [];
+
+        foreach ($old as $chave => $valor) {
+            $novaChave = $path === '' ? $chave : $path . '.' . $chave;
+    
+            // Se for um array, faz a chamada recursiva
+            if (is_array($valor) && isset($new[$chave]) && is_array($new[$chave])) {
+                $subDiferencas = self::compararArrays($valor, $new[$chave], $novaChave);
+                $diferencas = array_merge($diferencas, $subDiferencas);
+            }
+            // Verifica se o valor foi alterado
+            elseif (isset($new[$chave]) && $new[$chave] !== $valor) {
+                $diferencas[$novaChave] = [
+                    'old' => $valor,
+                    'new' => $new[$chave]
+                ];
+            }
+        }
+
+        return $diferencas;
+    }
+
 }

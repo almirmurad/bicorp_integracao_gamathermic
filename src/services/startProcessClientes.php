@@ -7,8 +7,8 @@ $array = [
     'status'=>'1',
 ];
 $json = json_encode($array);
-//$uri = 'http://localhost/integracao/public/proccessAlterClientOmie';
- $uri = 'https://https://fiel.bicorp.online/public/proccessAlterClientOmie';
+$uri = 'http://localhost/integracao/public/proccessAlterClientOmie';
+ //$uri = 'https://https://fiel.bicorp.online/public/proccessAlterClientOmie';
 
 $curl = curl_init();
 

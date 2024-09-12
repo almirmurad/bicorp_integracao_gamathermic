@@ -8,6 +8,7 @@ use PDOException;
 use src\exceptions\InteracaoNaoAdicionadaException;
 
 use src\exceptions\WebhookReadErrorException;
+use src\functions\DiverseFunctions;
 use src\models\Cliente;
 use src\models\Contact;
 
@@ -69,19 +70,23 @@ class ClientHandler
         
             if($action){
                 //se tiver action cria o objeto de contacs
-                ($action === 'delete')? $contact = self::createOldObj($webhook) :  $contact = self::createObj($webhook);
+      
                 switch($action){
                     case 'createCRMToERP':
+                        $contact = self::createObj($webhook);
                         $process = ContactServices::createContact($contact);
                         break;
                     case 'updateCRMToERP':
                         $diff = self::compare($webhook);
+                        $contact = self::createObj($webhook);
                         $process = ContactServices::updateContact($diff, $contact);
                         break;
                     case 'deleteCRMToERP':
+                        $contact = self::createOldObj($webhook);
                         $process = ContactServices::deleteContact($contact);
                         break;
                     case 'createERPToCRM':
+                        $contact  = self::createOmieObj($webhook);
                         $process = ContactServices::createContactERP($contact);
                         break;
                     case 'updateERPToCRM':
@@ -817,34 +822,81 @@ class ClientHandler
         $o = (array)$old;
         $n = (array)$new;
         //compara os arrays e devolvea diferença entre eles
-        function compararArrays($old, $new, $path = '') {
-            $diferencas = [];
-    
-            foreach ($old as $chave => $valor) {
-                $novaChave = $path === '' ? $chave : $path . '.' . $chave;
-        
-                // Se for um array, faz a chamada recursiva
-                if (is_array($valor) && isset($new[$chave]) && is_array($new[$chave])) {
-                    $subDiferencas = compararArrays($valor, $new[$chave], $novaChave);
-                    $diferencas = array_merge($diferencas, $subDiferencas);
-                }
-                // Verifica se o valor foi alterado
-                elseif (isset($new[$chave]) && $new[$chave] !== $valor) {
-                    $diferencas[$novaChave] = [
-                        'old' => $valor,
-                        'new' => $new[$chave]
-                    ];
-                }
-            }
-
-            return $diferencas;
-        }
-        
-        
-        
-        $diferencas = compararArrays($o, $n);
+        $diferencas = DiverseFunctions::compararArrays($o, $n);
 
         return $diferencas;
+    }
+
+    public function createOmieObj($webhook){
+        //decodifica o json de clientes vindos do webhook
+        $json = $webhook['json'];
+        $decoded = json_decode($json,true);
+
+        $array = DiverseFunctions::achatarArray($decoded);
+
+        $cliente = new stdClass();
+        $cliente->messageId = $array['messageId'];
+        $cliente->topic = $array['topic'];
+        $cliente->bairro = $array['event_bairro'];
+        $cliente->bloqueado = $array['event_bloqueado'];
+        $cliente->bloquearFaturamento = $array['event_bloquear_faturamento'];
+        $cep = (int)str_replace('-','',$array['event_cep']);
+        $cliente->cep = $cep;
+        $cliente->cidade = $array['event_cidade'];
+        $cliente->cidadeIbge = $array['event_cidade_ibge'];
+        $cliente->cnae = $array['event_cnae'];
+        $cliente->cnpjCpf = $array['event_cnpj_cpf'];
+        $cliente->codigoClienteIntegracao = $array['event_codigo_cliente_integracao'];
+        $cliente->codigoClienteOmie = $array['event_codigo_cliente_omie'];
+        $cliente->codigoPais = $array['event_codigo_pais'];
+        $cliente->complemento = $array['event_complemento'];
+        $cliente->contato = $array['event_contato'];
+        $cliente->contribuinte = $array['event_contribuinte'];
+        $cliente->agencia = $array['event_dadosBancarios_agencia'];
+        $cliente->cBanco = $array['event_dadosBancarios_codigo_banco'];
+        $cliente->nContaCorrente = $array['event_dadosBancarios_conta_corrente'];
+        $cliente->docTitular = $array['event_dadosBancarios_doc_titular'];
+        $cliente->nomeTitular = $array['event_dadosBancarios_nome_titular'];
+        $cliente->email = $array['event_email'];
+        $cliente->endereco = $array['event_endereco'];
+        $cliente->enderecoNumero = $array['event_endereco_numero'];
+        $cliente->estado = $array['event_estado'];
+        $cliente->exterior = $array['event_exterior'];
+        $cliente->faxDdd = $array['event_fax_ddd'];
+        $cliente->faxNumero = $array['event_fax_numero'];
+        $cliente->homepage = $array['event_homepage'];
+        $cliente->inativo = $array['event_inativo'];
+        $cliente->inscricaoEstadual = $array['event_inscricao_estadual'];
+        $cliente->inscricaoMunicipal = $array['event_inscricao_municipal'];
+        $cliente->inscricaoSuframa = $array['event_inscricao_suframa'];
+        $cliente->logradouro = $array['event_logradouro'];
+        $cliente->nif = $array['event_nif'];
+        $cliente->nomeFantasia = $array['event_nome_fantasia'];
+        $cliente->obsDetalhadas = $array['event_obs_detalhadas'];
+        $cliente->observacao = $array['event_observacao'];
+        $cliente->simplesNacional = $array['event_optante_simples_nacional'];
+        $cliente->pessoaFisica = $array['event_pessoa_fisica'];
+        $cliente->produtorRural = $array['event_produtor_rural'];
+        $cliente->razaoSocial = $array['event_razao_social'];
+        $cliente->recomendacaoAtraso = $array['event_recomendacao_atraso'];
+        $cliente->codigoVendedor = $array['event_recomendacoes_codigo_vendedor'];
+        $cliente->emailFatura = $array['event_recomendacoes_email_fatura'];
+        $cliente->gerarBoletos = $array['event_recomendacoes_gerar_boletos'];
+        $cliente->numeroParcelas = $array['event_recomendacoes_numero_parcelas'];
+        $cliente->telefoneDdd1 = $array['event_telefone1_ddd'];
+        $cliente->telefoneNumero1 = $array['event_telefone1_numero'];
+        $cliente->telefoneDdd2 = $array['event_telefone2_ddd'];
+        $cliente->telefoneNumero2 = $array['event_telefone2_numero'];
+        $cliente->tipoAtividade = $array['event_tipo_atividade'];
+        $cliente->limiteCredito = $array['event_valor_limite_credito'];
+        $cliente->authorEmail = $array['author_email'];
+        $cliente->authorName = $array['author_name'];
+        $cliente->authorUserId = $array['author_userId'];
+        $cliente->appKey = $array['appKey'];
+        $cliente->appHash = $array['appHash'];
+        $cliente->origin = $array['origin'];
+        
+        return $cliente;
     }
 
     //Trata a respostas para devolver ao controller

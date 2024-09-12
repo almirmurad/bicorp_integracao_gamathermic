@@ -110,6 +110,37 @@ class PloomesServices implements PloomesManagerInterface{
         
         return $response;
     }
+    //ENCONTRA O ID DO VENDEDOR NO PLOOMES
+    public function ownerId(object $deal):string
+    {
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->baseApi . 'Users?$filter=Email+eq+'. "'$deal->mailVendedor'",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => strtoupper($this->method[0]),
+            CURLOPT_HTTPHEADER => $this->headers
+        ));
+
+        $responseMail = curl_exec($curl);
+
+        curl_close($curl);
+
+        $responseMail = json_decode($responseMail, true);
+        // print_r($responseMail);
+        // exit;
+
+        $response = $responseMail['value'][0]['Id'] ?? false;
+
+
+        
+        return $response;
+    }
 
     //encontra a venda no ploomes
     public function requestOrder(object $deal):array|null
@@ -248,9 +279,9 @@ class PloomesServices implements PloomesManagerInterface{
 
     }
 
-//encontra cliente no ploomes pelo CNPJ
-public function getCitiesById(string $id):array|null
-{
+    //encontra cliente no ploomes pelo CNPJ
+    public function getCitiesById(string $id):array|null
+    {
 
     $curl = curl_init();
 
@@ -269,16 +300,44 @@ public function getCitiesById(string $id):array|null
 
     $response = curl_exec($curl);
     $response =json_decode($response, true);
-    
+
     curl_close($curl);
 
     return $response['value'][0];
 
-}
+    }
 
-//encontra cliente no ploomes pelo CNPJ
-public function getStateById(string $id):array|null
-{
+        //encontra cliente no ploomes pelo CNPJ
+        public function getCitiesByIBGECode(string $ibgeCode):array|null
+        {
+    
+        $curl = curl_init();
+    
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->baseApi .'Cities?$filter=IBGECode+eq+'.$ibgeCode,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => strtoupper($this->method[0]),
+            CURLOPT_HTTPHEADER => $this->headers
+    
+        ));
+    
+        $response = curl_exec($curl);
+        $response =json_decode($response, true);
+    
+        curl_close($curl);
+    
+        return $response['value'][0];
+    
+        }
+
+    //encontra cliente no ploomes pelo CNPJ
+    public function getStateById(string $id):array|null
+    {
 
     $curl = curl_init();
 
@@ -297,11 +356,43 @@ public function getStateById(string $id):array|null
 
     $response = curl_exec($curl);
     $response =json_decode($response, true);
-    
+
     curl_close($curl);
 
     return $response['value'][0];
 
-}
+    }
+
+    //CRIA CONTACT NO PLOOMES
+    public function createPloomesContact(string $json):bool
+    {
+    
+        //CHAMADA CURL PRA CRIAR WEBHOOK NO PLOOMES
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->baseApi . '/Contacts?$expand=OtherProperties',//ENDPOINT PLOOMES
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST =>strtoupper($this->method[1]),
+            CURLOPT_POSTFIELDS => $json,
+            CURLOPT_HTTPHEADER => $this->headers
+        ));
+
+        $response = json_decode(curl_exec($curl),true);
+        curl_close($curl);
+
+        print_r($response);
+
+
+        $idIntegration = $response['value'][0]['Id']??Null;
+
+        return ($idIntegration !== null)?true:false;
+       
+    }
 
 }

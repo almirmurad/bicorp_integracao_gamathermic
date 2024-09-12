@@ -15,3 +15,149 @@ Obs.: só retorna ao método startProcess em caso de sucesso absoluto, caso haja
 -- ContactsController recebe em response o array process ou em catch o erro da exceção e printa o resultado para finalizar o processo de cadastro.  
 - Step 2 Alter contacts CRM to ERP
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Array
+(
+    [messageId] => cd92e4fe-a58a-4b70-a5c4-fe17c1b4b1e9
+    [topic] => ClienteFornecedor.Incluido
+    [event] => Array
+        (
+            [bairro] => SAO MARCOS
+            [bloqueado] => N
+            [bloquear_faturamento] => 
+            [cep] => 83090-100
+            [cidade] => SAO JOSE DOS PINHAIS (PR)
+            [cidade_ibge] => 4125506
+            [cnae] => 6110803
+            [cnpj_cpf] => 29.903.486/0002-30
+            [codigo_cliente_integracao] => 
+            [codigo_cliente_omie] => 6969818460
+            [codigo_pais] => 1058
+            [complemento] => LOJA 02
+            [contato] => 
+            [contribuinte] => 
+            [dadosBancarios] => Array
+                (
+                    [agencia] => 
+                    [codigo_banco] => 
+                    [conta_corrente] => 
+                    [doc_titular] => 
+                    [nome_titular] => 
+                )
+
+            [email] => contabilidade@mvborges.com.br
+            [endereco] => RUA OLIMPIO FERREIRA DA CRUZ
+            [endereco_numero] => 751
+            [estado] => PR
+            [exterior] => N
+            [fax_ddd] => 
+            [fax_numero] => 
+            [homepage] => 
+            [inativo] => N
+            [inscricao_estadual] => 908.35855-41
+            [inscricao_municipal] => 
+            [inscricao_suframa] => 
+            [logradouro] => 
+            [nif] => 
+            [nome_fantasia] => COMPASS TELECOM SERVICES
+            [obs_detalhadas] => 
+            [observacao] => 
+            [optante_simples_nacional] => 
+            [pessoa_fisica] => N
+            [produtor_rural] => 
+            [razao_social] => COMPASS SERVICOS DE TELECOMUNICACOES LTDA
+            [recomendacao_atraso] => 
+            [recomendacoes] => Array
+                (
+                    [codigo_vendedor] => 0
+                    [email_fatura] => 
+                    [gerar_boletos] => N
+                    [numero_parcelas] => 
+                )
+
+            [tags] => Array
+                (
+                )
+
+            [telefone1_ddd] => 41
+            [telefone1_numero] => 3055-9700
+            [telefone2_ddd] => 41
+            [telefone2_numero] => 3055-9797
+            [tipo_atividade] => 
+            [valor_limite_credito] => 0.00
+        )
+
+    [author] => Array
+        (
+            [email] => no-reply@omie.com.br
+            [name] => Integração
+            [userId] => 89
+        )
+
+    [appKey] => 4194053472609
+    [appHash] => demo-5orvsx40
+    [origin] => omie-connect-2.0
+)
+
+
