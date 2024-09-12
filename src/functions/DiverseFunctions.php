@@ -114,12 +114,12 @@ class DiverseFunctions{
 
     }
 
-    public static function compararArrays($old, $new, $path = '') {
+    public static function compararArrays($old, $new, $path = '') 
+    {
         $diferencas = [];
 
         foreach ($old as $chave => $valor) {
             $novaChave = $path === '' ? $chave : $path . '.' . $chave;
-    
             // Se for um array, faz a chamada recursiva
             if (is_array($valor) && isset($new[$chave]) && is_array($new[$chave])) {
                 $subDiferencas = self::compararArrays($valor, $new[$chave], $novaChave);
