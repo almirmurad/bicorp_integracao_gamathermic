@@ -206,7 +206,7 @@ class OmieServices implements OmieManagerInterface{
         $vendedor = json_decode($response,true);
         
         
-        return $vendedor['email'];
+        return $vendedor['email'] ?? null;
     }
 
     //BUSCA O ID DE UM PRODUTO BASEADO NO CODIGO DO PRODUTO NO PLOOMES
@@ -647,9 +647,10 @@ class OmieServices implements OmieManagerInterface{
         ];
     
         $clienteJson = [];
-        $clienteJson['codigo_cliente_integracao'] = $diff['idIntegracao'];
-        $clienteJson['razao_social'] = $diff['Name']['new'] ?? null; 
-        $clienteJson['nome_fantasia'] = $diff['legalName']['new'] ?? null;
+
+        ($diff['idOmie'] === null)?$clienteJson['codigo_cliente_integracao'] = $diff['idIntegracao']:$clienteJson['codigo_cliente_omie'] = $diff['idOmie'];        
+        $clienteJson['razao_social'] = $diff['legalName']['new'] ?? null; 
+        $clienteJson['nome_fantasia'] = $diff['name']['new'] ?? null;
         $clienteJson['cnpj_cpf'] = $diff['cnpj']['new'] ?? $diff['cpf']['new'] ?? null;
         $clienteJson['email'] = $diff['email']['new'] ?? null;
         $clienteJson['homepage'] = $diff['website']['new'] ?? null;
@@ -742,17 +743,33 @@ class OmieServices implements OmieManagerInterface{
     }
     //Exclui um cliente no OMIE
     public function deleteClienteOmie(object $omie, object $contact)
-    {   
-        $json = [
-            'app_key' => $omie->appKey,
-            'app_secret' => $omie->appSecret,
-            'call' => 'ExcluirCliente',
-            'param' => [
-                [
-                    'codigo_cliente_integracao'=>$contact->id
+    {  
+        if(!isset($contact->idOmie)){
+
+            $json = [
+                'app_key' => $omie->appKey,
+                'app_secret' => $omie->appSecret,
+                'call' => 'ExcluirCliente',
+                'param' => [
+                    [
+                        'codigo_cliente_integracao'=>$contact->id
+                    ]
                 ]
-            ]
-                ];
+                    ];
+
+        } else{
+
+            $json = [
+                'app_key' => $omie->appKey,
+                'app_secret' => $omie->appSecret,
+                'call' => 'ExcluirCliente',
+                'param' => [
+                    [
+                        'codigo_cliente_omie'=>$contact->idOmie
+                    ]
+                ]
+                    ];
+        }
 
         $jsonDelete = json_encode($json);
 

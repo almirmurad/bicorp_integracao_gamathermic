@@ -67,8 +67,9 @@ class ClientHandler
         
         //talvez o ideal fosse devolver ao controller o ok de que o processo foi iniciado e um novo processo deve ser inciado 
         if($alterStatus){
+
             $action = ClientsFunctions::findAction($webhook);
-        
+            
             if($action){
                 //se tiver action cria o objeto de contacs
                 switch($action){
@@ -90,11 +91,13 @@ class ClientHandler
                         $process = ContactServices::createContactERP($contact);
                         break;
                     case 'updateERPToCRM':
-                        $diff = ClientsFunctions::compare($webhook);
-                        $process = ContactServices::updateContactERP($diff, $contact);
+                        $contact  = ClientsFunctions::createOmieObj($webhook);
+                        $contactJson = ClientsFunctions::createPloomesContactFromOmieObject($contact, $this->ploomesServices, $this->omieServices);
+                        $process = ContactServices::updateContactERP($contactJson, $contact, $this->ploomesServices);
                         break;
                     case 'deleteERPToCRM':
-                        $process = ContactServices::deleteContactERP($contact);
+                        $contact = ClientsFunctions::createOmieObj($webhook);
+                        $process = ContactServices::deleteContactERP($contact, $this->ploomesServices);
                         break;
                 } 
             }
@@ -138,6 +141,38 @@ class ClientHandler
     //Trata a respostas para devolver ao controller
     public function response($webhook, $contact, $process)
     {
+        if($webhook['origem'] === 'Omie'){
+
+            if(!empty($process['error'])){
+
+                $status = 4; //falhou
+                $alterStatus = $this->databaseServices->alterStatusWebhook($webhook['id'], $status);
+                
+                //$reprocess = Self::reprocessWebhook($webhook);
+                $this->databaseServices->registerLog($webhook['id'], $process['error'], $webhook['entity']); 
+
+                $decoded = json_decode($webhook['json'],true);
+            
+                if($decoded['topic'] === 'ClienteFornecedor.Incluido'){
+                    print 'entrou aqui';
+                    throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema'. $webhook['id']. ' em: '.$this->current, 500);
+                }elseif($decoded['topic'] === 'ClienteFornecedor.Excluido'){
+                    throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
+                }elseif($decoded['topic'] === 'ClienteFornecedor.Alterado'){
+                    throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
+                }
+            }
+
+            $status = 3; //Success
+            $alterStatus = $this->databaseServices->alterStatusWebhook($webhook['id'], $status);
+            
+            if($alterStatus){
+                $this->databaseServices->registerLog($webhook['id'], $process['success'], $webhook['entity']);
+                
+                return $process;//card processado cliente criado no Omie retorna mensagem winDeal para salvar no log
+            }
+        }
+
         //verifica quantas bases haviam para integrar
         $totalBasesIntegrar = 0;
         foreach($contact->basesFaturamento as $bf){

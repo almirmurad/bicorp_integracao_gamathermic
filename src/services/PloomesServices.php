@@ -14,7 +14,7 @@ class PloomesServices implements PloomesManagerInterface{
     public function __construct(){
         $this->apiKey = $_ENV['API_KEY'];
         $this->baseApi = $_ENV['BASE_API'];
-        $this->method = array('get','post','patch','update');
+        $this->method = array('get','post','patch','update','delete');
         $this->headers = [
             'User-Key:' . $this->apiKey,
             'Content-Type: application/json',
@@ -137,8 +137,6 @@ class PloomesServices implements PloomesManagerInterface{
 
         $response = $responseMail['value'][0]['Id'] ?? false;
 
-
-        
         return $response;
     }
 
@@ -198,7 +196,7 @@ class PloomesServices implements PloomesManagerInterface{
        
     }
     //encontra cliente no ploomes pelo CNPJ
-    public function consultaClientePloomesCnpj(string $cnpj):string{
+    public function consultaClientePloomesCnpj(string $cnpj){
 
         $curl = curl_init();
 
@@ -220,7 +218,7 @@ class PloomesServices implements PloomesManagerInterface{
         
         curl_close($curl);
 
-        return $response['value'][0]['Id'];
+        return $response['value'][0]['Id'] ?? null;
 
     }
     //ALTERA O ESTÁGIO DA VENDA NO PLOOMES
@@ -250,8 +248,7 @@ class PloomesServices implements PloomesManagerInterface{
        return ($response['value'][0]['StageId'] === $stage['StageId']) ? true :  false;
     }
 
-
- //encontra cliente no ploomes pelo CNPJ
+    //encontra cliente no ploomes pelo Id
     public function getClientById(string $id):array|null
     {
 
@@ -279,40 +276,40 @@ class PloomesServices implements PloomesManagerInterface{
 
     }
 
-    //encontra cliente no ploomes pelo CNPJ
+    //encontra cidade no ploomes pelo Id
     public function getCitiesById(string $id):array|null
     {
 
-    $curl = curl_init();
+        $curl = curl_init();
 
-    curl_setopt_array($curl, array(
-        CURLOPT_URL => $this->baseApi .'Cities?$filter=Id+eq+'.$id,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => strtoupper($this->method[0]),
-        CURLOPT_HTTPHEADER => $this->headers
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->baseApi .'Cities?$filter=Id+eq+'.$id,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => strtoupper($this->method[0]),
+            CURLOPT_HTTPHEADER => $this->headers
 
-    ));
+        ));
 
-    $response = curl_exec($curl);
-    $response =json_decode($response, true);
+        $response = curl_exec($curl);
+        $response =json_decode($response, true);
 
-    curl_close($curl);
+        curl_close($curl);
 
-    return $response['value'][0];
+        return $response['value'][0];
 
     }
 
-        //encontra cliente no ploomes pelo CNPJ
-        public function getCitiesByIBGECode(string $ibgeCode):array|null
-        {
-    
+    //encontra a cidade pelo codigo IBGE
+    public function getCitiesByIBGECode(string $ibgeCode):array|null
+    {
+
         $curl = curl_init();
-    
+
         curl_setopt_array($curl, array(
             CURLOPT_URL => $this->baseApi .'Cities?$filter=IBGECode+eq+'.$ibgeCode,
             CURLOPT_RETURNTRANSFER => true,
@@ -323,17 +320,17 @@ class PloomesServices implements PloomesManagerInterface{
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => strtoupper($this->method[0]),
             CURLOPT_HTTPHEADER => $this->headers
-    
+
         ));
-    
+
         $response = curl_exec($curl);
         $response =json_decode($response, true);
-    
+
         curl_close($curl);
-    
+
         return $response['value'][0];
-    
-        }
+
+    }
 
     //encontra cliente no ploomes pelo CNPJ
     public function getStateById(string $id):array|null
@@ -386,12 +383,63 @@ class PloomesServices implements PloomesManagerInterface{
         $response = json_decode(curl_exec($curl),true);
         curl_close($curl);
 
-        print_r($response);
-
-
         $idIntegration = $response['value'][0]['Id']??Null;
 
         return ($idIntegration !== null)?true:false;
+       
+    }
+
+    //ATUALIZA CONTACT NO PLOOMES
+    public function updatePloomesContact(string $json, int $idContact):bool
+    {
+        //CHAMADA CURL PRA CRIAR WEBHOOK NO PLOOMES
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->baseApi . '/Contacts('.$idContact.')',//ENDPOINT PLOOMES
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST =>strtoupper($this->method[2]),
+            CURLOPT_POSTFIELDS => $json,
+            CURLOPT_HTTPHEADER => $this->headers
+        ));
+
+        $response = json_decode(curl_exec($curl),true);
+        curl_close($curl);
+
+        $idIntegration = $response['value'][0]['Id'] ?? Null;
+
+        return ($idIntegration !== null)?true:false;
+    
+    }
+
+    //DELETA CONTACT NO PLOOMES
+    public function deletePloomesContact(int $idPloomes):bool
+    {
+        //CHAMADA CURL PRA CRIAR WEBHOOK NO PLOOMES
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->baseApi . '/Contacts('.$idPloomes.')',//ENDPOINT PLOOMES
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST =>strtoupper($this->method[4]),
+            CURLOPT_POSTFIELDS => null,
+            CURLOPT_HTTPHEADER => $this->headers
+        ));
+
+        $response = json_decode(curl_exec($curl),true);
+        curl_close($curl);
+
+        return ($response !== null) ? false : true;
        
     }
 

@@ -13,5 +13,5 @@ interface PloomesManagerInterface{
     //cria uma Interação no ploomes
     public function createPloomesIteraction(string $json):bool;
     //ENCONTRA UM CLIENTE NO PLOOMES ATRAVÉS DO CNPJ
-    public function consultaClientePloomesCnpj(string $cnpj):string;
+    public function consultaClientePloomesCnpj(string $cnpj);
 }

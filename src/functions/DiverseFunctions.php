@@ -7,11 +7,9 @@ class DiverseFunctions{
     //CONVERTE PARA DATA EM PORTUGUÊS
     public static function convertDate($date)
     {
-
         $dateIni = explode('T', $date);
         $datePt = explode('-', $dateIni[0]);
         $datePtFn = implode("/", array_reverse($datePt)); // . " às " . $dateIni[1];
-
         return $datePtFn;
     }
 
@@ -25,11 +23,12 @@ class DiverseFunctions{
         return $datePtFn;
     }
 
-    public static function limpa_cpf_cnpj($valor){
+    public static function limpa_cpf_cnpj($valor)
+    {
         $valor = trim($valor);
         $valor = str_replace(array('.','-','/'), "", $valor);
         return $valor;
-       }
+    }
 
     public static function calculaParcelas($dataInicio,$totalParcelas,$totalPedido)
     {
@@ -92,9 +91,8 @@ class DiverseFunctions{
         return $intervalo[$parcelamento];       
     }
 
-    public static function achatarArray($array, $prefixo = ''){
-
-        
+    public static function achatarArray($array, $prefixo = '')
+    {
         $resultado = array();
         
         foreach ($array as $chave => $valor) {
@@ -109,9 +107,7 @@ class DiverseFunctions{
                 $resultado[$novaChave] = $valor;
             }
         }
-
         return $resultado;
-
     }
 
     public static function compararArrays($old, $new, $path = '') 
