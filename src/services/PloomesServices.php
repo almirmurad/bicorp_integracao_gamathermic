@@ -2,6 +2,7 @@
 
 namespace src\services;
 
+use GuzzleHttp\Psr7\Response;
 use src\contracts\PloomesManagerInterface;
 
 class PloomesServices implements PloomesManagerInterface{
@@ -276,6 +277,33 @@ class PloomesServices implements PloomesManagerInterface{
 
     }
 
+    //encontra cliente no ploomes pelo Id
+    public function getProductByCode(string $codigo):array|null
+    {
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->baseApi .'/Products?$filter=Code+eq+'."'$codigo'".'&$expand=OtherProperties',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => strtoupper($this->method[0]),
+            CURLOPT_HTTPHEADER => $this->headers
+
+        ));
+
+        $response = curl_exec($curl);
+        $response =json_decode($response, true);
+        
+        curl_close($curl);
+       
+        return $response['value'][0];
+
+    }
     //encontra cidade no ploomes pelo Id
     public function getCitiesById(string $id):array|null
     {
@@ -426,6 +454,34 @@ class PloomesServices implements PloomesManagerInterface{
 
         curl_setopt_array($curl, array(
             CURLOPT_URL => $this->baseApi . '/Contacts('.$idContact.')',//ENDPOINT PLOOMES
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST =>strtoupper($this->method[2]),
+            CURLOPT_POSTFIELDS => $json,
+            CURLOPT_HTTPHEADER => $this->headers
+        ));
+
+        $response = json_decode(curl_exec($curl),true);
+        curl_close($curl);
+
+        $idIntegration = $response['value'][0]['Id'] ?? Null;
+
+        return ($idIntegration !== null)?true:false;
+    
+    }
+
+    //ATUALIZA Product NO PLOOMES
+    public function updatePloomesProduct(string $json, int $idContact):bool
+    {
+        //CHAMADA CURL PRA CRIAR WEBHOOK NO PLOOMES
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->baseApi . '/Products('.$idContact.')',//ENDPOINT PLOOMES
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,

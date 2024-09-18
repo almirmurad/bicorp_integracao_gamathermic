@@ -80,7 +80,7 @@ class ProductHandler
                     case 'updateERPToCRM':
                         $product  = ProductsFunctions::createOmieObj($webhook);
                         $productJson = ProductsFunctions::createPloomesProductFromOmieObject($product, $this->ploomesServices, $this->omieServices);
-                        $process = ProductServices::updateContactERP($productJson, $product, $this->ploomesServices);
+                        $process = ProductServices::updateProductFromERPToCRM($productJson, $product, $this->ploomesServices);
                         break;
                     case 'deleteERPToCRM':
                         $product = ProductsFunctions::createOmieObj($webhook);

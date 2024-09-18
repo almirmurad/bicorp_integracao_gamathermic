@@ -270,30 +270,20 @@ class ProductServices
 
     }
 
-    public static function updateContactERP($json, $contact, $ploomesServices)
+    public static function updateProductFromERPToCRM($json, $product, $ploomesServices)
     {
         $messages = [
             'success'=>[],
             'error'=>[],
         ];
         $current = date('d/m/Y H:i:s');
-        $idContact = $ploomesServices->consultaClientePloomesCnpj(DiverseFunctions::limpa_cpf_cnpj($contact->cnpjCpf));
+        $ploomesProduct = $ploomesServices->getProductByCode($product->codigo);
 
-        if(!$idContact){
-            $messages['error'] = 'Erro: cliente '.$contact->nomeFantasia.' não foi encontrado no Ploomes CRM';
+        if(!$ploomesProduct){
+            $messages['error'] = 'Erro: cliente '.$product->descricao.' não foi encontrado no Ploomes CRM - '.$current;
         }else{
-            $ploomesServices->updatePloomesContact($json, $idContact, $idContact);
-            // $messages['success'] = 'Cliente '.$contact->nomeFantasia.' alterado no Ploomes CRM com sucesso!';
-            //monta a mensagem para atualizar o cliente do ploomes
-            $msg=[
-                'ContactId' => $idContact,
-                'Content' => 'Cliente '.$contact->nomeFantasia.' alterado no Omie ERP na base: '.$contact->baseFaturamentoTitle.' via Bicorp Integração',
-                'Title' => 'Cliente Alterado'
-            ];
-            
-            //cria uma interação no card
-            ($ploomesServices->createPloomesIteraction(json_encode($msg)))?$message = 'Integração concluída com sucesso! Cliente Ploomes id: '.$idContact.' alterado no Ploomes CRM ('.$contact->baseFaturamentoTitle.') e mensagem enviada com sucesso em: '.$current : $message = 'Integração concluída com sucesso! Cliente Ploomes id: '.$idContact.' alterado no PLoomes CRM, porém não foi possível gravar a mensagem no card do cliente do Ploomes: '.$current;
-            $messages['success'] = $message;
+            $ploomesServices->updatePloomesProduct($json, $ploomesProduct['Id']);
+            $messages['success'] = 'Cliente '.$product->descricao.' alterado no Ploomes CRM com sucesso! - '.$current;
         }
 
         return $messages;
