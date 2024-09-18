@@ -3,13 +3,14 @@
 namespace src\handlers;
 
 use src\exceptions\WebhookReadErrorException;
-use src\functions\ClientsFunctions;
+use src\functions\ProductsFunctions;
 use src\models\Webhook;
-use src\services\ContactServices;
 use src\services\DatabaseServices;
 use src\services\OmieServices;
 use src\services\PloomesServices;
-class ClientHandler
+use src\services\ProductServices;
+
+class ProductHandler
 {
     private $current;
     private $ploomesServices;
@@ -26,7 +27,7 @@ class ClientHandler
     }
 
     //SALVA O WEBHOOK NO BANCO DE DADOS
-    public function saveClientHook($json)
+    public function saveProductHook($json)
     { 
         $decoded = json_decode($json, true);
       
@@ -36,7 +37,7 @@ class ClientHandler
         $webhook->json = $json; //webhook 
         $webhook->status = 1; // recebido
         $webhook->result = 'Rececibo';
-        $webhook->entity = $decoded['Entity']??'Contacts';
+        $webhook->entity = $decoded['Entity']??'Products';
         $webhook->origem = $origem;
         //salva o hook no banco
         return ($id = $this->databaseServices->saveWebhook($webhook)) ? ['id'=>$id, 'msg' =>'Webhook Salvo com sucesso id = '.$id .'às '.$this->current] : 0;
@@ -46,7 +47,6 @@ class ClientHandler
     //PROCESSA E CRIA O cliente. CHAMA O REPROCESS CASO DE ERRO
     public function startProcess($status, $entity)
     {   
-        //inicia o processo de crição de cliente, caso de certo retorna mensagem de ok pra gravar em log, e caso de erro retorna falso
         $webhook = $this->databaseServices->getWebhook($status, $entity);
         
         $status = 2; //processando
@@ -55,75 +55,45 @@ class ClientHandler
         //talvez o ideal fosse devolver ao controller o ok de que o processo foi iniciado e um novo processo deve ser inciado 
         if($alterStatus){
 
-            $action = ClientsFunctions::findAction($webhook);
-            
+            $action = ProductsFunctions::findAction($webhook);
+        
             if($action){
                 //se tiver action cria o objeto de contacs
                 switch($action){
-                    case 'createCRMToERP':
-                        $contact = ClientsFunctions::createObj($webhook, $this->ploomesServices);
-                        $process = ContactServices::createContact($contact);
-                        break;
-                    case 'updateCRMToERP':
-                        $contact = ClientsFunctions::createObj($webhook, $this->ploomesServices);
-                        $diff = ClientsFunctions::compare($webhook, $this->ploomesServices);
-                        $process = ContactServices::updateContact($diff, $contact);
-                        break;
-                    case 'deleteCRMToERP':
-                        $contact = ClientsFunctions::createOldObj($webhook, $this->ploomesServices);
-                        $process = ContactServices::deleteContact($contact);
-                        break;
+                    // case 'createCRMToERP':
+                    //     $product = ProductsFunctions::createObj($webhook, $this->ploomesServices);
+                    //     $process = ProductServices::createContact($product);
+                    //     break;
+                    // case 'updateCRMToERP':
+                    //     $product = ProductsFunctions::createObj($webhook, $this->ploomesServices);
+                    //     $diff = ProductsFunctions::compare($webhook, $this->ploomesServices);
+                    //     $process = ProductServices::updateContact($diff, $product);
+                    //     break;
+                    // case 'deleteCRMToERP':
+                    //     $product = ProductsFunctions::createOldObj($webhook, $this->ploomesServices);
+                    //     $process = ProductServices::deleteContact($product);
+                    //     break;
                     case 'createERPToCRM':
-                        $contact  = ClientsFunctions::createOmieObj($webhook);
-                        $process = ContactServices::createContactERP($contact);
+                        $product  = ProductsFunctions::createOmieObj($webhook);
+                        $process = ProductServices::createProductFromERPToCRM($product);
                         break;
                     case 'updateERPToCRM':
-                        $contact  = ClientsFunctions::createOmieObj($webhook);
-                        $contactJson = ClientsFunctions::createPloomesContactFromOmieObject($contact, $this->ploomesServices, $this->omieServices);
-                        $process = ContactServices::updateContactERP($contactJson, $contact, $this->ploomesServices);
+                        $product  = ProductsFunctions::createOmieObj($webhook);
+                        $productJson = ProductsFunctions::createPloomesProductFromOmieObject($product, $this->ploomesServices, $this->omieServices);
+                        $process = ProductServices::updateContactERP($productJson, $product, $this->ploomesServices);
                         break;
                     case 'deleteERPToCRM':
-                        $contact = ClientsFunctions::createOmieObj($webhook);
-                        $process = ContactServices::deleteContactERP($contact, $this->ploomesServices);
+                        $product = ProductsFunctions::createOmieObj($webhook);
+                        $process = ProductServices::deleteContactERP($product, $this->ploomesServices);
                         break;
                 } 
             }
 
-            return self::response($webhook, $contact, $process);
+            return self::response($webhook, $product, $process);
 
         }
                  
     }
-
-    //REPROCESSA O WEBHOOK COM FALHA
-    // public function reprocessWebhook($hook){
-    //     $status = 4;//falhou
-    //     //$hook = $this->databaseServices->getWebhook($status, 'Contacts');
-    //     //$json = $hook['json'];
-    //     $status = 2; //processando
-    //     $alterStatus = $this->databaseServices->alterStatusWebhook($hook['id'], $status);
-        
-    //     if($alterStatus){
-            
-    //         $createClient = Self::newClient($hook);
-            
-            
-    //         if(!isset($createClient['contactsCreate']['error'])){
-    //             $status = 3; //Sucesso
-    //             $alterStatus = $this->databaseServices->alterStatusWebhook($hook['id'], $status);
-    //             if($alterStatus){
-    //                 return $createClient;//card processado pedido criado no Omie retorna mensagem winDeal para salvr no log
-    //             }
-
-    //         }else{
-    //             $status = 4; //falhou com mensagem
-    //             $alterStatus = $this->databaseServices->alterStatusWebhook($hook['id'], $status);
-                
-    //             return $createClient;
-    //         }
-    //     }
-        
-    // }
 
     //Trata a respostas para devolver ao controller
     public function response($webhook, $contact, $process)

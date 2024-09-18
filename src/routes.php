@@ -32,14 +32,18 @@ $router->post('/alterOrderStage', 'OrderController@alterOrderStage');//Pedido Al
 
 //contacts ploomes
 $router->post('/ploomesContacts', 'ContactController@ploomesContacts');//Novo cliente no ploomes
-$router->post('/omieClients', 'ContactController@omieClients');//Novo cliente no ploomes
-$router->post('/processNewContact', 'ContactController@processNewContact'); //inicia o processo com cron job
-$router->post('/alterClientPloomes', 'ContactController@alterClientPloomes'); //recebe um webhhok de cliente alterado no ploomes
+
 //clientes Omie
-$router->post('/newClientOmie', 'ClientController@newClientOmie'); //recebe um webhhok de cliente alterado no ploomesproccessAlterClientOmie
-$router->post('/proccessAlterClientOmie', 'ClientController@proccessAlterClientOmie'); //recebe um webhhok de cliente alterado no 
+$router->post('/omieClients', 'ContactController@omieClients');//Novo cliente no omie
 
+//start Process Clientes Omie x Ploomes
+$router->post('/processNewContact', 'ContactController@processNewContact'); //inicia o processo com cron job
+//processo de alterar cliente no omie pelo cron job 
+// $router->post('/proccessAlterClientOmie', 'ClientController@proccessAlterClientOmie'); //recebe um webhhok de cliente alterado no 
 
+//products
+$router->post('/omieProducts', 'ProductController@omieProducts');//Novo cliente no ploomes
+$router->post('/processNewProduct', 'ProductController@processNewProduct'); //inicia o processo com cron job
 
 
 //Invoices NFE

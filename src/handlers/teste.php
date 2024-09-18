@@ -1,25 +1,41 @@
 <?php
-$idOmie = 6972596007;
-$k = 0;
-$match = match ($k) {
-    0 => 'contact_4F0C36B9-5990-42FB-AEBC-5DCFD7A837C3',
-    1 => 'contact_6DB7009F-1E58-4871-B1E6-65534737C1D0',
-    2 => 'contact_AE3D1F66-44A8-4F88-AAA5-F10F05E662C2',
-    3 => 'contact_07784D81-18E1-42DC-9937-AB37434176FB',
-};
-$codigoOmie = $criaClienteOmie['codigo_cliente_omie'];
-$array = [
-   
-   'TypeId'=>1,
-   'OtherProperties'=>[
-       [
-           'FieldKey'=>$match,
-           'StringValue'=>"$idOmie",
-       ]
-       
-   ]
+    //function index padrão dos controllers, a princípio desnecessário
+    // public function index() {
+    //     //$total = Deal::select('id')->count();        
+    //     $data = [
+    //         'pagina' => 'Pedidos',
+    //         'loggedUser'=>$this->loggedUser,
+    //         //'total'=>$total
+    //     ];
+    //     $this->render('gerenciador.pages.index', $data);
+    // }
 
-];
-                    $json = json_encode($array);
-                    print_r($json);
-                    exit;
+     //REPROCESSA O WEBHOOK COM FALHA não esta sendo usado no momento
+    // public function reprocessWebhook($hook){
+    //     $status = 4;//falhou
+    //     //$hook = $this->databaseServices->getWebhook($status, 'Contacts');
+    //     //$json = $hook['json'];
+    //     $status = 2; //processando
+    //     $alterStatus = $this->databaseServices->alterStatusWebhook($hook['id'], $status);
+        
+    //     if($alterStatus){
+            
+    //         $createClient = Self::newClient($hook);
+            
+            
+    //         if(!isset($createClient['contactsCreate']['error'])){
+    //             $status = 3; //Sucesso
+    //             $alterStatus = $this->databaseServices->alterStatusWebhook($hook['id'], $status);
+    //             if($alterStatus){
+    //                 return $createClient;//card processado pedido criado no Omie retorna mensagem winDeal para salvr no log
+    //             }
+
+    //         }else{
+    //             $status = 4; //falhou com mensagem
+    //             $alterStatus = $this->databaseServices->alterStatusWebhook($hook['id'], $status);
+                
+    //             return $createClient;
+    //         }
+    //     }
+        
+    // }

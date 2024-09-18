@@ -389,6 +389,35 @@ class PloomesServices implements PloomesManagerInterface{
        
     }
 
+  //CRIA Produto NO PLOOMES
+  public function createPloomesProduct(string $json):bool
+  {
+  
+      //CHAMADA CURL PRA CRIAR WEBHOOK NO PLOOMES
+      $curl = curl_init();
+
+      curl_setopt_array($curl, array(
+          CURLOPT_URL => $this->baseApi . '/Products?$expand=OtherProperties',//ENDPOINT PLOOMES
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST =>strtoupper($this->method[1]),
+          CURLOPT_POSTFIELDS => $json,
+          CURLOPT_HTTPHEADER => $this->headers
+      ));
+
+      $response = json_decode(curl_exec($curl),true);
+      curl_close($curl);
+
+      $idIntegration = $response['value'][0]['Id']??Null;
+
+      return ($idIntegration !== null)?true:false;
+     
+  }
+
     //ATUALIZA CONTACT NO PLOOMES
     public function updatePloomesContact(string $json, int $idContact):bool
     {

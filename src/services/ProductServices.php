@@ -5,13 +5,14 @@ namespace src\services;
 use src\exceptions\WebhookReadErrorException;
 use src\functions\ClientsFunctions;
 use src\functions\DiverseFunctions;
+use src\functions\ProductsFunctions;
 use src\models\Contact;
 use src\services\DatabaseServices;
 use src\services\OmieServices;
 use src\services\PloomesServices;
 use stdClass;
 
-class ContactServices
+class ProductServices
 {
     public static function createContact($contact)
     {
@@ -245,7 +246,7 @@ class ContactServices
 
     }
 
-    public static function createContactERP($contact)
+    public static function createProductFromERPToCRM($product)
     {
         $omieServices = new OmieServices();
         $ploomesServices = new PloomesServices();
@@ -255,20 +256,13 @@ class ContactServices
         ];
    
         $current = date('d/m/Y H:i:s');
-        $json = ClientsFunctions::createPloomesContactFromOmieObject($contact, $ploomesServices, $omieServices);
-
-        $cnpj = DiverseFunctions::limpa_cpf_cnpj($contact->cnpjCpf);
-        $pContact = $ploomesServices->consultaClientePloomesCnpj($cnpj);
-        if($pContact !== null){
-            $messages['error'] = 'Erro ao cadastrar o cliente '.$contact->nomeFantasia .'('.$contact->cnpjCpf.') Cliente já cadastrado no Ploomes com o código: '.$pContact.' Data:' .$current;
-
+        $json = ProductsFunctions::createPloomesProductFromOmieObject($product, $ploomesServices, $omieServices);
+        
+        if(!$ploomesServices->createPloomesProduct($json)){
+             $messages['error'] = 'Erro ao cadastrar o produto ('.$product->descricao.') Data:' .$current;
         }else{
-  
-            if(!$ploomesServices->createPloomesContact($json)){
-            }else{
-                $messages['success'] = 'Cliente '.$contact->nomeFantasia.' Cadastrado no Ploomes CRM com sucesso! Data: '.$current;
-            }
-            
+            //aqui poderia enviar ao omie o codigo do produto de integração (id produto no ploomes)
+            $messages['success'] = 'Produto ('.$product->descricao.') Cadastrado no Ploomes CRM com sucesso! Data: '.$current;
         }
 
         return $messages;

@@ -874,15 +874,19 @@ class ClientsFunctions{
                     'StringValue'=>$contact->codigoClienteOmie,
                 ];
                 break;
-            // case 2337978328686: 
-                //$contact->baseFaturametoTitle = 'GSU';
-                //     $cOmie = [
-            //         'FieldKey'=>'contact_07784D81-18E1-42DC-9937-AB37434176FB',
-            //         'StringValue'=>$contact->codigoClienteOmie,
-
-            //     ];
-            //     break;
+            case 2337978328686: 
+                $omie = new stdClass();
+                $omie->appKey = $_ENV['APPK_HML'];
+                $omie->appSecret = $_ENV['SECRETS_HML']; 
+                $contact->baseFaturametoTitle = 'GSU';
+                    $cOmie = [
+                    'FieldKey'=>'contact_07784D81-18E1-42DC-9937-AB37434176FB',
+                    'StringValue'=>$contact->codigoClienteOmie,
+                ];
+                break;
         }
+
+        
          
 
         $data = [];
