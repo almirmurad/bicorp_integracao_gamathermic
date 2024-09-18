@@ -975,9 +975,7 @@ class ProductsFunctions{
    
         $data['OtherProperties'] = $op;
         $json = json_encode($data);
-        // print_r($product);
-        // print_r($json);
-        // exit;
+
         return $json;
 
     }

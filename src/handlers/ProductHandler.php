@@ -84,7 +84,7 @@ class ProductHandler
                         break;
                     case 'deleteERPToCRM':
                         $product = ProductsFunctions::createOmieObj($webhook);
-                        $process = ProductServices::deleteContactERP($product, $this->ploomesServices);
+                        $process = ProductServices::deleteProductFromERPToCRM($product, $this->ploomesServices);
                         break;
                 } 
             }

@@ -289,9 +289,8 @@ class ProductServices
         return $messages;
     }
 
-    public static function deleteContactERP($contact, $ploomesServices)
+    public static function deleteProductFromERPToCRM($product, $ploomesServices)
     {
-        
         $messages = [
             'success'=>[],
             'error'=>[],
@@ -299,15 +298,14 @@ class ProductServices
    
         $current = date('d/m/Y H:i:s');
 
-        //verificar se existe um cleinte cadastrado no ploomes com o cnpj e se existir deleta
-        $cnpj = DiverseFunctions::limpa_cpf_cnpj($contact->cnpjCpf);
-        $pContact = $ploomesServices->consultaClientePloomesCnpj($cnpj);
+        //verificar se existe um Produto cadastrado no ploomes com o Codigo e se existir deleta
+        $pProduct = $ploomesServices->getProductByCode($product->codigo);
        
-        if($pContact === null){
-            $messages['error'] = 'Erro ao exluir o cliente '.$contact->nomeFantasia.' Não foi encontrado no Ploomes. Data: '.$current ;
+        if($pProduct['Id'] === null){
+            $messages['error'] = 'Erro ao exluir o produto '.$product->descricao.' Não foi encontrado no Ploomes. Data: '.$current ;
         }else{
-            $ploomesServices->deletePloomesContact($pContact);
-            $messages['success'] = 'Cliente '.$contact->nomeFantasia.' excluído do Omie ERP e do Ploomes CRM. Data: '.$current;
+            $ploomesServices->deletePloomesProduct($pProduct['Id']);
+            $messages['success'] = 'Produto '.$product->descricao.' excluído do Omie ERP e do Ploomes CRM. Data: '.$current;
         }
 
         return $messages;

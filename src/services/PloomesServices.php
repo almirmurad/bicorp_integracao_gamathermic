@@ -527,5 +527,31 @@ class PloomesServices implements PloomesManagerInterface{
         return ($response !== null) ? false : true;
        
     }
+    
+    //DELETA Product NO PLOOMES
+    public function deletePloomesProduct(int $idPloomes):bool
+    {
+        //CHAMADA CURL PRA CRIAR WEBHOOK NO PLOOMES
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->baseApi . '/Products('.$idPloomes.')',//ENDPOINT PLOOMES
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST =>strtoupper($this->method[4]),
+            CURLOPT_POSTFIELDS => null,
+            CURLOPT_HTTPHEADER => $this->headers
+        ));
+
+        $response = json_decode(curl_exec($curl),true);
+        curl_close($curl);
+
+        return ($response !== null) ? false : true;
+       
+    }
 
 }
