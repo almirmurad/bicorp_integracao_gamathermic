@@ -45,6 +45,9 @@ $router->post('/processNewContact', 'ContactController@processNewContact'); //in
 $router->post('/omieProducts', 'ProductController@omieProducts');//Novo cliente no ploomes
 $router->post('/processNewProduct', 'ProductController@processNewProduct'); //inicia o processo com cron job
 
+//services
+$router->post('/omieServices', 'ServiceController@omieServices');//Novo cliente no ploomes
+$router->post('/processNewService', 'ServiceController@processNewService'); //inicia o processo com cron job
 
 //Invoices NFE
 $router->post('/invoiceIssue', 'InvoicingController@invoiceIssue');

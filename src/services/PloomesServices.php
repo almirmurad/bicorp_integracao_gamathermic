@@ -301,7 +301,7 @@ class PloomesServices implements PloomesManagerInterface{
         
         curl_close($curl);
        
-        return $response['value'][0];
+        return $response['value'][0] ?? null;
 
     }
     //encontra cidade no ploomes pelo Id

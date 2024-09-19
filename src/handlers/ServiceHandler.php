@@ -3,14 +3,15 @@
 namespace src\handlers;
 
 use src\exceptions\WebhookReadErrorException;
-use src\functions\ProductsFunctions;
+use src\functions\ServicesFunctions;
 use src\models\Webhook;
 use src\services\DatabaseServices;
 use src\services\OmieServices;
 use src\services\PloomesServices;
 use src\services\ProductServices;
+use src\services\ServiceServices;
 
-class ProductHandler
+class ServiceHandler
 {
     private $current;
     private $ploomesServices;
@@ -27,7 +28,7 @@ class ProductHandler
     }
 
     //SALVA O WEBHOOK NO BANCO DE DADOS
-    public function saveProductHook($json)
+    public function saveServiceHook($json)
     { 
         $decoded = json_decode($json, true);
       
@@ -37,7 +38,7 @@ class ProductHandler
         $webhook->json = $json; //webhook 
         $webhook->status = 1; // recebido
         $webhook->result = 'Rececibo';
-        $webhook->entity = $decoded['Entity']??'Products';
+        $webhook->entity = $decoded['Entity']??'Services';
         $webhook->origem = $origem;
         //salva o hook no banco
         return ($id = $this->databaseServices->saveWebhook($webhook)) ? ['id'=>$id, 'msg' =>'Webhook Salvo com sucesso id = '.$id .'às '.$this->current] : 0;
@@ -48,61 +49,60 @@ class ProductHandler
     public function startProcess($status, $entity)
     {   
         $webhook = $this->databaseServices->getWebhook($status, $entity);
-        
+    
         $status = 2; //processando
         $alterStatus = $this->databaseServices->alterStatusWebhook($webhook['id'], $status);
-        
+     
         //talvez o ideal fosse devolver ao controller o ok de que o processo foi iniciado e um novo processo deve ser inciado 
         if($alterStatus){
-
-            $action = ProductsFunctions::findAction($webhook);
-        
+            
+            $action = ServicesFunctions::findAction($webhook);
+            
             if($action){
                 //se tiver action cria o objeto de contacs
                 switch($action){
                     case 'createERPToCRM':
-                        $product  = ProductsFunctions::createOmieObj($webhook);
-                        $process = ProductServices::createProductFromERPToCRM($product);
+                        $service  = ServicesFunctions::createOmieObj($webhook);
+                        $process = ServiceServices::createServiceFromERPToCRM($service);
                         break;
                     case 'updateERPToCRM':
-                        $product  = ProductsFunctions::createOmieObj($webhook);
-                        $productJson = ProductsFunctions::createPloomesProductFromOmieObject($product, $this->ploomesServices, $this->omieServices);
-                        $process = ProductServices::updateProductFromERPToCRM($productJson, $product, $this->ploomesServices);
+                        $service  = ServicesFunctions::createOmieObj($webhook);
+                        $serviceJson = ServicesFunctions::createPloomesServiceFromOmieObject($service, $this->ploomesServices, $this->omieServices);
+                        $process = ServiceServices::updateServiceFromERPToCRM($serviceJson, $service, $this->ploomesServices);
                         break;
                     case 'deleteERPToCRM':
-                        $product = ProductsFunctions::createOmieObj($webhook);
-                        $process = ProductServices::deleteProductFromERPToCRM($product, $this->ploomesServices);
+                        $service = ServicesFunctions::createOmieObj($webhook);
+                        $process = ServiceServices::deleteServiceFromERPToCRM($service, $this->ploomesServices);
                         break;
                 } 
             }
 
-            return self::response($webhook, $product, $process);
+            return self::response($webhook, $service, $process);
 
         }
                  
     }
 
     //Trata a respostas para devolver ao controller
-    public function response($webhook, $contact, $process)
+    public function response($webhook, $service, $process)
     {
         if($webhook['origem'] === 'Omie'){
-
+            
             if(!empty($process['error'])){
-
                 $status = 4; //falhou
                 $alterStatus = $this->databaseServices->alterStatusWebhook($webhook['id'], $status);
-                
+            
                 //$reprocess = Self::reprocessWebhook($webhook);
                 $this->databaseServices->registerLog($webhook['id'], $process['error'], $webhook['entity']); 
-
+              
                 $decoded = json_decode($webhook['json'],true);
             
-                if($decoded['topic'] === 'Produto.Incluido'){
+                if($decoded['topic'] === 'Servico.Incluido'){
                     print 'entrou aqui';
                     throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id:'. $webhook['id']. ' em: '.$this->current, 500);
-                }elseif($decoded['topic'] === 'Produto.Excluido'){
+                }elseif($decoded['topic'] === 'Servico.Excluido'){
                     throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
-                }elseif($decoded['topic'] === 'Produto.Alterado'){
+                }elseif($decoded['topic'] === 'Servico.Alterado'){
                     throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
                 }
             }
@@ -119,7 +119,7 @@ class ProductHandler
 
         //verifica quantas bases haviam para integrar
         $totalBasesIntegrar = 0;
-        foreach($contact->basesFaturamento as $bf){
+        foreach($service->basesFaturamento as $bf){
             if($bf['integrar']>0){
                 $totalBasesIntegrar++;
             }

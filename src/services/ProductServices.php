@@ -280,10 +280,10 @@ class ProductServices
         $ploomesProduct = $ploomesServices->getProductByCode($product->codigo);
 
         if(!$ploomesProduct){
-            $messages['error'] = 'Erro: cliente '.$product->descricao.' não foi encontrado no Ploomes CRM - '.$current;
+            $messages['error'] = 'Erro: produto '.$product->descricao.' não foi encontrado no Ploomes CRM - '.$current;
         }else{
             $ploomesServices->updatePloomesProduct($json, $ploomesProduct['Id']);
-            $messages['success'] = 'Cliente '.$product->descricao.' alterado no Ploomes CRM com sucesso! - '.$current;
+            $messages['success'] = 'Produto '.$product->descricao.' alterado no Ploomes CRM com sucesso! - '.$current;
         }
 
         return $messages;

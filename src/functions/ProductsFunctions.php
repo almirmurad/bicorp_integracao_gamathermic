@@ -14,6 +14,7 @@ class ProductsFunctions{
         //decodifica o json de clientes vindos do webhook
         $json = $webhook['json'];
         $decoded = json_decode($json,true);
+        $current = date('d/m/Y H:i:s');
         //identifica qual action do webhook
         if(isset($decoded['Action'])){
 
