@@ -496,16 +496,16 @@ class OmieServices implements OmieManagerInterface{
 
         $clienteJson = [];
         $clienteJson['codigo_cliente_integracao'] = $contact->id;
-        $clienteJson['razao_social'] = $contact->name;
-        $clienteJson['nome_fantasia'] = $contact->legalName ?? null;
+        $clienteJson['razao_social'] = $contact->legalName;
+        $clienteJson['nome_fantasia'] = $contact->name;
         $clienteJson['cnpj_cpf'] = $contact->cnpj ?? $contact->cpf;
-        $clienteJson['email'] = $contact->email;
+        $clienteJson['email'] = $contact->email ?? null;
         $clienteJson['homepage'] = $contact->website ?? null;
-        $clienteJson['telefone1_ddd'] = $contact->ddd1;
-        $clienteJson['telefone1_numero'] = $contact->phone2 ?? null;
+        $clienteJson['telefone1_ddd'] = $contact->ddd1 ?? null;
+        $clienteJson['telefone1_numero'] = $contact->phone1 ?? null;
         $clienteJson['telefone2_ddd'] = $contact->ddd2 ?? null;
-        $clienteJson['telefone2_numero'] = $contact->phone1;
-        $clienteJson['contato'] = $contact->contato1;
+        $clienteJson['telefone2_numero'] = $contact->phone2 ?? null;
+        $clienteJson['contato'] = $contact->contato1 ?? null;
         $clienteJson['endereco'] = $contact->streetAddress;
         $clienteJson['endereco_numero'] = $contact->streetAddressNumber;
         $clienteJson['bairro'] = $contact->neighborhood;
@@ -514,19 +514,20 @@ class OmieServices implements OmieManagerInterface{
         //$clienteJson['cidade'] = $contact->cityName;
         $clienteJson['cidade_ibge'] = $contact->cityId;
         // $clienteJson['cep'] = $contact->streetAdress ?? null;
-        $clienteJson['cep'] = $contact->zipCode ?? null;
+        $clienteJson['cep'] = $contact->zipCode;
         $clienteJson['documento_exterior'] = $contact->documentoExterior ?? null;
         $clienteJson['inativo'] = $contact->inativo ?? null;
         $clienteJson['bloquear_exclusao'] = $contact->bloquearExclusao ?? null;
         //inicio aba CNAE e Outros
-        $clienteJson['cnae'] = 3091102;//$contact->cnaeCode ?? null;
+        $clienteJson['cnae'] = $contact->cnaeCode ?? null;
         $clienteJson['inscricao_estadual'] = $contact->inscricaoEstadual ?? null;
         $clienteJson['inscricao_municipal'] = $contact->inscricaoMunicipal ?? null;
         $clienteJson['inscricao_suframa'] = $contact->inscricaoSuframa ?? null;
         $clienteJson['optante_simples_nacional'] = $contact->simplesNacional ?? null;
         $clienteJson['produtor_rural'] = $contact->produtorRural ?? null;
         $clienteJson['contribuinte'] = $contact->contribuinte ?? null;
-        $clienteJson['tipo_atividade'] = '1';//$contact->segmento ?? null;
+        $clienteJson['tipo_atividade'] = $contact->ramoAtividade ?? null;
+       
         $clienteJson['valor_limite_credito'] = $contact->limiteCredito ?? null;
         $clienteJson['observacao'] = $contact->observacao ?? null;
         //fim aba CNAE e Outros
@@ -638,7 +639,7 @@ class OmieServices implements OmieManagerInterface{
     } 
     //altera um cliente no OMIE com base nas difereças dos arrays Old e News do Ploomes
     public function alteraCliente(object $omie, array $diff)
-    {
+    {   
         $array = [
             'app_key'=>$omie->appKey,
             'app_secret'=>$omie->appSecret,
@@ -672,14 +673,14 @@ class OmieServices implements OmieManagerInterface{
         $clienteJson['inativo'] = $diff['inativo']['new'] ?? null;
         $clienteJson['bloquear_exclusao'] = $diff['bloquearExclusao']['new'] ?? null;
         //inicio aba CNAE e Outros
-        $clienteJson['cnae'] = 3091102 ?? null;//$diff['cnaeCode']['new'] ?? null;
+        $clienteJson['cnae'] = $diff['cnaeCode']['new'] ?? null;//3091102 ?? null;
         $clienteJson['inscricao_estadual'] = $diff['inscricaoEstadual']['new'] ?? null;
         $clienteJson['inscricao_municipal'] = $diff['inscricaoMunicipal']['new'] ?? null;
         $clienteJson['inscricao_suframa'] = $diff['inscricaoSuframa']['new'] ?? null;
         $clienteJson['optante_simples_nacional'] = $diff['simplesNacional']['new'] ?? null;
         $clienteJson['produtor_rural'] = $diff['produtorRural']['new'] ?? null;
         $clienteJson['contribuinte'] = $diff['contribuinte']['new'] ?? null;
-        $clienteJson['tipo_atividade'] = '1';//$diff['segmento ?? null;
+        $clienteJson['tipo_atividade'] = $diff['ramoAtividade']['new'] ?? null;
         $clienteJson['valor_limite_credito'] = $diff['limiteCredito']['new'] ?? null;
         $clienteJson['observacao'] = $diff['observacao']['new'] ?? null;
         //fim aba CNAE e Outros
@@ -704,14 +705,15 @@ class OmieServices implements OmieManagerInterface{
         $clienteJson['recomendacoes'][] = array_filter($recomendacoes);
         
         //fim array recomendações
-
+        
         $clienteJson['tags']= $diff['tags']['new'] ?? null;
+   
          
         $array['param'][] = array_filter($clienteJson);
 
-        // print_r($array);
+         //print_r($array);
         // print_r($diff);
-        // exit;
+        //exit;
 
         $json = json_encode($array);
 
@@ -797,6 +799,50 @@ class OmieServices implements OmieManagerInterface{
         $cliente = json_decode($response, true);
     
         return $cliente;
+
+    }
+
+    //consulta estoque
+    public function getStockById(object $product, object $omie){
+        $current = date('d/m/Y');
+        $array = [
+                    'app_key' => $omie->appKey,
+                    'app_secret' => $omie->appSecret,
+                    'call' => 'PosicaoEstoque',
+                    'param' => [
+                        [
+                            'id_prod'=>$product->codigo_produto,
+                            'data'=>$current,
+                        ]
+                    ]
+                ];
+
+            $json = json_encode($array);
+
+            $curl = curl_init();
+    
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://app.omie.com.br/api/v1/estoque/consulta/',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => $json,
+                CURLOPT_HTTPHEADER => array(
+                    'Content-Type: application/json'
+                ),
+            ));
+    
+            $response = curl_exec($curl);
+    
+            curl_close($curl);
+    
+            $estoque = json_decode($response, true);
+        
+            return $estoque;
 
     }
   

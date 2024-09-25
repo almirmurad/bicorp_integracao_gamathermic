@@ -23,7 +23,7 @@ class ContactServices
         ];
    
         $current = date('d/m/Y H:i:s');
-   
+
         foreach($contact->basesFaturamento as $k => $bf)
         {
 
@@ -34,7 +34,8 @@ class ContactServices
                 $omie[$k]->target = $bf['sigla']; 
                 $omie[$k]->appSecret = $bf['appSecret'];
                 $omie[$k]->appKey = $bf['appKey'];
-                $contact->cVendedorOmie = $omieServices->vendedorIdOmie($omie[$k],$contact->ownerEmail); 
+                $contact->cVendedorOmie = $omieServices->vendedorIdOmie($omie[$k],$contact->ownerEmail) ?? null; 
+                
                 $criaClienteOmie = $omieServices->criaClienteOmie($omie[$k], $contact);
 
                 //verifica se criou o cliente no omie
@@ -47,7 +48,6 @@ class ContactServices
                     };
                     $codigoOmie = $criaClienteOmie['codigo_cliente_omie'];
                     $array = [
-                        
                         'TypeId'=>1,
                         'OtherProperties'=>[
                             [
@@ -57,9 +57,9 @@ class ContactServices
                         ]
                     ];
                     $json = json_encode($array);
+                    //insere o id do omie no campo correspondente do cliente Ploomes
                     $insertIdOmie = $ploomesServices->updatePloomesContact($json, $contact->id);
                     if($insertIdOmie){
-
                         //monta a mensagem para atualizar o cliente do ploomes
                         $msg=[
                             'ContactId' => $contact->id,
@@ -71,31 +71,6 @@ class ContactServices
                         ($ploomesServices->createPloomesIteraction(json_encode($msg)))?$message = 'Integração concluída com sucesso! Cliente Ploomes id: '.$contact->id.' gravados no Omie ERP com o numero: '.$criaClienteOmie['codigo_cliente_omie'].' e mensagem enviada com sucesso em: '.$current : $message = 'Integração concluída com sucesso! Cliente Ploomes id: '.$contact->id.' gravados no Omie ERP com o numero: '.$criaClienteOmie['codigo_cliente_omie'].' porém não foi possível gravar a mensagem no card do cliente do Ploomes: '.$current;
 
                     }
-                   
-
-                    //inclui o id do pedido no omie na tabela deal
-                    // if($criaClienteOmie['codigo_cliente_omie']){
-                    //     //salva um deal no banco
-                    //     $deal->omieOrderId = $incluiPedidoOmie['codigo_pedido'];
-                    //     $dealCreatedId = $this->databaseServices->saveDeal($deal);   
-                    //     $message['winDeal']['dealMessage'] ='Id do Deal no Banco de Dados: '.$dealCreatedId;  
-                    //     if($dealCreatedId){
-
-                    //         $omie[$k]->idOmie = $deal->omieOrderId;
-                    //         $omie[$k]->codCliente = $idClienteOmie;
-                    //         $omie[$k]->codPedidoIntegracao = $deal->lastOrderId;
-                    //         $omie[$k]->numPedidoOmie = intval($incluiPedidoOmie['numero_pedido']);
-                    //         $omie[$k]->codClienteIntegracao = $deal->contactId;
-                    //         $omie[$k]->dataPrevisao = $deal->finishDate;
-                    //         $omie[$k]->codVendedorOmie = $codVendedorOmie;
-                    //         $omie[$k]->idVendedorPloomes = $deal->ownerId;   
-                    //         $omie[$k]->appKey = $omie[$k]->appKey;             
-                    
-                    //         $id = $this->databaseServices->saveOrder($omie[$k]);
-                    //         $message['winDeal']['newOrder'] = 'Novo pedido salvo na base de dados de pedidos '.$omie[$k]->baseFaturamentoTitle.' id '.$id.'em: '.$current;
-                    //     }
-                        
-                    // }
 
                     $messages['success'][]=$message;
                     
@@ -114,6 +89,7 @@ class ContactServices
                 }       
             }
         }   
+
         return $messages;
     }
 
@@ -132,9 +108,6 @@ class ContactServices
             foreach($contact->basesFaturamento as $k => $bf)
             {
                 $omie[$k] = new stdClass();
-
-                
-                    
                     if($bf['integrar'] > 0){
                         $total ++;
                         $omie[$k]->baseFaturamentoTitle = $bf['title'];

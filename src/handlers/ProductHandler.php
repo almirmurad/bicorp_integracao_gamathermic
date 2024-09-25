@@ -61,16 +61,16 @@ class ProductHandler
                 //se tiver action cria o objeto de contacs
                 switch($action){
                     case 'createERPToCRM':
-                        $product  = ProductsFunctions::createOmieObj($webhook);
+                        $product  = ProductsFunctions::createOmieObj($webhook, $this->omieServices);
                         $process = ProductServices::createProductFromERPToCRM($product);
                         break;
                     case 'updateERPToCRM':
-                        $product  = ProductsFunctions::createOmieObj($webhook);
+                        $product  = ProductsFunctions::createOmieObj($webhook, $this->omieServices);
                         $productJson = ProductsFunctions::createPloomesProductFromOmieObject($product, $this->ploomesServices, $this->omieServices);
                         $process = ProductServices::updateProductFromERPToCRM($productJson, $product, $this->ploomesServices);
                         break;
                     case 'deleteERPToCRM':
-                        $product = ProductsFunctions::createOmieObj($webhook);
+                        $product = ProductsFunctions::createOmieObj($webhook, $this->omieServices);
                         $process = ProductServices::deleteProductFromERPToCRM($product, $this->ploomesServices);
                         break;
                 } 

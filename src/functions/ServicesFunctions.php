@@ -195,7 +195,7 @@ class ServicesFunctions{
         // $data['FamilyId'] = $service->codigo_familia;
         $data['Code'] = $service->codigo;
         //$data['ImageUrl'] = $service->endereco ?? null;
-        $data['UnitPrice'] = $service->valor_unitario ?? null;
+        $data['UnitPrice'] = $service->precoUnit ?? null;
         // $data['CreateImportId'] = $city['Id'];//pegar na api do ploomes
         // $data['UpdateImportId'] = $service->segmento ?? null;//Id do Tipo de atividade(não veio no webhook de cadastro do omie)
         // $data['Editable'] = $service->nFuncionarios ?? null;//Id do número de funcionários(não veio no webhook de cadastro do omie)

@@ -60,10 +60,31 @@ class ClientsFunctions{
             $prop[$key] = $op;
             // print '['.$key.']=>['.$op.']';
         }
+        
         //contact_879A3AA2-57B1-49DC-AEC2-21FE89617665 = tipo de cliente
         $contact->tipoCliente = $prop['contact_879A3AA2-57B1-49DC-AEC2-21FE89617665'] ?? null;
         //contact_FF485334-CE8C-4FB9-B3CA-4FF000E75227 = ramo de atividade
-        $contact->ramoAtividade = $prop['contact_FF485334-CE8C-4FB9-B3CA-4FF000E75227'];
+        //$contact->ramoAtividade = $prop['contact_FF485334-CE8C-4FB9-B3CA-4FF000E75227'] ?? null;
+        $ramo= $prop['contact_FF485334-CE8C-4FB9-B3CA-4FF000E75227'] ?? null;
+        if($ramo !== null){
+            $id = match($ramo){
+               
+                420130572=>0,
+                420130568=>1,
+                420130574=>2,
+                420130569=>3,
+                420130565=>4,
+                420130566=>5,           
+                420130571=>6,
+                420130570=>7,
+                420130563=>8,
+                420130573=>9,
+    
+            };
+            $contact->ramoAtividade = $id;
+        }else{
+            $contact->ramoAtividade = null;
+        }
         //contact_FA99392B-CED8-4668-B003-DFC1111DACB0 = Porte
         $contact->porte = $prop['contact_FA99392B-CED8-4668-B003-DFC1111DACB0'] ?? null;
         //contact_20B72360-82CF-4806-BB05-21E89D5C61FD = importância
@@ -79,24 +100,24 @@ class ClientsFunctions{
         //contact_3094AFFE-4263-43B6-A14B-8B0708CA1160 = inscrição suframa
         $contact->inscricaoSuframa = $prop['contact_3094AFFE-4263-43B6-A14B-8B0708CA1160'] ?? null;
         //contact_9BB527FD-8277-4D1F-AF99-DD88D5064719 = Simples nacional?(s/n)  
-        $contact->simplesNacional = $prop['contact_9BB527FD-8277-4D1F-AF99-DD88D5064719'] ?? null;
-        ($contact->simplesNacional) ? $contact->simplesNacional = 'S' : $contact->simplesNacional = 'N';
+        $contact->simplesNacional = $prop['contact_9BB527FD-8277-4D1F-AF99-DD88D5064719'];//é obrigatório para emissão de nf
+        (isset($contact->simplesNacional) && $contact->simplesNacional !== false) ? $contact->simplesNacional = 'S' : $contact->simplesNacional = 'N';
         //contact_3C521209-46BD-4EA5-9F41-34756621CCB4 = contato1
         $contact->contato1 = $prop['contact_3C521209-46BD-4EA5-9F41-34756621CCB4'] ?? null;
         //contact_F9B60153-6BDF-4040-9C3A-E23B1469894A = Produtor Rural
         $contact->produtorRural = $prop['contact_F9B60153-6BDF-4040-9C3A-E23B1469894A'] ?? null;
-        ($contact->produtorRural) ? $contact->produtorRural = 'S' : $contact->produtorRural = 'N';
+        (isset($contact->produtorRural) && $contact->produtorRural !== false) ? $contact->produtorRural = 'S' : $contact->produtorRural = 'N';
         //contact_FC16AEA5-E4BF-44CE-83DA-7F33B7D56453 = Contribuinte(s/n)
         $contact->contribuinte = $prop['contact_FC16AEA5-E4BF-44CE-83DA-7F33B7D56453'] ?? null;
-        ($contact->contribuinte) ? $contact->contribuinte = 'S' : $contact->contribuinte = 'N';
+        (isset($contact->contribuinte) && $contact->contribuinte !== false) ? $contact->contribuinte = 'S' : $contact->contribuinte = 'N';
         //contact_10D27B0F-F9EF-4378-B1A8-099319BAC0AD = limite de crédito
         $contact->limiteCredito = $prop['contact_10D27B0F-F9EF-4378-B1A8-099319BAC0AD'] ?? null;
         //contact_CED4CBAD-92C7-4A51-9985-B9010D27E1A4 = inativo (s/n)
         $contact->inativo = $prop['contact_CED4CBAD-92C7-4A51-9985-B9010D27E1A4'] ?? null;
-        ($contact->inativo) ? $contact->inativo = 'S' : $contact->inativo = 'N';
+        (isset($contact->inativo) && $contact->inativo !== false) ? $contact->inativo = 'S' : $contact->inativo = 'N';
         //contact_C613A391-155B-42F5-9C92-20C3371CC3DE = bloqueia excusão (s/n)
         $contact->bloquearExclusao = $prop['contact_C613A391-155B-42F5-9C92-20C3371CC3DE'] ?? null;
-        ($contact->bloquearExclusao) ? $contact->bloquearExclusao = 'S' : $contact->bloquearExclusao = 'N';
+        (isset($contact->bloquearExclusao) && $contact->bloquearExclusao !== false) ? $contact->bloquearExclusao = 'S' : $contact->bloquearExclusao = 'N';
         //contact_77CCD2FB-53D7-4203-BE6B-14B671A06F33 = transportadora padrão
         $contact->cTransportadoraPadrao = $prop['contact_77CCD2FB-53D7-4203-BE6B-14B671A06F33'] ?? null;
         //contact_6BB80AEA-43D0-45E8-B9E4-28D89D9773B9 = codigo do banco
@@ -113,21 +134,21 @@ class ClientsFunctions{
         $contact->chavePix = $prop['contact_847FE760-74D0-462D-B464-9E89C7E1C28E'] ?? null;
         //contact_33015EDD-B3A7-464E-81D0-5F38D31F604A = Transferência Padrão
         $contact->transferenciaPadrao = $prop['contact_33015EDD-B3A7-464E-81D0-5F38D31F604A'] ?? null;
-        ($contact->transferenciaPadrao) ? $contact->transferenciaPadrao = 'S' : $contact->transferenciaPadrao = 'N';
+        (isset($contact->transferenciaPadrao) && $contact->transferenciaPadrao !== false) ? $contact->transferenciaPadrao = 'S' : $contact->transferenciaPadrao = 'N';
         //contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C = Integrar com base omie 1? (s/n)
-        ($prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C']) ? $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] = 1 : $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] = 0;
+        (isset($prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C']) && $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] !== false) ? $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] = 1 : $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] = 0;
         //contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C = Integrar com base omie 2? (s/n)
-        ($prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C']) ? $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'] = 1 : $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'] = 0;
+        (isset($prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C']) && $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'] !== false) ? $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'] = 1 : $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'] = 0;
         //contact_02AA406F-F955-4AE0-B380-B14301D1188B = Integrar com base omie 3? (s/n)
-        ($prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B']) ? $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] = 1 : $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] = 0;
+        (isset($prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B']) && $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] !== false) ? $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] = 1 : $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] = 0;
         //contact_E497C521-4275-48E7-B44E-7A057844B045 = Integrar com base omie 4? (s/n)
-        ($prop['contact_E497C521-4275-48E7-B44E-7A057844B045']) ? $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] = 1 : $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] = 0;
+        (isset($prop['contact_E497C521-4275-48E7-B44E-7A057844B045']) && $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] !== false) ? $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] = 1 : $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] = 0;
+    
         $contact->codOmie = [];
         $contact->codOmie[0] = $prop['contact_4F0C36B9-5990-42FB-AEBC-5DCFD7A837C3'] ?? null;
         $contact->codOmie[1] = $prop['contact_6DB7009F-1E58-4871-B1E6-65534737C1D0'] ?? null;
         $contact->codOmie[2] = $prop['contact_AE3D1F66-44A8-4F88-AAA5-F10F05E662C2'] ?? null;
         $contact->codOmie[3] = $prop['contact_07784D81-18E1-42DC-9937-AB37434176FB'] ?? null;
-        
         
         $phones = [];
         foreach($cliente['Phones'] as $phone){
@@ -140,38 +161,38 @@ class ClientsFunctions{
                 'nPhone' => $nPhone
             ];        
         }
-
+      
         $contact->id = $cliente['Id']; //Id do Contact
-        $contact->name = $cliente['Name'] ?? null; // Nome ou nome fantasia do contact
-        $contact->legalName = $cliente['LegalName'] ?? null; // Razão social do contact
-        $contact->cnpj = $cliente['CNPJ'] ?? null; // Contatos CNPJ
-        $contact->cpf = $cliente['CPF'] ?? null; // Contatos CPF
-        $contact->documentoExterior = $cliente['IdentityDocument']; // Contatos CPF
-        $contact->segmento = $cliente['LineOfBusiness']['Id'] ?? null; // Contatos CPF
+        $contact->name = $cliente['Name']; // Nome ou nome fantasia do contact !obrigatório!
+        $contact->legalName = $cliente['LegalName']; // Razão social do contact !obrigatório!
+        $contact->cnpj = $cliente['CNPJ'] ?? null; // Contatos CNPJ !obrigatório!
+        $contact->cpf = $cliente['CPF'] ?? null; // Contatos CPF !obrigatório!
+        $contact->documentoExterior = $cliente['IdentityDocument'] ?? null; // Documento extrangeiro CPF
+        $contact->segmento = $cliente['LineOfBusiness']['Id'] ?? null; // Segmento CPF
         $contact->email = $cliente['Email']; // Contatos Email obrigatório
-        $contact->website = $cliente['Website'] ?? null; // Contatos Email obrigatório
-        $contact->ddd1 = $phones[0]['ddd']; //"telefone1_ddd": "011",
-        $contact->phone1 = $phones[0]['nPhone']; //"telefone1_numero": "2737-2737",
+        $contact->website = $cliente['Website'] ?? null; // Contatos website obrigatório
+        $contact->ddd1 = $phones[0]['ddd'] ?? null; //"telefone1_ddd": "011",
+        $contact->phone1 = $phones[0]['nPhone'] ?? null; //"telefone1_numero": "2737-2737",
         $contact->ddd2 = $phones[1]['ddd'] ?? null; //"telefone1_ddd": "011",
         $contact->phone2 = $phones[1]['nPhone'] ?? null; //"telefone1_numero": "2737-2737",
         //$contact->contato1 = $prop['contact_E6008BF6-A43D-4D1C-813E-C6BD8C077F77'] ?? null;
-        $contact->streetAddress = $cliente['StreetAddress']; // Endereço Obrigatório
-        $contact->streetAddressNumber = $cliente['StreetAddressNumber']; // Número Endereço Obrigatório
+        $contact->streetAddress = $cliente['StreetAddress']; // Endereço !obrigatório!
+        $contact->streetAddressNumber = $cliente['StreetAddressNumber']; // Número Endereço !obrigatório!
         $contact->streetAddressLine2 = $cliente['StreetAddressLine2'] ?? null; // complemento do Endereço 
-        $contact->neighborhood = $cliente['Neighborhood']; // bairro do Endereço é obrigatório
-        $contact->zipCode = $cliente['ZipCode']; // CEP do Endereço é obrigatório
-        $contact->cityId = $cliente['City']['IBGECode']; // Id da cidade é obrigatório
-        $contact->cityName = $cliente['City']['Name']; // estamos pegando o IBGE code
-        $contact->cityLagitude = $cliente['City']['Latitude']; // Latitude da cidade é obrigatório
-        $contact->cityLongitude = $cliente['City']['Longitude']; // Longitude da cidade é obrigatório
-        $contact->stateShort = $cliente['State']['Short']; // Sigla do estado é obrigatório
-        $contact->stateName = $cliente['State']['Name']; //estamos pegando a sigla do estado
+        $contact->neighborhood = $cliente['Neighborhood']; // bairro do Endereço é !obrigatório!
+        $contact->zipCode = $cliente['ZipCode']; // CEP do Endereço é !obrigatório!
+        $contact->cityId = $cliente['City']['IBGECode'] ?? null; // Id da cidade é obrigatório
+        $contact->cityName = $cliente['City']['Name'] ?? null; // estamos pegando o IBGE code
+        $contact->cityLagitude = $cliente['City']['Latitude'] ?? null; // Latitude da cidade 
+        $contact->cityLongitude = $cliente['City']['Longitude'] ?? null; // Longitude da cidade 
+        $contact->stateShort = $cliente['State']['Short']; // Sigla do estado é !obrigatório!
+        $contact->stateName = $cliente['State']['Name'] ?? null; //estamos pegando a sigla do estado
         $contact->countryId = $cliente['CountryId'] ?? null; // Omie preenche o país automaticamente
         $contact->cnaeCode = $cliente['CnaeCode'] ?? null; // Id do cnae 
         $contact->cnaeName = $cliente['CnaeName'] ?? null; // Name do cnae 
         $contact->ownerId = $cliente['Owner']['Id'] ?? null; // Responsável (Vendedor)
-        $contact->ownerEmail = 'tecnologia@bicorp.com.br';// Responsável (Vendedor) 
-        //$contact->ownerEmail = $cliente['Owner']['Email']; // Responsável (Vendedor) 
+        //$contact->ownerEmail = 'tecnologia@bicorp.com.br';// Responsável (Vendedor) 
+        $contact->ownerEmail = $cliente['Owner']['Email'] ?? null; // Responsável (Vendedor) 
         $contact->observacao = $cliente['Note']; // Observação 
         
         // Base de Faturamento para fiel não precisa pois integra e depois a automação distribui em todas as bases, em gamathermic precisa
@@ -213,29 +234,6 @@ class ClientsFunctions{
         $bases[2]['appKey'] = $_ENV['APPK_MSC']??null;
         $bases[2]['appSecret'] = $_ENV['SECRETS_MSC']??null;
         
-        
-        //switch para uma base serve mas para as 4 base não pois ele vai verificar se existe base de faturamento em apenas uma das opções
-        // switch($prop){
-            
-        //     case $base1:
-            //         $contact->baseFaturamentoTitle = 'ENGEPARTS';
-            //         $contact->baseFaturamentoSigla = 'EPT';
-            //         break;
-            //     case $base2:
-                //         $contact->baseFaturamentoTitle = 'GAMATERMIC';
-                //         $contact->baseFaturamentoSigla = 'GTC';
-                //         break;
-        //     case $base3:
-        //         $contact->baseFaturamentoTitle = 'SEMIN';
-        //         $contact->baseFaturamentoSigla = 'SMN';
-        //         break;
-        //     case $base4:
-        //         $contact->baseFaturamentoTitle = 'GSU';
-        //         $contact->baseFaturamentoSigla = 'GSU';
-        //         break;
-        
-        // }
-        
         // (!empty($contact->baseFaturamento))? $contact->baseFaturamento : $m[] = 'Base de faturamento inexistente';
         $contact->basesFaturamento = $bases;        
         
@@ -252,19 +250,20 @@ class ClientsFunctions{
             }
         }
         $contact->tags = $tags;
-
+    
         return $contact;
     }
 
     //cria Old obj cliente
     public static function createOldObj($webhook, $ploomesServices)
     {
-        //decodifica o json de clientes vindos do webhook
+
+        //decodifica o json de clientes vindos do webhook, não dá pra buscar pela api ploomes pq o cliente foi deletado 
         $json = $webhook['json'];
         $decoded = json_decode($json,true);
         $cliente = $decoded['Old'];
         $contact = new Contact();     
-    
+
         /************************************************************
          *                   Other Properties                        *
          *                                                           *
@@ -280,7 +279,26 @@ class ClientsFunctions{
         //contact_879A3AA2-57B1-49DC-AEC2-21FE89617665 = tipo de cliente
         $contact->tipoCliente = $prop['contact_879A3AA2-57B1-49DC-AEC2-21FE89617665'] ?? null;
         //contact_FF485334-CE8C-4FB9-B3CA-4FF000E75227 = ramo de atividade
-        $contact->ramoAtividade = $prop['contact_FF485334-CE8C-4FB9-B3CA-4FF000E75227'] ?? null;
+        $ramo= $prop['contact_FF485334-CE8C-4FB9-B3CA-4FF000E75227'] ?? null;
+        if($ramo !== null){
+            $id = match($ramo){
+               
+                420130572=>0,
+                420130568=>1,
+                420130574=>2,
+                420130569=>3,
+                420130565=>4,
+                420130566=>5,           
+                420130571=>6,
+                420130570=>7,
+                420130563=>8,
+                420130573=>9,
+    
+            };
+            $contact->ramoAtividade = $id;
+        }else{
+            $contact->ramoAtividade = null;
+        }
         //contact_FA99392B-CED8-4668-B003-DFC1111DACB0 = Porte
         $contact->porte = $prop['contact_FA99392B-CED8-4668-B003-DFC1111DACB0'] ?? null;
         //contact_20B72360-82CF-4806-BB05-21E89D5C61FD = importância
@@ -296,24 +314,24 @@ class ClientsFunctions{
         //contact_3094AFFE-4263-43B6-A14B-8B0708CA1160 = inscrição suframa
         $contact->inscricaoSuframa = $prop['contact_3094AFFE-4263-43B6-A14B-8B0708CA1160'] ?? null;
         //contact_9BB527FD-8277-4D1F-AF99-DD88D5064719 = Simples nacional?(s/n)  
-        $contact->simplesNacional = $prop['contact_9BB527FD-8277-4D1F-AF99-DD88D5064719'] ?? null;
-        ($contact->simplesNacional) ? $contact->simplesNacional = 'S' : $contact->simplesNacional = 'N';
+        $contact->simplesNacional = $prop['contact_9BB527FD-8277-4D1F-AF99-DD88D5064719'];//é obrigatório para emissão de nf
+        (isset($contact->simplesNacional) && $contact->simplesNacional !== false) ? $contact->simplesNacional = 'S' : $contact->simplesNacional = 'N';
         //contact_3C521209-46BD-4EA5-9F41-34756621CCB4 = contato1
         $contact->contato1 = $prop['contact_3C521209-46BD-4EA5-9F41-34756621CCB4'] ?? null;
         //contact_F9B60153-6BDF-4040-9C3A-E23B1469894A = Produtor Rural
         $contact->produtorRural = $prop['contact_F9B60153-6BDF-4040-9C3A-E23B1469894A'] ?? null;
-        ($contact->produtorRural) ? $contact->produtorRural = 'S' : $contact->produtorRural = 'N';
+        (isset($contact->produtorRural) && $contact->produtorRural !== false) ? $contact->produtorRural = 'S' : $contact->produtorRural = 'N';
         //contact_FC16AEA5-E4BF-44CE-83DA-7F33B7D56453 = Contribuinte(s/n)
         $contact->contribuinte = $prop['contact_FC16AEA5-E4BF-44CE-83DA-7F33B7D56453'] ?? null;
-        ($contact->contribuinte) ? $contact->contribuinte = 'S' : $contact->contribuinte = 'N';
+        (isset($contact->contribuinte) && $contact->contribuinte !== false) ? $contact->contribuinte = 'S' : $contact->contribuinte = 'N';
         //contact_10D27B0F-F9EF-4378-B1A8-099319BAC0AD = limite de crédito
         $contact->limiteCredito = $prop['contact_10D27B0F-F9EF-4378-B1A8-099319BAC0AD'] ?? null;
         //contact_CED4CBAD-92C7-4A51-9985-B9010D27E1A4 = inativo (s/n)
         $contact->inativo = $prop['contact_CED4CBAD-92C7-4A51-9985-B9010D27E1A4'] ?? null;
-        ($contact->inativo) ? $contact->inativo = 'S' : $contact->inativo = 'N';
+        (isset($contact->inativo) && $contact->inativo !== false) ? $contact->inativo = 'S' : $contact->inativo = 'N';
         //contact_C613A391-155B-42F5-9C92-20C3371CC3DE = bloqueia excusão (s/n)
         $contact->bloquearExclusao = $prop['contact_C613A391-155B-42F5-9C92-20C3371CC3DE'] ?? null;
-        ($contact->bloquearExclusao) ? $contact->bloquearExclusao = 'S' : $contact->bloquearExclusao = 'N';
+        (isset($contact->bloquearExclusao) && $contact->bloquearExclusao !== false) ? $contact->bloquearExclusao = 'S' : $contact->bloquearExclusao = 'N';
         //contact_77CCD2FB-53D7-4203-BE6B-14B671A06F33 = transportadora padrão
         $contact->cTransportadoraPadrao = $prop['contact_77CCD2FB-53D7-4203-BE6B-14B671A06F33'] ?? null;
         //contact_6BB80AEA-43D0-45E8-B9E4-28D89D9773B9 = codigo do banco
@@ -330,15 +348,16 @@ class ClientsFunctions{
         $contact->chavePix = $prop['contact_847FE760-74D0-462D-B464-9E89C7E1C28E'] ?? null;
         //contact_33015EDD-B3A7-464E-81D0-5F38D31F604A = Transferência Padrão
         $contact->transferenciaPadrao = $prop['contact_33015EDD-B3A7-464E-81D0-5F38D31F604A'] ?? null;
-        ($contact->transferenciaPadrao) ? $contact->transferenciaPadrao = 'S' : $contact->transferenciaPadrao = 'N';
+        (isset($contact->transferenciaPadrao) && $contact->transferenciaPadrao !== false) ? $contact->transferenciaPadrao = 'S' : $contact->transferenciaPadrao = 'N';
         //contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C = Integrar com base omie 1? (s/n)
-        ($prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C']) ? $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] = 1 : $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] = 0;
+        (isset($prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C']) && $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] !== false) ? $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] = 1 : $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] = 0;
         //contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C = Integrar com base omie 2? (s/n)
-        ($prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C']) ? $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'] = 1 : $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'] = 0;
+        (isset($prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C']) && $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'] !== false) ? $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'] = 1 : $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'] = 0;
         //contact_02AA406F-F955-4AE0-B380-B14301D1188B = Integrar com base omie 3? (s/n)
-        ($prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B']) ? $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] = 1 : $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] = 0;
+        (isset($prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B']) && $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] !== false) ? $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] = 1 : $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] = 0;
         //contact_E497C521-4275-48E7-B44E-7A057844B045 = Integrar com base omie 4? (s/n)
-        ($prop['contact_E497C521-4275-48E7-B44E-7A057844B045']) ? $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] = 1 : $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] = 0;
+        (isset($prop['contact_E497C521-4275-48E7-B44E-7A057844B045']) && $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] !== false) ? $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] = 1 : $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] = 0;
+    
         $contact->codOmie = [];
         $contact->codOmie[0] = $prop['contact_4F0C36B9-5990-42FB-AEBC-5DCFD7A837C3'] ?? null;
         $contact->codOmie[1] = $prop['contact_6DB7009F-1E58-4871-B1E6-65534737C1D0'] ?? null;
@@ -358,16 +377,16 @@ class ClientsFunctions{
         }
 
         $contact->id = $cliente['Id']; //Id do Contact
-        $contact->name = $cliente['Name'] ?? null; // Nome ou nome fantasia do contact
-        $contact->legalName = $cliente['LegalName'] ?? null; // Razão social do contact
+        $contact->name = $cliente['Name']; // Nome ou nome fantasia do contact
+        $contact->legalName = $cliente['LegalName']; // Razão social do contact
         $contact->cnpj = $cliente['CNPJ'] ?? null; // Contatos CNPJ
         $contact->cpf = $cliente['CPF'] ?? null; // Contatos CPF
         $contact->documentoExterior = $cliente['IdentityDocument'] ?? null; // Contatos CPF
         $contact->segmento = $cliente['LineOfBusinessId'] ?? null; // Contatos CPF
         $contact->email = $cliente['Email']; // Contatos Email obrigatório
         $contact->website = $cliente['Website'] ?? null; // Contatos Email obrigatório
-        $contact->ddd1 = $phones[0]['ddd']; //"telefone1_ddd": "011",
-        $contact->phone1 = $phones[0]['nPhone']; //"telefone1_numero": "2737-2737",
+        $contact->ddd1 = $phones[0]['ddd'] ?? null; //"telefone1_ddd": "011",
+        $contact->phone1 = $phones[0]['nPhone'] ?? null; //"telefone1_numero": "2737-2737",
         $contact->ddd2 = $phones[1]['ddd'] ?? null; //"telefone1_ddd": "011",
         $contact->phone2 = $phones[1]['nPhone'] ?? null; //"telefone1_numero": "2737-2737",
         //$contact->contato1 = $prop['contact_E6008BF6-A43D-4D1C-813E-C6BD8C077F77'] ?? null;
@@ -380,11 +399,11 @@ class ClientsFunctions{
         $cities = $ploomesServices->getCitiesById($cliente['CityId']);
         $contact->cityId = $cities['IBGECode'];
         $contact->cityName = $cities['Name']; // estamos pegando o IBGE code
-        $contact->cityLagitude = $cities['Latitude']; // Latitude da cidade é obrigatório
-        $contact->cityLongitude = $cities['Longitude']; // Longitude da cidade é obrigatório
+        $contact->cityLagitude = $cities['Latitude'] ?? null; // Latitude da cidade é obrigatório
+        $contact->cityLongitude = $cities['Longitude'] ?? null; // Longitude da cidade é obrigatório
         $state = $ploomesServices->getStateById($cities['StateId']);
         $contact->stateShort = $state['Short']; // Sigla do estado é obrigatório
-        $contact->stateName = $state['Name']; //estamos pegando a sigla do estado
+        $contact->stateName = $state['Name'] ?? null; //estamos pegando a sigla do estado
         //$contact->countryId = $cliente['CountryId'] ?? null; // Omie preenche o país automaticamente
         $contact->cnaeCode = $cliente['CnaeCode'] ?? null; // Id do cnae 
         $contact->cnaeName = $cliente['CnaeName'] ?? null; // Name do cnae 
@@ -392,7 +411,7 @@ class ClientsFunctions{
 
         $contact->ownerEmail = $ploomesServices->ownerMail($contact);// Responsável (Vendedor) 
         //$contact->ownerEmail = $cliente['Owner']['Email']; // Responsável (Vendedor) 
-        $contact->observacao = $cliente['Note']; // Observação 
+        $contact->observacao = $cliente['Note'] ?? null; // Observação 
         
         // Base de Faturamento para fiel não precisa pois integra e depois a automação distribui em todas as bases, em gamathermic precisa
         $bases = [];
@@ -476,7 +495,26 @@ class ClientsFunctions{
         //contact_879A3AA2-57B1-49DC-AEC2-21FE89617665 = tipo de cliente
         $contact->tipoCliente = $prop['contact_879A3AA2-57B1-49DC-AEC2-21FE89617665'] ?? null;
         //contact_FF485334-CE8C-4FB9-B3CA-4FF000E75227 = ramo de atividade
-        $contact->ramoAtividade = $prop['contact_FF485334-CE8C-4FB9-B3CA-4FF000E75227'] ?? null;
+        $ramo= $prop['contact_FF485334-CE8C-4FB9-B3CA-4FF000E75227'] ?? null;
+        if($ramo !== null){
+            $id = match($ramo){
+               
+                420130572=>0,
+                420130568=>1,
+                420130574=>2,
+                420130569=>3,
+                420130565=>4,
+                420130566=>5,           
+                420130571=>6,
+                420130570=>7,
+                420130563=>8,
+                420130573=>9,
+    
+            };
+            $contact->ramoAtividade = $id;
+        }else{
+            $contact->ramoAtividade = null;
+        }
         //contact_FA99392B-CED8-4668-B003-DFC1111DACB0 = Porte
         $contact->porte = $prop['contact_FA99392B-CED8-4668-B003-DFC1111DACB0'] ?? null;
         //contact_20B72360-82CF-4806-BB05-21E89D5C61FD = importância
@@ -528,13 +566,13 @@ class ClientsFunctions{
         $contact->transferenciaPadrao = $prop['contact_33015EDD-B3A7-464E-81D0-5F38D31F604A'];
         ($contact->transferenciaPadrao) ? $contact->transferenciaPadrao = 'S' : $contact->transferenciaPadrao = 'N';
         //contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C = Integrar com base omie 1? (s/n)
-        ($prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C']) ? $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] = 1 : $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] = 0;
+        (isset($prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C']) && $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] !== false) ? $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] = 1 : $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] = 0;
         //contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C = Integrar com base omie 2? (s/n)
-        ($prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C']) ? $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'] = 1 : $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'] = 0;
+        (isset($prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C']) && $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'] !== false) ? $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'] = 1 : $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'] = 0;
         //contact_02AA406F-F955-4AE0-B380-B14301D1188B = Integrar com base omie 3? (s/n)
-        ($prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B']) ? $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] = 1 : $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] = 0;
+        (isset($prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B']) && $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] !== false) ? $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] = 1 : $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] = 0;
         //contact_E497C521-4275-48E7-B44E-7A057844B045 = Integrar com base omie 4? (s/n)
-        ($prop['contact_E497C521-4275-48E7-B44E-7A057844B045']) ? $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] = 1 : $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] = 0;
+        (isset($prop['contact_E497C521-4275-48E7-B44E-7A057844B045']) && $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] !== false) ? $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] = 1 : $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] = 0;
         $contact->codOmie = [];
         $contact->codOmie[0] = $prop['contact_4F0C36B9-5990-42FB-AEBC-5DCFD7A837C3'] ?? null;
         $contact->codOmie[1] = $prop['contact_6DB7009F-1E58-4871-B1E6-65534737C1D0'] ?? null;
@@ -675,13 +713,15 @@ class ClientsFunctions{
 
     //compara os arrays old e new do Ploomes e retorna o objeto a ser alterado
     public static function compare($webhook, $ploomesServices)
-    {
+    {  
         //separa old e news do webhook principal, cria o objeto de cada um através do getCLientbyId do ploomes para terem as mesmas propriedades
         $old = self::createOldObj($webhook, $ploomesServices);
         $new = self::createNewObj($webhook, $ploomesServices);
+
         //converte os objetos em arrays
         $o = (array)$old;
         $n = (array)$new;
+
         //compara os arrays e devolvea diferença entre eles
         $diferencas = DiverseFunctions::compararArrays($o, $n);
 
@@ -705,7 +745,7 @@ class ClientsFunctions{
         $cep = (int)str_replace('-','',$array['event_cep']);
         $cliente->cep = $cep;
         $cliente->cidade = $array['event_cidade'];
-        $cliente->cidadeIbge = $array['event_cidade_ibge'];
+        $cliente->cidadeIbge = $array['event_cidade_ibge'] ?? null;
         $cliente->cnae = $array['event_cnae'];
         $cliente->cnpjCpf = $array['event_cnpj_cpf'];
         $cliente->codigoClienteIntegracao = $array['event_codigo_cliente_integracao'];
@@ -841,7 +881,6 @@ class ClientsFunctions{
 
     public static function createPloomesContactFromOmieObject($contact, $ploomesServices, $omieServices)
     {
-
         switch($contact->appKey){
             case '4194053472609': 
                 $omie = new stdClass();
@@ -874,7 +913,7 @@ class ClientsFunctions{
                     'StringValue'=>$contact->codigoClienteOmie,
                 ];
                 break;
-            case 2337978328686: 
+            case '2337978328686': 
                 $omie = new stdClass();
                 $omie->appKey = $_ENV['APPK_HML'];
                 $omie->appSecret = $_ENV['SECRETS_HML']; 
@@ -909,7 +948,6 @@ class ClientsFunctions{
         $idVendedorPloomes = $ploomesServices->ownerId($contact);
         (!$idVendedorPloomes) ? $contact->cVendedorPloomes = null : $contact->cVendedorPloomes = $idVendedorPloomes;
         $data['OwnerId'] = $contact->cVendedorPloomes ?? null;//Id do vendedor padrão(comparar api ploomes)
-  
         $data['Note'] = $contact->observacao ?? null;
         $data['Email'] = $contact->email ?? null;
         $data['Website'] = $contact->homepage ?? null;
@@ -928,27 +966,44 @@ class ClientsFunctions{
         //$data['IdentityDocument'] = $contact->exterior ?? null;//(documento internacional exterior)
         //$data['CNAEName'] = $contact->cnaeName ?? null;(inexistente no omie)
         $data['Phones'] = [];
+        $ddd1 = preg_replace("/[^0-9]/", "", $contact->telefoneDdd1);
+        $ddd2 = preg_replace("/[^0-9]/", "", $contact->telefoneDdd2);
         $phone1 = [
-            'PhoneNumber'=>"($contact->telefoneDdd1) $contact->telefoneNumero1",
+            'PhoneNumber'=>"($ddd1) $contact->telefoneNumero1" ?? null,
             'TypeId'=>1,
             'CountryId'=>76,
         ];
 
         $phone2 = [
-            'PhoneNumber'=>"($contact->telefoneDdd2) $contact->telefoneNumero2",
+            'PhoneNumber'=>"($ddd2) $contact->telefoneNumero2",
             'TypeId' => 2,
             'CountryId' => 76,
         ];
-        $data['Phones'][] = $phone1;
-        $data['Phones'][] = $phone2;
+        $data['Phones'][] = $phone1 ?? null;
+        $data['Phones'][] = $phone2 ?? null;
         $op = [];
+        $id = match($contact->tipoAtividade){
+           
+            '0'=>420130572,
+            '1'=>420130568,
+            '2'=>420130574,
+            '3'=>420130569,
+            '4'=>420130565,
+            '5'=>420130566,           
+            '6'=>420130571,
+            '7'=>420130570,
+            '8'=>420130563,
+            '9'=>420130573,
+
+        };
         $ramo = [
             'FieldKey'=> 'contact_FF485334-CE8C-4FB9-B3CA-4FF000E75227',
-            'IntegerValue'=>409150923,
+            'IntegerValue'=>$id,//ramo teste
         ];
+        
         $tipo = [
             'FieldKey'=>'contact_879A3AA2-57B1-49DC-AEC2-21FE89617665',
-            'IntegerValue'=>409150910,
+            'IntegerValue'=>409150910,//pessoa juridica
         ];
         // $porte = [
         //     'FieldKey'=>'contact_FA99392B-CED8-4668-B003-DFC1111DACB0',
@@ -960,7 +1015,7 @@ class ClientsFunctions{
         ];
         $situacao = [
             'FieldKey'=>'contact_5F52472B-E311-4574-96E2-3181EADFAFBE',
-            'IntegerValue'=>409150897,
+            'IntegerValue'=>409150897,//ativo???
         ];
         // $cicloCompra = [
         //     'FieldKey'=>'contact_9E595E72-E50C-4E95-9A05-D3B024C177AD',
@@ -968,15 +1023,15 @@ class ClientsFunctions{
         // ];
         $inscEstadual = [
             'FieldKey'=>'contact_5D5A8D57-A98F-4857-9D11-FCB7397E53CB',
-            'StringValue'=>$contact->inscricaoEstadual,
+            'StringValue'=>$contact->inscricaoEstadual ?? null,
         ];
         $inscMunicipal = [
             'FieldKey'=>'contact_D21FAEED-75B2-40E4-B169-503131EB3609',
-            'StringValue'=>$contact->inscricaoMunicipal,
+            'StringValue'=>$contact->inscricaoMunicipal ?? null,
         ];
         $inscSuframa = [
             'FieldKey'=>'contact_3094AFFE-4263-43B6-A14B-8B0708CA1160',
-            'StringValue'=>$contact->inscricaoSuframa,
+            'StringValue'=>$contact->inscricaoSuframa ?? null, 
         ];
         $simplesNacional = [
             'FieldKey'=>'contact_9BB527FD-8277-4D1F-AF99-DD88D5064719',
@@ -984,7 +1039,7 @@ class ClientsFunctions{
         ];
         $contato1 = [
             'FieldKey'=>'contact_3C521209-46BD-4EA5-9F41-34756621CCB4',
-            'StringValue'=>$contact->contato,
+            'StringValue'=>$contact->contato ?? null,
         ];
         $prodRural = [
             'FieldKey'=>'contact_F9B60153-6BDF-4040-9C3A-E23B1469894A',
@@ -996,7 +1051,7 @@ class ClientsFunctions{
         ];
         $limiteCredito = [
             'FieldKey'=>'contact_10D27B0F-F9EF-4378-B1A8-099319BAC0AD',
-            'DecimalValue'=>$contact->limiteCredito,
+            'DecimalValue'=>$contact->limiteCredito ?? null,
         ];
         $inativo = [
             'FieldKey'=>'contact_CED4CBAD-92C7-4A51-9985-B9010D27E1A4',
@@ -1009,27 +1064,27 @@ class ClientsFunctions{
         $transpPadrao = [
             'FieldKey'=>'contact_77CCD2FB-53D7-4203-BE6B-14B671A06F33',
             //'IntegerValue'=>'',
-            'StringValue'=>$contact->codigoVendedor
+            'StringValue'=>$contact->codigoVendedor ?? null
         ];
         $cBanco = [
             'FieldKey'=>'contact_6BB80AEA-43D0-45E8-B9E4-28D89D9773B9',
-            'StringValue'=>$contact->cBanco,
+            'StringValue'=>$contact->cBanco ?? null,
         ];
         $agencia = [
             'FieldKey'=>'contact_1F1E1F00-34CB-4356-B852-496D62A90E10',
-            'StringValue'=>$contact->agencia,
+            'StringValue'=>$contact->agencia ?? null,
         ];
         $nContaCorrente = [
             'FieldKey'=>'contact_38E58F93-1A6C-4E40-9F5B-45B5692D7C80',
-            'StringValue'=>$contact->nContaCorrente,
+            'StringValue'=>$contact->nContaCorrente ?? null,
         ];
         $docTitular = [
             'FieldKey'=>'contact_FDFB1BE8-ECC8-4CFF-8A37-58DCF24CDB50',
-            'StringValue'=>$contact->docTitular,
+            'StringValue'=>$contact->docTitular ?? null,
         ];
         $nomeTitular = [
             'FieldKey'=>'contact_DDD76E27-8EFA-416B-B7DF-321C1FB31066',
-            'StringValue'=>$contact->nomeTitular,
+            'StringValue'=>$contact->nomeTitular ?? null,
         ];
         $cli = $omieServices->getClientById($omie,$contact);
         $chavePix = [

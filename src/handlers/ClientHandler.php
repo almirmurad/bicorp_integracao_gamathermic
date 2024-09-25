@@ -54,12 +54,14 @@ class ClientHandler
         
         //talvez o ideal fosse devolver ao controller o ok de que o processo foi iniciado e um novo processo deve ser inciado 
         if($alterStatus){
-
+         
             $action = ClientsFunctions::findAction($webhook);
             
             if($action){
                 //se tiver action cria o objeto de contacs
+                
                 switch($action){
+                  
                     case 'createCRMToERP':
                         $contact = ClientsFunctions::createObj($webhook, $this->ploomesServices);
                         $process = ContactServices::createContact($contact);
@@ -141,7 +143,6 @@ class ClientHandler
                 $decoded = json_decode($webhook['json'],true);
             
                 if($decoded['topic'] === 'ClienteFornecedor.Incluido'){
-                    print 'entrou aqui';
                     throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema'. $webhook['id']. ' em: '.$this->current, 500);
                 }elseif($decoded['topic'] === 'ClienteFornecedor.Excluido'){
                     throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
