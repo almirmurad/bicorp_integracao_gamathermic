@@ -42,8 +42,9 @@ $router->post('/processNewContact', 'ContactController@processNewContact'); //in
 // $router->post('/proccessAlterClientOmie', 'ClientController@proccessAlterClientOmie'); //recebe um webhhok de cliente alterado no 
 
 //products
-$router->post('/omieProducts', 'ProductController@omieProducts');//Novo cliente no ploomes
+$router->post('/omieProducts', 'ProductController@omieProducts');//Novo produto no Omie
 $router->post('/processNewProduct', 'ProductController@processNewProduct'); //inicia o processo com cron job
+$router->post('/ploomesProducts', 'ProductController@ploomesProducts'); //Novo produto no ploomes
 
 //services
 $router->post('/omieServices', 'ServiceController@omieServices');//Novo cliente no ploomes

@@ -133,4 +133,53 @@ class ProductController extends Controller {
         }
 
     } 
+
+    public function ploomesProducts()
+    {
+        $message = [];
+        $json = file_get_contents('php://input');
+
+        ob_start();
+        var_dump($json);
+        $input = ob_get_contents();
+        ob_end_clean();
+        file_put_contents('./assets/products.log', $input . PHP_EOL . date('d/m/Y H:i:s') . PHP_EOL, FILE_APPEND);
+
+        try{
+            $productHandler = new ProductHandler($this->ploomesServices, $this->omieServices, $this->databaseServices);
+            $response = $productHandler->saveProductHook($json);
+            
+            if ($response > 0) {
+                
+                $message =[
+                    'status_code' => 200,
+                    'status_message' => 'Success: '. $response['msg'],
+                ];
+                
+            }
+
+        }catch(WebhookReadErrorException $e){        
+        }
+        finally{
+            if(isset($e)){
+                ob_start();
+                var_dump($e->getMessage());
+                $input = ob_get_contents();
+                ob_end_clean();
+                file_put_contents('./assets/log.log', $input . PHP_EOL . date('d/m/Y H:i:s'), FILE_APPEND);
+                
+                return print $e->getMessage();
+            }
+             //grava log
+             ob_start();
+             print_r($message);
+             $input = ob_get_contents();
+             ob_end_clean();
+             file_put_contents('./assets/log.log', $input . PHP_EOL, FILE_APPEND);
+             
+             return print $message['status_message'];
+           
+        }
+            
+    }
 }

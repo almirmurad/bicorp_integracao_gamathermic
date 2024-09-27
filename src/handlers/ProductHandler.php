@@ -56,7 +56,7 @@ class ProductHandler
         if($alterStatus){
 
             $action = ProductsFunctions::findAction($webhook);
-        
+
             if($action){
                 //se tiver action cria o objeto de contacs
                 switch($action){
@@ -73,19 +73,28 @@ class ProductHandler
                         $product = ProductsFunctions::createOmieObj($webhook, $this->omieServices);
                         $process = ProductServices::deleteProductFromERPToCRM($product, $this->ploomesServices);
                         break;
+                    case 'stockMovementERPtoCRM':
+                        $process = ProductsFunctions::moveStock($webhook, $this->ploomesServices);
+                        //$process = ProductServices::attStockTablePloomes($stockTable, $this->ploomesServices);
+                        break;
+                    case 'createCRMToERP':
+                        //quando o produto é criado no crm ele apenas atualiza o código de integração na base correta
+                        $product = ProductsFunctions::createProductFromPloomesWebhook($webhook);
+                        $process = ProductServices::setProductIntegrationCode($product, $this->omieServices);
+                        break;
                 } 
             }
 
-            return self::response($webhook, $product, $process);
+            return self::response($webhook, $process);
 
         }
                  
     }
 
     //Trata a respostas para devolver ao controller
-    public function response($webhook, $contact, $process)
+    public function response($webhook, $process)
     {
-        if($webhook['origem'] === 'Omie'){
+
 
             if(!empty($process['error'])){
 
@@ -94,17 +103,19 @@ class ProductHandler
                 
                 //$reprocess = Self::reprocessWebhook($webhook);
                 $this->databaseServices->registerLog($webhook['id'], $process['error'], $webhook['entity']); 
+                throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
 
-                $decoded = json_decode($webhook['json'],true);
+                //$decoded = json_decode($webhook['json'],true);
             
-                if($decoded['topic'] === 'Produto.Incluido'){
-                    print 'entrou aqui';
-                    throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id:'. $webhook['id']. ' em: '.$this->current, 500);
-                }elseif($decoded['topic'] === 'Produto.Excluido'){
-                    throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
-                }elseif($decoded['topic'] === 'Produto.Alterado'){
-                    throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
-                }
+                // if($decoded['topic'] === 'Produto.Incluido'){
+                //     throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id:'. $webhook['id']. ' em: '.$this->current, 500);
+                // }elseif($decoded['topic'] === 'Produto.Excluido'){
+                //     throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
+                // }elseif($decoded['topic'] === 'Produto.Alterado'){
+                //     throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
+                // }elseif($decoded['topic'] === 'Produto.MovimentacaoEstoque'){
+                //     throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
+                // }
             }
 
             $status = 3; //Success
@@ -115,71 +126,11 @@ class ProductHandler
                 
                 return $process;//card processado cliente criado no Omie retorna mensagem winDeal para salvar no log
             }
-        }
 
-        //verifica quantas bases haviam para integrar
-        $totalBasesIntegrar = 0;
-        foreach($contact->basesFaturamento as $bf){
-            if($bf['integrar']>0){
-                $totalBasesIntegrar++;
-            }
-        }
-        //sucesso absoluto contato cadastrado em todas as bases
-        if(count($process['success']) == $totalBasesIntegrar){
-            $status = 3; //Success
-            $alterStatus = $this->databaseServices->alterStatusWebhook($webhook['id'], $status);
-            foreach($process['success'] as $success){
 
-                $this->databaseServices->registerLog($webhook['id'], $success, $webhook['entity']);
-            }
+         
+        
 
-            if($alterStatus){
-                
-                return $process;//card processado cliente criado no Omie retorna mensagem winDeal para salvar no log
-            }
-            //falha absoluta erro no cadastramento do contato em todas as bases
-        }elseif(count($process['error']) == $totalBasesIntegrar){
-            $status = 4; //falhou
-            $alterStatus = $this->databaseServices->alterStatusWebhook($webhook['id'], $status);
-            
-            //$reprocess = Self::reprocessWebhook($webhook);
-
-            //if($reprocess['error']){
-                foreach($process['error'] as $error){
-                    
-                    $this->databaseServices->registerLog($webhook['id'], $error, $webhook['entity']); 
-
-                }
-                throw new WebhookReadErrorException('Erro ao gravar cliente(s) verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
-                
-                //return $reprocess['error'];
-
-            //}
-            
-        }else{
-
-            $status = 5; //parcial cadastrou eum alguma(s) bases e em outara(s) não
-            $alterStatus = $this->databaseServices->alterStatusWebhook($webhook['id'], $status);
-            
-            //$reprocess = Self::reprocessWebhook($webhook);
-
-            //if($reprocess['error']){
-                foreach($process['success'] as $success){
-
-                    $this->databaseServices->registerLog($webhook['id'], $success, $webhook['entity']);
-                }
-                foreach($process['error'] as $error){
-
-                    $this->databaseServices->registerLog($webhook['id'], $error, $webhook['entity']);
-                }
-                
-                throw new WebhookReadErrorException('Nem todos os clientes foram cadastrados, houveram falhas as gravar clientes, verifique os logs do sistema. '. $this->current, 500);
-                
-                // return $process;
-
-            //}
-
-        }
     }
     
 

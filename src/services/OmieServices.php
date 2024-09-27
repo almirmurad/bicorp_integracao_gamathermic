@@ -845,5 +845,47 @@ class OmieServices implements OmieManagerInterface{
             return $estoque;
 
     }
-  
+    //seta o id de integração como Id Ploomes
+    public function setProductIntegrationCodeAction($product)
+    {
+        $array = [
+            'app_key' => $product->baseFaturamento['appKey'],
+            'app_secret' => $product->baseFaturamento['appSecret'],
+            'call' => 'AssociarCodIntProduto',
+            'param' => [
+                [
+                    'codigo_produto' => $product->baseFaturamento['idOmie'],
+                    'codigo_produto_integracao' => $product->idPloomes
+                ]
+            ]
+        ];
+
+        $json = json_encode($array);
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://app.omie.com.br/api/v1/geral/produtos/',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $json,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        $infoIntegracao = json_decode($response, true);
+
+        return $infoIntegracao;
+
+        }
 }

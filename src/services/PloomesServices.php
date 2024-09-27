@@ -133,8 +133,6 @@ class PloomesServices implements PloomesManagerInterface{
         curl_close($curl);
 
         $responseMail = json_decode($responseMail, true);
-        // print_r($responseMail);
-        // exit;
 
         $response = $responseMail['value'][0]['Id'] ?? false;
 
@@ -277,7 +275,35 @@ class PloomesServices implements PloomesManagerInterface{
 
     }
 
-    //encontra cliente no ploomes pelo Id
+    //encontra produto no ploomes pelo Id
+    public function getProductById(string $id):array|null
+    {
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->baseApi .'/Products?$filter=Id+eq+'.$id.'&$expand=OtherProperties',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => strtoupper($this->method[0]),
+            CURLOPT_HTTPHEADER => $this->headers
+
+        ));
+
+        $response = curl_exec($curl);
+        $response =json_decode($response, true);
+        
+        curl_close($curl);
+       
+        return $response['value'][0] ?? null;
+
+    }
+
+    //encontra produto no ploomes pelo code
     public function getProductByCode(string $codigo):array|null
     {
 
@@ -300,7 +326,7 @@ class PloomesServices implements PloomesManagerInterface{
         $response =json_decode($response, true);
         
         curl_close($curl);
-       
+    
         return $response['value'][0] ?? null;
 
     }
@@ -475,13 +501,13 @@ class PloomesServices implements PloomesManagerInterface{
     }
 
     //ATUALIZA Product NO PLOOMES
-    public function updatePloomesProduct(string $json, int $idContact):bool
+    public function updatePloomesProduct(string $json, int $idProduct):bool
     {
         //CHAMADA CURL PRA CRIAR WEBHOOK NO PLOOMES
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->baseApi . '/Products('.$idContact.')',//ENDPOINT PLOOMES
+            CURLOPT_URL => $this->baseApi . '/Products('.$idProduct.')',//ENDPOINT PLOOMES
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,

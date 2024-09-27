@@ -38,7 +38,7 @@
                             <select class="form-cmps" name="entityId" id="entityId">
                                 <option value="1">Cliente</option>
                                 <option value="2">Negócio</option>
-                                <option value="12" disabled>Produtos</option>
+                                <option value="10">Produtos</option>
                             </select>
                         </div>
                         <div class="campo">
