@@ -142,49 +142,49 @@ class ServicesFunctions{
     // cria o objet e a requisição a ser enviada ao ploomes com o objeto do omie
     public static function createPloomesServiceFromOmieObject($service, $ploomesServices, $omieServices)
     {
-
+       
         switch($service->appKey){
             case '4194053472609': 
                 $omie = new stdClass();
                 $omie->appKey = $_ENV['APPK_DEMO'];
                 $omie->appSecret = $_ENV['SECRETS_DEMO'];
                 $service->baseFaturamentoTitle = 'Engeparts';
-                // $cOmie = [
-                //     'FieldKey'=>'contact_4F0C36B9-5990-42FB-AEBC-5DCFD7A837C3',
-                //     'StringValue'=>$service->codigoClienteOmie,
-                // ];
+                $cOmie = [
+                    'FieldKey'=>'product_0A53B875-0974-440F-B4CE-240E8F400B0F',
+                    'StringValue'=>$service->codServ,
+                ];
                 break;
             case '2335095664902': 
                 $omie = new stdClass();
                 $omie->appKey = $_ENV['APPK_MHL'];
                 $omie->appSecret = $_ENV['SECRETS_MHL'];
                 $service->baseFaturamentoTitle = 'Gamatermic';
-                // $cOmie = [
-                //     'FieldKey'=>'contact_6DB7009F-1E58-4871-B1E6-65534737C1D0',
-                //     'StringValue'=>$service->codigoClienteOmie,
+                $cOmie = [
+                    'FieldKey'=>'product_E241BF1D-7622-45DF-9658-825331BD1C2D',
+                    'StringValue'=>$service->codServ,
 
-                // ];
+                ];
                 break;
             case '2597402735928':
                 $omie = new stdClass();
                 $omie->appKey = $_ENV['APPK_MSC'];
                 $omie->appSecret = $_ENV['SECRETS_MSC']; 
                 $service->baseFaturamentoTitle = 'Semin';
-                // $cOmie = [
-                //     'FieldKey'=>'contact_AE3D1F66-44A8-4F88-AAA5-F10F05E662C2',
-                //     'StringValue'=>$service->codigoClienteOmie,
-                // ];
+                $cOmie = [
+                    'FieldKey'=>'product_429C894A-708E-4125-A434-2A70EDCAFED6',
+                    'StringValue'=>$service->codServ,
+                ];
                 break;
             case 2337978328686: 
                 $omie = new stdClass();
                 $omie->appKey = $_ENV['APPK_HML'];
                 $omie->appSecret = $_ENV['SECRETS_HML']; 
                 $service->baseFaturamentoTitle = 'GSU';
-                // $cOmie = [
-                //     'FieldKey'=>'contact_07784D81-18E1-42DC-9937-AB37434176FB',
-                //     'StringValue'=>$service->codigoClienteOmie,
+                $cOmie = [
+                    'FieldKey'=>'product_816E5031-2843-4E71-8721-E97185A98E77',
+                    'StringValue'=>$service->codServ,
 
-                // ];
+                ];
                 break;
         }
         //cria o produto formato ploomes 
@@ -237,9 +237,13 @@ class ServicesFunctions{
 
         $op[] = $descDetalhada;
         $op[] = $obsInternas;
+        $op[] = $cOmie;
         // $op[] = $categoria;
    
         $data['OtherProperties'] = $op;
+
+        // print_r($data);
+        // exit;
         $json = json_encode($data);
 
         return $json;

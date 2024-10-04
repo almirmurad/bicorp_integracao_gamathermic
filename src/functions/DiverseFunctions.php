@@ -110,27 +110,70 @@ class DiverseFunctions{
         return $resultado;
     }
 
-    public static function compararArrays($old, $new, $path = '') 
-    {
-        $diferencas = [];
+    // public static function compararArrays($old, $new, $path = '') 
+    // {
+    //     $diferencas = [];
 
-        foreach ($old as $chave => $valor) {
-            $novaChave = $path === '' ? $chave : $path . '.' . $chave;
-            // Se for um array, faz a chamada recursiva
-            if (is_array($valor) && isset($new[$chave]) && is_array($new[$chave])) {
-                $subDiferencas = self::compararArrays($valor, $new[$chave], $novaChave);
-                $diferencas = array_merge($diferencas, $subDiferencas);
-            }
-            // Verifica se o valor foi alterado
-            elseif (isset($new[$chave]) && $new[$chave] !== $valor) {
-                $diferencas[$novaChave] = [
-                    'old' => $valor,
-                    'new' => $new[$chave]
-                ];
-            }
-        }
+    //     foreach ($old as $chave => $valor) {
+    //         $novaChave = $path === '' ? $chave : $path . '.' . $chave;
+    //         // Se for um array, faz a chamada recursiva
+    //         if (is_array($valor) && isset($new[$chave]) && is_array($new[$chave])) {
+    //             $subDiferencas = self::compararArrays($valor, $new[$chave], $novaChave);
+    //             $diferencas = array_merge($diferencas, $subDiferencas);
+    //         }
+    //         // Verifica se o valor foi alterado
+    //         elseif (isset($new[$chave]) && $new[$chave] !== $valor) {
+    //             $diferencas[$novaChave] = [
+    //                 'old' => $valor,
+    //                 'new' => $new[$chave]
+    //             ];
+    //         }
+    //     }
 
-        return $diferencas;
-    }
+    //     return $diferencas;
+    // }
+
+    // public static function compararArrays($old, $new, $path = '') 
+    // {
+    //     $diferencas = [];
+
+    //     foreach ($old as $chave => $valor) {
+    //         $novaChave = $path === '' ? $chave : $path . '.' . $chave;
+            
+    //         // Se for um array, faz a chamada recursiva
+    //         if (is_array($valor) && isset($new[$chave]) && is_array($new[$chave])) {
+    //             $subDiferencas = self::compararArrays($valor, $new[$chave], $novaChave);
+    //             $diferencas = array_merge($diferencas, $subDiferencas);
+    //         }
+    //         // Verifica se o valor é diferente
+    //         elseif (isset($new[$chave]) && $new[$chave] !== $valor) {
+    //             $diferencas[$novaChave] = [
+    //                 'old' => $valor,
+    //                 'new' => $new[$chave]
+    //             ];
+    //         }
+    //         // Caso exista a chave no array antigo, mas não no novo
+    //         elseif (!isset($new[$chave])) {
+    //             $diferencas[$novaChave] = [
+    //                 'old' => $valor,
+    //                 'new' => null
+    //             ];
+    //         }
+    //     }
+
+    //     // Verifica se há chaves no novo array que não estão no antigo
+    //     foreach ($new as $chave => $valor) {
+    //         $novaChave = $path === '' ? $chave : $path . '.' . $chave;
+    //         if (!isset($old[$chave])) {
+    //             $diferencas[$novaChave] = [
+    //                 'old' => null,
+    //                 'new' => $valor
+    //             ];
+    //         }
+    //     }
+
+    //     return $diferencas;
+    // }
+
 
 }

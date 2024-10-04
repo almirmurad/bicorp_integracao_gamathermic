@@ -54,6 +54,8 @@ class ClientHandler
         
         //talvez o ideal fosse devolver ao controller o ok de que o processo foi iniciado e um novo processo deve ser inciado 
         if($alterStatus){
+
+            
          
             $action = ClientsFunctions::findAction($webhook);
             
@@ -68,8 +70,7 @@ class ClientHandler
                         break;
                     case 'updateCRMToERP':
                         $contact = ClientsFunctions::createObj($webhook, $this->ploomesServices);
-                        $diff = ClientsFunctions::compare($webhook, $this->ploomesServices);
-                        $process = ContactServices::updateContact($diff, $contact);
+                        $process = ContactServices::updateContactCRMToERP($contact);
                         break;
                     case 'deleteCRMToERP':
                         $contact = ClientsFunctions::createOldObj($webhook, $this->ploomesServices);

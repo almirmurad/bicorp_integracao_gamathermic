@@ -20,12 +20,27 @@ class ServiceServices
    
         $current = date('d/m/Y H:i:s');
         $json = ServicesFunctions::createPloomesServiceFromOmieObject($service, $ploomesServices, $omieServices);
+        $sPloomes = $ploomesServices->getProductByCode($service->codigo);
+        // print_r($sPloomes);
+        // exit;
+        if($sPloomes === null)
+        {
         
-        if(!$ploomesServices->createPloomesProduct($json)){
-             $messages['error'] = 'Erro ao cadastrar o serviço ('.$service->descricao.') Data:' .$current;
+            if(!$ploomesServices->createPloomesProduct($json)){
+                $messages['error'] = 'Erro ao cadastrar o serviço ('.$service->descricao.') Data:' .$current;
+            }else{
+                //aqui poderia enviar ao omie o codigo do serviço de integração (id serviço no ploomes)
+                $messages['success'] = 'Serviço ('.$service->descricao.') Cadastrado no Ploomes CRM com sucesso! Data: '.$current;
+            }
+
         }else{
-            //aqui poderia enviar ao omie o codigo do produto de integração (id produto no ploomes)
-            $messages['success'] = 'Serviço ('.$service->descricao.') Cadastrado no Ploomes CRM com sucesso! Data: '.$current;
+            $service->idPloomes = $sPloomes['Id'];
+            if(!$ploomesServices->updatePloomesProduct($json, $service->idPloomes)){
+                $messages['error'] = 'Erro ao cadastrar/alterar o serviço ('.$service->descricao.') Data:' .$current;
+            }else{
+                //aqui poderia enviar ao omie o codigo do serviço de integração (id serviço no ploomes)
+                $messages['success'] = 'Serviço ('.$service->descricao.') Cadastrado/alterado no Ploomes CRM com sucesso! Data: '.$current;
+            }
         }
         return $messages;
     }

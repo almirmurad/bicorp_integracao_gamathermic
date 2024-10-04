@@ -11,12 +11,13 @@ class ClientsFunctions{
     // encontra o processo a ser executado caso haja cadastro, exclusão ou alteração no webhook
     public static function findAction($webhook)
     {
+        $current = date('d/m/Y H:i:s');
         //decodifica o json de clientes vindos do webhook
         $json = $webhook['json'];
         $decoded = json_decode($json,true);
         //identifica qual action do webhook
         if(isset($decoded['Action'])){
-
+            
             $action = match($decoded['Action']){
                 'Create' => 'createCRMToERP',
                 'Update' => 'updateCRMToERP',
@@ -31,9 +32,7 @@ class ClientsFunctions{
         }else{
             throw new WebhookReadErrorException('Não foi encontrda nenhuma ação no webhook '.$current, 500);
         }
-
         return $action;
-
     }
 
     //cria obj cliente
@@ -100,7 +99,7 @@ class ClientsFunctions{
         //contact_3094AFFE-4263-43B6-A14B-8B0708CA1160 = inscrição suframa
         $contact->inscricaoSuframa = $prop['contact_3094AFFE-4263-43B6-A14B-8B0708CA1160'] ?? null;
         //contact_9BB527FD-8277-4D1F-AF99-DD88D5064719 = Simples nacional?(s/n)  
-        $contact->simplesNacional = $prop['contact_9BB527FD-8277-4D1F-AF99-DD88D5064719'];//é obrigatório para emissão de nf
+        $contact->simplesNacional = $prop['contact_9BB527FD-8277-4D1F-AF99-DD88D5064719'] ?? null;//é obrigatório para emissão de nf
         (isset($contact->simplesNacional) && $contact->simplesNacional !== false) ? $contact->simplesNacional = 'S' : $contact->simplesNacional = 'N';
         //contact_3C521209-46BD-4EA5-9F41-34756621CCB4 = contato1
         $contact->contato1 = $prop['contact_3C521209-46BD-4EA5-9F41-34756621CCB4'] ?? null;
@@ -239,18 +238,27 @@ class ClientsFunctions{
         
         $tags= [];
         $tag=[];
+        if($decoded['New']['Tags']){
+    
+            foreach($decoded['New']['Tags'] as $iTag){
 
-        if($cliente['Tags']){
-
-            foreach($cliente['Tags'] as $iTag){
-
-                $tag['tag']=$iTag['Tag']['Name'];
+                $tagName = match($iTag['TagId']){
+                    40203491=>'Fornecedor',
+                    40203492=>'Transportadora',
+                    40203493=>'Funcionário',
+                    40203494=>'Min. da Fazenda',
+                    40203495=>'Banco e Inst. Financeiras',
+                    40203497=>'Diretor',
+                    40203778=>'Cliente',
+                };
+                
+                $tag['tag']=$tagName;
                 
                 $tags[]=$tag;
             }
         }
         $contact->tags = $tags;
-    
+
         return $contact;
     }
 
@@ -314,7 +322,7 @@ class ClientsFunctions{
         //contact_3094AFFE-4263-43B6-A14B-8B0708CA1160 = inscrição suframa
         $contact->inscricaoSuframa = $prop['contact_3094AFFE-4263-43B6-A14B-8B0708CA1160'] ?? null;
         //contact_9BB527FD-8277-4D1F-AF99-DD88D5064719 = Simples nacional?(s/n)  
-        $contact->simplesNacional = $prop['contact_9BB527FD-8277-4D1F-AF99-DD88D5064719'];//é obrigatório para emissão de nf
+        $contact->simplesNacional = $prop['contact_9BB527FD-8277-4D1F-AF99-DD88D5064719'] ?? null;//é obrigatório para emissão de nf
         (isset($contact->simplesNacional) && $contact->simplesNacional !== false) ? $contact->simplesNacional = 'S' : $contact->simplesNacional = 'N';
         //contact_3C521209-46BD-4EA5-9F41-34756621CCB4 = contato1
         $contact->contato1 = $prop['contact_3C521209-46BD-4EA5-9F41-34756621CCB4'] ?? null;
@@ -363,7 +371,7 @@ class ClientsFunctions{
         $contact->codOmie[1] = $prop['contact_6DB7009F-1E58-4871-B1E6-65534737C1D0'] ?? null;
         $contact->codOmie[2] = $prop['contact_AE3D1F66-44A8-4F88-AAA5-F10F05E662C2'] ?? null;
         $contact->codOmie[3] = $prop['contact_07784D81-18E1-42DC-9937-AB37434176FB'] ?? null;
-        
+    
         $phones = [];
         foreach($cliente['Phones'] as $phone){
             
@@ -453,21 +461,31 @@ class ClientsFunctions{
         $bases[2]['appSecret'] = $_ENV['SECRETS_MSC']??null;
     
         $contact->basesFaturamento = $bases;        
-        
+
         $tags= [];
         $tag=[];
-
         if($cliente['Tags']){
-
+            
             foreach($cliente['Tags'] as $iTag){
 
-                $tag['tag']=$iTag['Tag']['Name'];
+                $tagName = match($iTag['TagId']){
+                    40203491=>'Fornecedor',
+                    40203492=>'Transportadora',
+                    40203493=>'Funcionário',
+                    40203494=>'Min. da Fazenda',
+                    40203495=>'Banco e Inst. Financeiras',
+                    40203497=>'Diretor',
+                    40203778=>'Cliente',
+                };
+                
+                $tag['tag']=$tagName;
                 
                 $tags[]=$tag;
             }
         }
         $contact->tags = $tags;
-
+        // print_r($contact);
+        // exit;
         return $contact;
     }
 
@@ -530,24 +548,25 @@ class ClientsFunctions{
         //contact_3094AFFE-4263-43B6-A14B-8B0708CA1160 = inscrição suframa
         $contact->inscricaoSuframa = $prop['contact_3094AFFE-4263-43B6-A14B-8B0708CA1160'] ?? null;
         //contact_9BB527FD-8277-4D1F-AF99-DD88D5064719 = Simples nacional?(s/n)  
-        $contact->simplesNacional = $prop['contact_9BB527FD-8277-4D1F-AF99-DD88D5064719'] ?? null;
-        ($contact->simplesNacional) ? $contact->simplesNacional = 'S' : $contact->simplesNacional = 'N';
+        // $contact->simplesNacional = $prop['contact_9BB527FD-8277-4D1F-AF99-DD88D5064719'] ?? null;
+        $contact->simplesNacional = $prop['contact_9BB527FD-8277-4D1F-AF99-DD88D5064719'] ?? null;//é obrigatório para emissão de nf
+        (isset($contact->simplesNacional) && $contact->simplesNacional !== false) ? $contact->simplesNacional = 'S' : $contact->simplesNacional = 'N';
         //contact_3C521209-46BD-4EA5-9F41-34756621CCB4 = contato1
         $contact->contato1 = $prop['contact_3C521209-46BD-4EA5-9F41-34756621CCB4'] ?? null;
         //contact_F9B60153-6BDF-4040-9C3A-E23B1469894A = Produtor Rural
-        $contact->produtorRural = $prop['contact_F9B60153-6BDF-4040-9C3A-E23B1469894A'];
-        ($contact->produtorRural) ? $contact->produtorRural = 'S' : $contact->produtorRural = 'N';
+        $contact->produtorRural = $prop['contact_F9B60153-6BDF-4040-9C3A-E23B1469894A'] ?? null;
+        (isset($contact->produtorRural) && $contact->produtorRural !== false) ? $contact->produtorRural = 'S' : $contact->produtorRural = 'N';
         //contact_FC16AEA5-E4BF-44CE-83DA-7F33B7D56453 = Contribuinte(s/n)
-        $contact->contribuinte = $prop['contact_FC16AEA5-E4BF-44CE-83DA-7F33B7D56453'];
-        ($contact->contribuinte) ? $contact->contribuinte = 'S' : $contact->contribuinte = 'N';
+        $contact->contribuinte = $prop['contact_FC16AEA5-E4BF-44CE-83DA-7F33B7D56453'] ?? null;
+        (isset($contact->contribuinte) && $contact->contribuinte !== false) ? $contact->contribuinte = 'S' : $contact->contribuinte = 'N';
         //contact_10D27B0F-F9EF-4378-B1A8-099319BAC0AD = limite de crédito
         $contact->limiteCredito = $prop['contact_10D27B0F-F9EF-4378-B1A8-099319BAC0AD'] ?? null;
         //contact_CED4CBAD-92C7-4A51-9985-B9010D27E1A4 = inativo (s/n)
-        $contact->inativo = $prop['contact_CED4CBAD-92C7-4A51-9985-B9010D27E1A4'];
-        ($contact->inativo) ? $contact->inativo = 'S' : $contact->inativo = 'N';
+        $contact->inativo = $prop['contact_CED4CBAD-92C7-4A51-9985-B9010D27E1A4'] ?? null;
+        (isset($contact->inativo) && $contact->inativo !== false) ? $contact->inativo = 'S' : $contact->inativo = 'N';
         //contact_C613A391-155B-42F5-9C92-20C3371CC3DE = bloqueia excusão (s/n)
         $contact->bloquearExclusao = $prop['contact_C613A391-155B-42F5-9C92-20C3371CC3DE'] ?? null;
-        ($contact->bloquearExclusao) ? $contact->bloquearExclusao = 'S' : $contact->bloquearExclusao = 'N';
+        (isset($contact->bloquearExclusao) && $contact->bloquearExclusao !== false) ? $contact->bloquearExclusao = 'S' : $contact->bloquearExclusao = 'N';
         //contact_77CCD2FB-53D7-4203-BE6B-14B671A06F33 = transportadora padrão
         $contact->cTransportadoraPadrao = $prop['contact_77CCD2FB-53D7-4203-BE6B-14B671A06F33'] ?? null;
         //contact_6BB80AEA-43D0-45E8-B9E4-28D89D9773B9 = codigo do banco
@@ -563,7 +582,7 @@ class ClientsFunctions{
         //contact_847FE760-74D0-462D-B464-9E89C7E1C28E = chave pix
         $contact->chavePix = $prop['contact_847FE760-74D0-462D-B464-9E89C7E1C28E'] ?? null;
         //contact_33015EDD-B3A7-464E-81D0-5F38D31F604A = Transferência Padrão
-        $contact->transferenciaPadrao = $prop['contact_33015EDD-B3A7-464E-81D0-5F38D31F604A'];
+        $contact->transferenciaPadrao = $prop['contact_33015EDD-B3A7-464E-81D0-5F38D31F604A'] ?? null;
         ($contact->transferenciaPadrao) ? $contact->transferenciaPadrao = 'S' : $contact->transferenciaPadrao = 'N';
         //contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C = Integrar com base omie 1? (s/n)
         (isset($prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C']) && $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] !== false) ? $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] = 1 : $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'] = 0;
@@ -666,8 +685,6 @@ class ClientsFunctions{
         // $bases[3]['appSecret'] = $_ENV['SECRETS_GSU']??null;
         $bases[2]['appKey'] = $_ENV['APPK_MSC']??null;
         $bases[2]['appSecret'] = $_ENV['SECRETS_MSC']??null;
-        
-        
         //switch para uma base serve mas para as 4 base não pois ele vai verificar se existe base de faturamento em apenas uma das opções
         // switch($prop){
             
@@ -692,16 +709,24 @@ class ClientsFunctions{
         
         // (!empty($contact->baseFaturamento))? $contact->baseFaturamento : $m[] = 'Base de faturamento inexistente';
         $contact->basesFaturamento = $bases;        
-        
-        
+
         $tags= [];
         $tag=[];
-
         if($cliente['Tags']){
-
+    
             foreach($cliente['Tags'] as $iTag){
 
-                $tag['tag']=$iTag['Tag']['Name'];
+                $tagName = match($iTag['TagId']){
+                    40203491=>'Fornecedor',
+                    40203492=>'Transportadora',
+                    40203493=>'Funcionário',
+                    40203494=>'Min. da Fazenda',
+                    40203495=>'Banco e Inst. Financeiras',
+                    40203497=>'Diretor',
+                    40203778=>'Cliente',
+                };
+                
+                $tag['tag']=$tagName;
                 
                 $tags[]=$tag;
             }
@@ -709,23 +734,6 @@ class ClientsFunctions{
         $contact->tags = $tags;
 
         return $contact;
-    }
-
-    //compara os arrays old e new do Ploomes e retorna o objeto a ser alterado
-    public static function compare($webhook, $ploomesServices)
-    {  
-        //separa old e news do webhook principal, cria o objeto de cada um através do getCLientbyId do ploomes para terem as mesmas propriedades
-        $old = self::createOldObj($webhook, $ploomesServices);
-        $new = self::createNewObj($webhook, $ploomesServices);
-
-        //converte os objetos em arrays
-        $o = (array)$old;
-        $n = (array)$new;
-
-        //compara os arrays e devolvea diferença entre eles
-        $diferencas = DiverseFunctions::compararArrays($o, $n);
-
-        return $diferencas;
     }
 
     public static function createOmieObj($webhook)
@@ -785,6 +793,13 @@ class ClientsFunctions{
         $cliente->emailFatura = $array['event_recomendacoes_email_fatura'];
         $cliente->gerarBoletos = $array['event_recomendacoes_gerar_boletos'];
         $cliente->numeroParcelas = $array['event_recomendacoes_numero_parcelas'];
+        $tags=[];
+     
+        foreach($decoded['event']['tags'] as $t=>$v){
+            $tags[$t]=$v;
+           
+        }
+        $cliente->tags = $tags;
         $cliente->telefoneDdd1 = $array['event_telefone1_ddd'];
         $cliente->telefoneNumero1 = $array['event_telefone1_numero'];
         $cliente->telefoneDdd2 = $array['event_telefone2_ddd'];
@@ -797,7 +812,7 @@ class ClientsFunctions{
         $cliente->appKey = $array['appKey'];
         $cliente->appHash = $array['appHash'];
         $cliente->origin = $array['origin'];
-        
+
         return $cliente;
     }
 
@@ -864,19 +879,12 @@ class ClientsFunctions{
         // $cliente->appKey = $array['appKey'];
         // $cliente->appHash = $array['appHash'];
         // $cliente->origin = $array['origin'];
-        
+        // print_r($cliente);
+        // exit;
         return $cliente;
-
-
-    
-
         // if(empty($id)){
         //     throw new WebhookReadErrorException('Impossível alterar, clinete não possui código de integração',500);
         // }
-
-
-
-
     }
 
     public static function createPloomesContactFromOmieObject($contact, $ploomesServices, $omieServices)
@@ -925,14 +933,11 @@ class ClientsFunctions{
                 break;
         }
 
-        
-         
-
         $data = [];
         $data['TypeId'] = 1;
         $data['Name'] = $contact->nomeFantasia;
         $data['LegalName'] = $contact->razaoSocial;
-        $data['Register'] = $contact->cnpjCpf;
+        $data['Register'] = DiverseFunctions::limpa_cpf_cnpj($contact->cnpjCpf);
         $data['StatusId'] = 40059036;
         $data['Neighborhood'] = $contact->bairro ?? null;
         $data['ZipCode'] = $contact->cep ?? null;
@@ -965,6 +970,12 @@ class ClientsFunctions{
         //$data['AvatarUrl'] = $contact->avatar ?? null;(inexistente no omie)
         //$data['IdentityDocument'] = $contact->exterior ?? null;//(documento internacional exterior)
         //$data['CNAEName'] = $contact->cnaeName ?? null;(inexistente no omie)
+        // $person = [];
+        // $person['id'] = '';
+        // $person['TypeId'] = 2;
+        // $person['Name'] = $contact->contato;
+
+        // $data['Contacts'] = $person;
         $data['Phones'] = [];
         $ddd1 = preg_replace("/[^0-9]/", "", $contact->telefoneDdd1);
         $ddd2 = preg_replace("/[^0-9]/", "", $contact->telefoneDdd2);
@@ -982,8 +993,7 @@ class ClientsFunctions{
         $data['Phones'][] = $phone1 ?? null;
         $data['Phones'][] = $phone2 ?? null;
         $op = [];
-        $id = match($contact->tipoAtividade){
-           
+        $id = match($contact->tipoAtividade){  
             '0'=>420130572,
             '1'=>420130568,
             '2'=>420130574,
@@ -994,8 +1004,30 @@ class ClientsFunctions{
             '7'=>420130570,
             '8'=>420130563,
             '9'=>420130573,
-
         };
+
+        $tags = [];
+        $tag = [];
+        foreach($contact->tags as $t)
+        {
+            $idTag = match($t['tag']){
+                "Fornecedor"=>40203491,         
+                "Transportadora"=>40203492,
+                "Funcionário"=>40203493,               
+                "Min. da Fazenda"=>40203494,
+                "Banco e Inst. Financeiras"=>40203495,
+                "Diretor"=>40203497,
+                "Cliente"=>40203778,
+            };
+    
+            $tag['TagId'] = $idTag;
+            $tag['Tag']['Name'] = $t['tag'];
+            
+            $tags[]=$tag;
+        }
+        
+        $data['Tags'] = $tags;
+
         $ramo = [
             'FieldKey'=> 'contact_FF485334-CE8C-4FB9-B3CA-4FF000E75227',
             'IntegerValue'=>$id,//ramo teste
@@ -1013,10 +1045,10 @@ class ClientsFunctions{
             'FieldKey'=>'contact_20B72360-82CF-4806-BB05-21E89D5C61FD',
             'IntegerValue'=>409150919,//alta
         ];
-        $situacao = [
-            'FieldKey'=>'contact_5F52472B-E311-4574-96E2-3181EADFAFBE',
-            'IntegerValue'=>409150897,//ativo???
-        ];
+        // $situacao = [
+        //     'FieldKey'=>'contact_5F52472B-E311-4574-96E2-3181EADFAFBE',
+        //     'IntegerValue'=>409150897,//ativo???
+        // ];
         // $cicloCompra = [
         //     'FieldKey'=>'contact_9E595E72-E50C-4E95-9A05-D3B024C177AD',
         //     'StringValue'=>'',
@@ -1111,11 +1143,11 @@ class ClientsFunctions{
             'FieldKey'=>'contact_E497C521-4275-48E7-B44E-7A057844B045',
             'BoolValue'=>(isset($contact->appKey) && $contact->appKey === '2337978328686') ?  true :  false,
         ];
-
+        
         $op[] = $ramo;
         $op[] = $tipo;
         $op[] = $importancia;
-        $op[] = $situacao;
+        // $op[] = $situacao;
         $op[] = $inscEstadual;
         $op[] = $inscMunicipal;
         $op[] = $inscSuframa;
@@ -1142,7 +1174,8 @@ class ClientsFunctions{
    
         $data['OtherProperties'] = $op;
         $json = json_encode($data,JSON_UNESCAPED_UNICODE);
-
+        // print_r($data);
+        // exit;
         return $json;
 
     }
