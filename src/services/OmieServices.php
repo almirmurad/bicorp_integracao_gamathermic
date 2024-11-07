@@ -247,6 +247,7 @@ class OmieServices implements OmieManagerInterface{
         curl_close($curl);
 
         $item = json_decode($response);
+
         
         $id = $item->codigo_produto;
         
@@ -254,13 +255,60 @@ class OmieServices implements OmieManagerInterface{
 
     }
 
+    public function insertProject($omie, $projectName){
+        $array = [
+            'app_key' =>   $omie->appKey,
+            'app_secret' => $omie->appSecret,
+            'call' => 'IncluirProjeto',
+            'param'=>[
+                [
+                    'codint'=> $projectName,
+                    'nome'=>$projectName,
+                    'inativo'=> "N"
+                ]
+            ],
+        ];
+
+        $json = json_encode($array);
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://app.omie.com.br/api/v1/geral/projetos/',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $json,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+       
+        $response = json_decode($response,true);
+        
+        return $response;
+
+
+    }
+
     //CRIA PEDIDO NO OMIE
-    public function criaPedidoOmie(object $omie, string $idClienteOmie, object $deal, array $productsOrder, string $codVendedorOmie, string $notes, string $parcelamento)
+    public function criaPedidoOmie(object $omie, string $idClienteOmie, object $deal, array $productsOrder, string $codVendedorOmie, string $notes)
     {   
+        
         //$det = [];//informações dos produtos da venda(array de arrays)
         //$ide=[];//array de informações do produto vai dentro do array det com por exemplo codigo_item_integracao(codigo do item no ploomes)
         //$produto = [];//array de informações do produto específico, codigo quantidade valor unitário. infos do item no omie. dentro de det
         //$parcela = []; //info de cada parcela individualmente data_vencimento, numero_parcela, percentual, valor (array de arrays) vai dentro de lista_parcelas
+        // print_r($deal);
+        // exit;
         
         // cabeçalho da requisição ($appKey,$appSecret, call(metodo))
         $top = [
@@ -275,13 +323,13 @@ class OmieServices implements OmieManagerInterface{
         // cabecalho
         $cabecalho = [];//cabeçalho do pedido (array)
         $cabecalho['codigo_cliente'] = $idClienteOmie;//int
-        $cabecalho['codigo_pedido_integracao'] = $deal->lastOrderId;//string
+        $cabecalho['codigo_pedido_integracao'] = $deal->id;//string
         $cabecalho['data_previsao'] = DiverseFunctions::convertDate($deal->previsaoFaturamento) ?? "";//string
         $cabecalho['etapa'] = '10';//string
-        $cabecalho['numero_pedido'] = $deal->lastOrderId;//string
+        $cabecalho['numero_pedido'] = $deal->id;//string
         //$cabecalho['tipo_desconto_pedido'] = 'P';//string
         //$cabecalho['perc_desconto_pedido'] = 5;//string
-        $cabecalho['codigo_parcela'] = DiverseFunctions::getIdParcelamento($parcelamento);//string'qtde_parcela'=>2
+        $cabecalho['codigo_parcela'] = $deal->idParcelamento;//string'qtde_parcela'=>2
         //$cabecalho['qtde_parcelas'] = $qtdeParcelas;//string=>2
         $cabecalho['origem_pedido'] = 'API';//string
         //$cabecalho['quantidade_itens'] = 1;//int
@@ -301,7 +349,7 @@ class OmieServices implements OmieManagerInterface{
         
         //frete
         $frete = [];//array com infos do frete, por exemplo, modailidade;
-        $frete['modalidade'] = '9';//string
+        $frete['modalidade'] = $deal->modalidadeFrete;//string
         //$frete['previsao_entrega'] = DiverseFunctions::convertDate($deal->previsaoEntrega);//string
         
         //informações adicionais
@@ -313,6 +361,7 @@ class OmieServices implements OmieManagerInterface{
         $informacoes_adicionais['numero_pedido_cliente']=$deal->numPedidoCliente ?? "0";
         $informacoes_adicionais['codVend']=$codVendedorOmie;
         $informacoes_adicionais['codproj']= $omie->codProjeto ?? null;
+        $informacoes_adicionais['dados_adicionais_nf'] = $notes;
 
         //lista parcelas
         //$lista_parcelas = [];//array de parcelas
@@ -333,7 +382,7 @@ class OmieServices implements OmieManagerInterface{
         $newPedido['observacoes'] = $observacoes;
         $top['param'][]= $newPedido;
 
-        // $jsonPedido = json_encode($top, JSON_UNESCAPED_UNICODE);
+       // $jsonPedido = json_encode($top, JSON_UNESCAPED_UNICODE);
         // print_r($jsonPedido);
         // exit;
 
@@ -352,7 +401,63 @@ class OmieServices implements OmieManagerInterface{
       
         return $body;
 
+    }
+
+    public function criaOS(object $omie, string $idClienteOmie, object $deal, array $serviceOrder, string $codVendedorOmie, string $notes, array $produtosUtilizados)
+    {
+        $top = [
+            'app_key' =>   $omie->appKey,
+            'app_secret' => $omie->appSecret,
+            'call' => 'IncluirOS',
+            'param'=>[],
+        ];
+
+        $cabecalho = [];//cabeçalho do pedido (array)
+        $cabecalho['nCodCli'] = $idClienteOmie;//int
+        $cabecalho['cCodIntOS'] = 'SRV/'.$deal->id;//string
+        $cabecalho['dDtPrevisao'] = DiverseFunctions::convertDate($deal->previsaoFaturamento) ?? "";//string
+        $cabecalho['cEtapa'] = '10';//string
+        $cabecalho['cCodParc'] =  $deal->idParcelamento;//string'qtde_parcela'=>2
+        $cabecalho['nQtdeParc'] = 3;//string'qtde_parcela'=>2
+        $cabecalho['nCodVend'] = $codVendedorOmie;//string'qtde_parcela'=>2
+
+        $InformacoesAdicionais = []; //informações adicionais por exemplo codigo_categoria = 1.01.02 p/ serviços
+        $InformacoesAdicionais['cCodCateg'] = '1.01.02';//string
+        $InformacoesAdicionais['nCodCC'] = $omie->ncc;//int
+        $InformacoesAdicionais['cDadosAdicNF'] = $notes;//string
+        $InformacoesAdicionais['cNumPedido']=$deal->numPedidoCliente ?? "0";
+        $InformacoesAdicionais['nCodProj']= $omie->codProjeto ?? null;
+
+        $pu = [];
+
+        $pu['cAcaoProdUtilizados'] = 'EST';
+        $pu['produtoUtilizado'] = $produtosUtilizados;
+    
+        $newOS = [];//array que engloba tudo
+        $newOS['cabecalho'] = $cabecalho;
+        $newOS['InformacoesAdicionais'] = $InformacoesAdicionais;
+        $newOS['servicosPrestados'] = $serviceOrder;
+        $newOS['produtosUtilizados'] = $pu;
+ 
+        $top['param'][]= $newOS;
         
+
+        // print_r(json_encode($top));
+        // exit;
+        
+        $client = new Client([
+            'handler' => new CurlHandler([
+                 'handle_factory' => new CurlFactory(0)
+            ])
+        ]);
+
+        $response = $client->post('https://app.omie.com.br/api/v1/servicos/os/',[
+            "json" => $top
+        ]);
+        //$code = $response->getStatusCode();
+        $body = json_decode($response->getBody(),true); 
+
+        return $body;        
     }
 
     // busca o pedido através do Id do OMIE
@@ -480,6 +585,63 @@ class OmieServices implements OmieManagerInterface{
         
         
     }
+
+    //busca cliente pelo ID
+    public function getShipping($omie, $contact)
+    {
+        if($contact->cTransportadoraPadrao){
+            $param = array(
+
+                [
+                    'codigo_cliente_omie'=>$contact->cTransportadoraPadrao
+                ]
+            );
+               
+        }else{
+            $param = array(
+                [
+                    'codigo_cliente_integracao'=>"$contact->idTranspPadrao"
+                ]
+            );
+        }
+
+        
+        $jsonOmieIdCliente = [
+            'app_key' => $omie->appKey,
+            'app_secret' => $omie->appSecret,
+            'call' => 'ConsultarCliente',
+            'param'=> $param
+                ];
+                
+                $jsonCnpj = json_encode($jsonOmieIdCliente);
+                
+             
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://app.omie.com.br/api/v1/geral/clientes/',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $jsonCnpj,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        $shipping = json_decode($response, true);
+        
+        return $shipping['codigo_cliente_omie'] ?? null;
+        
+    }
     //Cria cliente no Omie ERP
     public function criaClienteOmie(object $omie, object $contact)
     {
@@ -547,7 +709,7 @@ class OmieServices implements OmieManagerInterface{
         $clienteJson['recomendacoes'] =[];
         $recomendacoes=[];//vendedor padrão
         $recomendacoes['codigo_vendedor'] = $contact->cVendedorOmie ?? null;
-        $recomendacoes['codigo_transportadora'] = null;//6967396742;// $contact->ownerId ?? null;
+        $recomendacoes['codigo_transportadora'] = $contact->idTransportadora ?? null;
         $clienteJson['recomendacoes'][] = $recomendacoes;
         //fim array recomendações
 

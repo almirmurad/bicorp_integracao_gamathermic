@@ -7,20 +7,12 @@ use src\handlers\DealHandler;
 use src\handlers\LoginHandler;
 use src\exceptions\WebhookReadErrorException;
 use src\exceptions\BaseFaturamentoInexistenteException;
-use src\exceptions\ClienteInexistenteException;
-use src\exceptions\CnpjClienteInexistenteException;
 use src\exceptions\DealNaoExcluidoBDException;
-use src\exceptions\EmailVendedorNaoExistenteException;
-use src\exceptions\PedidoInexistenteException;
-use src\exceptions\PedidoRejeitadoException;
-use src\exceptions\ProdutoInexistenteException;
-use src\exceptions\ProjetoNaoEncontradoException;
-use src\exceptions\PropostaNaoEncontradaException;
-use src\exceptions\VendedorInexistenteException;
 use src\models\Deal;
 use src\services\DatabaseServices;
 use src\services\OmieServices;
 use src\services\PloomesServices;
+use src\services\RabbitMQServices;
 
 class DealController extends Controller {
     
@@ -28,6 +20,7 @@ class DealController extends Controller {
     private $ploomesServices;
     private $omieServices;
     private $databaseServices;
+    private $rabbitMQServices;
 
     public function __construct()
     {
@@ -41,6 +34,7 @@ class DealController extends Controller {
         $this->ploomesServices = new ploomesServices();
         $this->omieServices = new omieServices();
         $this->databaseServices = new DatabaseServices();
+        $this->rabbitMQServices = new RabbitMQServices();
 
     }
 
@@ -61,16 +55,20 @@ class DealController extends Controller {
         *Recebe o webhook de card ganho, salva na base e retorna 200
         */
         $json = file_get_contents('php://input');
-        ob_start();
-        var_dump($json);
-        $input = ob_get_contents();
-        ob_end_clean();
-        file_put_contents('./assets/all.log', $input . PHP_EOL, FILE_APPEND);
+        // ob_start();
+        // var_dump($json);
+        // $input = ob_get_contents();
+        // ob_end_clean();
+        // file_put_contents('./assets/all.log', $input . PHP_EOL, FILE_APPEND);
 
         try{
             
             $dealHandler = new DealHandler($this->ploomesServices, $this->omieServices, $this->databaseServices);
             $response = $dealHandler->saveDealHook($json);
+                        
+             // $rk = origem.entidade.ação
+             $rk = array('Ploomes','Deals');
+             $this->rabbitMQServices->publicarMensagem('deals_exc', $rk, 'ploomes_deals',  $json);
 
             if ($response > 0) {
 
@@ -80,14 +78,6 @@ class DealController extends Controller {
                     'status_message' => 'SUCCESS: '. $response['msg'],
                 ];
                 
-            }else{
-
-                $message = [];
-                $message =[
-                    'status_code' => 200,
-                    'status_message' => 'SUCCESS: '. $response['msg'],
-                ];
-
             }
 
         }catch(WebhookReadErrorException $e){        
@@ -176,24 +166,17 @@ class DealController extends Controller {
         return print_r($ping);
         
     }
-    
     public function processWinDeal(){
         $json = file_get_contents('php://input');
-        $decoded = json_decode($json,true);
-
-        $status = $decoded['status'];
-        $entity = $decoded['entity'];
-    
+        $message = [];
         /**
          * processa o webhook 
          */
-
         try{
             
             $dealHandler = new DealHandler($this->ploomesServices, $this->omieServices, $this->databaseServices);
-            $response = $dealHandler->startProcess($status, $entity);
+            $response = $dealHandler->startProcess($json);
 
-            $message = [];
             $message =[
                 'status_code' => 200,
                 'status_message' => $response,
@@ -210,26 +193,6 @@ class DealController extends Controller {
         
         }catch(WebhookReadErrorException $e){                      
         }
-        catch(BaseFaturamentoInexistenteException $e){           
-        }
-        catch(CnpjClienteInexistenteException $e){           
-        }
-        catch(PedidoInexistenteException $e){           
-        }
-        catch(ProdutoInexistenteException $e){           
-        }
-        catch(ClienteInexistenteException $e){           
-        }
-        catch(VendedorInexistenteException $e){           
-        }
-        catch(PedidoRejeitadoException $e){           
-        }
-        catch(PropostaNaoEncontradaException $e){           
-        }
-        catch(ProjetoNaoEncontradoException $e){           
-        }
-        catch(EmailVendedorNaoExistenteException $e){           
-        }
         finally{
             if(isset($e)){
                 ob_start();
@@ -238,16 +201,18 @@ class DealController extends Controller {
                 ob_end_clean();
                 file_put_contents('./assets/log.log', $input . PHP_EOL . date('d/m/Y H:i:s'), FILE_APPEND);
                 //print $e->getMessage();
-                $message = [];
+              
                 $message =[
                     'status_code' => 500,
                     'status_message' => $e->getMessage(),
                 ];
-               
-                return print 'ERROR: '.$message['status_code'].' MESSAGE: '.$message['status_message'];
+                $m = json_encode($message);
+                 return print_r($m);
+                //return print 'ERROR: '.$message['status_code'].' MESSAGE: '.$message['status_message'];
                }
-    
-            return print $message['status_message']['winDeal']['interactionMessage'];
+               $m = json_encode($message);
+               return print_r($m);
+            //return print $message['status_message']['winDeal']['success'];
         }
 
     } 

@@ -1,6 +1,6 @@
 RewriteEngine On
 
-ErrorDocument 403 https://fiel.dev-webmurad.com.br/public/error
+ErrorDocument 403 https://gamatermic.bicorp.online/public/error
 
 <Files .env>
  Order allow,deny

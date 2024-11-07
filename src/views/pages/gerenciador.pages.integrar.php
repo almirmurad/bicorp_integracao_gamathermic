@@ -39,6 +39,7 @@
                                 <option value="1">Cliente</option>
                                 <option value="2">Negócio</option>
                                 <option value="10">Produtos</option>
+                                <option value="4">Vendas</option>
                             </select>
                         </div>
                         <div class="campo">

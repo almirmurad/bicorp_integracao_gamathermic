@@ -22,12 +22,14 @@ $router->get('/delHook/{id}', 'IntegracaoController@delHook');
 $router->get('/deals', 'DealController@index');
 $router->post('/winDeal', 'DealController@winDeal');
 $router->post('/deletedDeal', 'DealController@deletedDeal');
-$router->post('/processWinDeal', 'DealController@processWinDeal');
+// $router->post('/processWinDeal', 'DealController@processWinDeal');
 
 //Orders
-$router->post('/newOmieOrder', 'OrderController@newOmieOrder');//novo pedido no omie
-$router->post('/deletedOrder', 'OrderController@deletedOrder');//Pedido deletado no omie
-$router->post('/alterOrderStage', 'OrderController@alterOrderStage');//Pedido Alterado no kanban de vendas de produtos do omie
+//$router->post('/newOmieOrder', 'OrderController@newOmieOrder');//novo pedido no omie
+$router->post('/ploomesOrder', 'OrderController@ploomesOrder');//novo pedido no omie
+$router->post('/processNewOrder', 'OrderController@processNewOrder');
+//$router->post('/deletedOrder', 'OrderController@deletedOrder');//Pedido deletado no omie
+//$router->post('/alterOrderStage', 'OrderController@alterOrderStage');//Pedido Alterado no kanban de vendas de produtos do omie
 
 
 //contacts ploomes
@@ -41,6 +43,9 @@ $router->post('/processNewContact', 'ContactController@processNewContact'); //in
 //processo de alterar cliente no omie pelo cron job 
 // $router->post('/proccessAlterClientOmie', 'ClientController@proccessAlterClientOmie'); //recebe um webhhok de cliente alterado no 
 
+
+
+
 //products
 $router->post('/omieProducts', 'ProductController@omieProducts');//Novo produto no Omie
 $router->post('/processNewProduct', 'ProductController@processNewProduct'); //inicia o processo com cron job
@@ -53,7 +58,6 @@ $router->post('/processNewService', 'ServiceController@processNewService'); //in
 //Invoices NFE
 $router->post('/invoiceIssue', 'InvoicingController@invoiceIssue');
 $router->post('/deletedInvoice', 'InvoicingController@deletedInvoice');
-
 
 
 //Interactions

@@ -142,11 +142,12 @@ class PloomesServices implements PloomesManagerInterface{
     //encontra a venda no ploomes
     public function requestOrder(object $deal):array|null
     {
+        $id = $deal->id ?? $deal->lastOrderId;
 
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->baseApi . 'Orders?$filter=Id+eq+' . $deal->lastOrderId . '&$expand=OtherProperties,Products($select=Product,Discount,Quantity,UnitPrice,Id;$expand=OtherProperties,Parts($expand=Product($select=Code,Id)),Product($expand=OtherProperties($filter=FieldId+eq+40232989)))',
+            CURLOPT_URL => $this->baseApi . 'Orders?$filter=Id+eq+' . $id. '&$expand=OtherProperties,Products($select=Product,Discount,Quantity,UnitPrice,Id,Ordination;$expand=Parts($expand=Product($select=Code,Id),OtherProperties),Product($select=Code,Id;$expand=Group($select=Id,Name),OtherProperties))&$orderby=Id',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,

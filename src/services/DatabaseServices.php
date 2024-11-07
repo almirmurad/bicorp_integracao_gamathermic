@@ -54,6 +54,18 @@ class DatabaseServices implements DatabaseManagerInterface{
         }
       
     }
+
+    //BUSCA NO BANCO DE DADOS INFORMAÇÕES DO WEBHOOK A SER PROCESSADO.
+    public function getAllWebhook($status, $entity){
+        try{
+            $hook = Webhook::select()->where('status', $status)->where('entity',$entity)->orderBy('created_at')->get();
+            return (!$hook ? throw new WebhookReadErrorException('Não existem '.$entity.' pendentes a serem processados no momento. Data: '.date('d/m/Y H:i:s').PHP_EOL, 552) : $hook);
+            return $hook;
+        }catch(PDOException $e){
+            throw new WebhookReadErrorException('Erro ao buscar o webhook na base de dados: '.$e->getMessage(). 'Data: '.date('d/m/Y H:i:s'), 552);
+        }
+      
+    }
     //ALTERA O STATUS DO WEBHOOK
     public function alterStatusWebhook($id, $statusId){
         // print 'id do webhook no bd = '.$id. PHP_EOL;
@@ -125,7 +137,7 @@ class DatabaseServices implements DatabaseManagerInterface{
                     'create_date'=>$deal->createDate,
                     'last_order_id'=>$deal->lastOrderId,
                     'creator_id'=>$deal->creatorId,
-                    'webhook_id'=>$deal->webhookId,
+                    //'webhook_id'=>$deal->webhookId,
                     'created_at'=>date('Y-m-d H:i:s'),
                     ]
             )->execute();

@@ -119,3 +119,4 @@ max-width:100%;
 </html>
 
 
+🔴 Propostas perdidas

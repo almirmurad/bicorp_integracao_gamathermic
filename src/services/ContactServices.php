@@ -35,7 +35,7 @@ class ContactServices
                 $omie[$k]->appSecret = $bf['appSecret'];
                 $omie[$k]->appKey = $bf['appKey'];
                 $contact->cVendedorOmie = $omieServices->vendedorIdOmie($omie[$k],$contact->ownerEmail) ?? null; 
-                
+                $contact->idTransportadora = $omieServices->getShipping($omie[$k], $contact);
                 $criaClienteOmie = $omieServices->criaClienteOmie($omie[$k], $contact);
 
                 //verifica se criou o cliente no omie

@@ -1,5 +1,5 @@
 <?php
-// require '../../vendor/autoload.php';
+ require '../../vendor/autoload.php';
 // use GuzzleHttp\Client;
 // use GuzzleHttp\Handler\CurlFactory;
 // use GuzzleHttp\Handler\CurlHandler;
@@ -28,16 +28,19 @@
 // print_r($server);
 // print '</pre>';
 // exit;
+
+
 $headers = [
     
     'Content-Type: application/json',
 ];
 $array = [
     'status'=>'1',
-    'entity'=>'Deals'
+    'entity'=>'clientes'
 ];
 $json = json_encode($array);
-$uri = 'https://fiel.bicorp.online/public/processWinDeal';
+// $uri = 'https://gamatermic.bicorp.online/public/processWinDeal';
+$uri = 'http://localhost/gamatermic/public/processWinDeal';
 
 $curl = curl_init();
 
@@ -59,4 +62,4 @@ $curl = curl_init();
 
         curl_close($curl);
 
-       var_dump($response);
+       print_r($response);

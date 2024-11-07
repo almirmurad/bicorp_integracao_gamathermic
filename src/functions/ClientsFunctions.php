@@ -1,6 +1,7 @@
 <?php
 namespace src\functions;
 
+use src\exceptions\ClienteInexistenteException;
 use src\exceptions\WebhookReadErrorException;
 use src\models\Contact;
 use stdClass;
@@ -9,38 +10,51 @@ use stdClass;
 class ClientsFunctions{
 
     // encontra o processo a ser executado caso haja cadastro, exclusão ou alteração no webhook
-    public static function findAction($webhook)
+    // public static function findAction($webhook)
+    public static function findAction($json)
     {
         $current = date('d/m/Y H:i:s');
         //decodifica o json de clientes vindos do webhook
-        $json = $webhook['json'];
+        // $json = $webhook['json'];
         $decoded = json_decode($json,true);
+        
         //identifica qual action do webhook
         if(isset($decoded['Action'])){
+            try{
+                $action = match($decoded['Action']){
+                    'Create' => 'createCRMToERP',
+                    'Update' => 'updateCRMToERP',
+                    'Delete' => 'deleteCRMToERP'
+                };
+            }catch(\UnhandledMatchError $e){
+                throw new WebhookReadErrorException('Não foi encontrada nenhuma ação no webhook ['.$e->getMessage().']'.$current, 500);
+            }
             
-            $action = match($decoded['Action']){
-                'Create' => 'createCRMToERP',
-                'Update' => 'updateCRMToERP',
-                'Delete' => 'deleteCRMToERP'
-            };
         }elseif(isset($decoded['topic'])){
-            $action = match($decoded['topic']){
-                'ClienteFornecedor.Incluido' => 'createERPToCRM',
-                'ClienteFornecedor.Alterado' => 'updateERPToCRM',
-                'ClienteFornecedor.Excluido' => 'deleteERPToCRM'
-            };
+            try{
+                $action = match($decoded['topic']){
+                    'ClienteFornecedor.Incluido' => 'createERPToCRM',
+                    'ClienteFornecedor.Alterado' => 'updateERPToCRM',
+                    'ClienteFornecedor.Excluido' => 'deleteERPToCRM',
+                };
+            }catch(\UnhandledMatchError $e){
+                throw new WebhookReadErrorException('Não foi encontrada nenhuma ação no webhook ['.$e->getMessage().']'.$current, 500);
+            }
         }else{
-            throw new WebhookReadErrorException('Não foi encontrda nenhuma ação no webhook '.$current, 500);
+            throw new WebhookReadErrorException('Não foi encontrada nenhuma ação no webhook '.$current, 500);
         }
+        // print_r($action);
+        // print_r($json);
+        // exit;
         return $action;
     }
 
     //cria obj cliente
-    public static function createObj($webhook, $ploomesServices)
+    public static function createObj($json, $ploomesServices)
     {
     
         //decodifica o json de clientes vindos do webhook
-        $json = $webhook['json'];
+    
         $decoded = json_decode($json,true);
 
         $cliente = $ploomesServices->getClientById($decoded['New']['Id']);
@@ -131,6 +145,8 @@ class ClientsFunctions{
         $contact->nomeTitular = $prop['contact_DDD76E27-8EFA-416B-B7DF-321C1FB31066'] ?? null;
         //contact_847FE760-74D0-462D-B464-9E89C7E1C28E = chave pix
         $contact->chavePix = $prop['contact_847FE760-74D0-462D-B464-9E89C7E1C28E'] ?? null;
+        //contact_3E075EA9-320C-479E-A956-5A3734C55E51 = Transportadora Padrão
+        $contact->idTranspPadrao = $prop['contact_3E075EA9-320C-479E-A956-5A3734C55E51'] ?? null;
         //contact_33015EDD-B3A7-464E-81D0-5F38D31F604A = Transferência Padrão
         $contact->transferenciaPadrao = $prop['contact_33015EDD-B3A7-464E-81D0-5F38D31F604A'] ?? null;
         (isset($contact->transferenciaPadrao) && $contact->transferenciaPadrao !== false) ? $contact->transferenciaPadrao = 'S' : $contact->transferenciaPadrao = 'N';
@@ -230,8 +246,8 @@ class ClientsFunctions{
         $bases[3]['integrar'] = $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] ?? null;
         // $bases[3]['appKey'] = $_ENV['APPK_GSU']??null;
         // $bases[3]['appSecret'] = $_ENV['SECRETS_GSU']??null;
-        $bases[2]['appKey'] = $_ENV['APPK_MSC']??null;
-        $bases[2]['appSecret'] = $_ENV['SECRETS_MSC']??null;
+        $bases[3]['appKey'] = $_ENV['APPK_MSC']??null;
+        $bases[3]['appSecret'] = $_ENV['SECRETS_MSC']??null;
         
         // (!empty($contact->baseFaturamento))? $contact->baseFaturamento : $m[] = 'Base de faturamento inexistente';
         $contact->basesFaturamento = $bases;        
@@ -258,7 +274,6 @@ class ClientsFunctions{
             }
         }
         $contact->tags = $tags;
-
         return $contact;
     }
 
@@ -683,8 +698,8 @@ class ClientsFunctions{
         $bases[3]['integrar'] = $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] ?? null;
         // $bases[3]['appKey'] = $_ENV['APPK_GSU']??null;
         // $bases[3]['appSecret'] = $_ENV['SECRETS_GSU']??null;
-        $bases[2]['appKey'] = $_ENV['APPK_MSC']??null;
-        $bases[2]['appSecret'] = $_ENV['SECRETS_MSC']??null;
+        $bases[3]['appKey'] = $_ENV['APPK_MSC']??null;
+        $bases[3]['appSecret'] = $_ENV['SECRETS_MSC']??null;
         //switch para uma base serve mas para as 4 base não pois ele vai verificar se existe base de faturamento em apenas uma das opções
         // switch($prop){
             
@@ -736,63 +751,81 @@ class ClientsFunctions{
         return $contact;
     }
 
-    public static function createOmieObj($webhook)
+    public static function createOmieObj($json, $omieServices)
     {
         //decodifica o json de clientes vindos do webhook
-        $json = $webhook['json'];
+        //$json = $webhook['json'];
+
         $decoded = json_decode($json,true);
-
-        $array = DiverseFunctions::achatarArray($decoded);
-
+        $omie = new stdClass();
+        $omie->appKey = $decoded['appKey'];
+        match($omie->appKey){
+            '4194053472609'=> $omie->appSecret =  $_ENV['SECRETS_DEMO'],
+            '2335095664902'=> $omie->appSecret =  $_ENV['SECRETS_DEMO'],
+            '2597402735928'=> $omie->appSecret =  $_ENV['SECRETS_DEMO'],
+            '2337978328686'=> $omie->appSecret =  $_ENV['SECRETS_DEMO'],
+        };
+        
         $cliente = new stdClass();
-        $cliente->messageId = $array['messageId'];
-        $cliente->topic = $array['topic'];
-        $cliente->bairro = $array['event_bairro'];
-        $cliente->bloqueado = $array['event_bloqueado'];
-        $cliente->bloquearFaturamento = $array['event_bloquear_faturamento'];
-        $cep = (int)str_replace('-','',$array['event_cep']);
-        $cliente->cep = $cep;
-        $cliente->cidade = $array['event_cidade'];
-        $cliente->cidadeIbge = $array['event_cidade_ibge'] ?? null;
-        $cliente->cnae = $array['event_cnae'];
-        $cliente->cnpjCpf = $array['event_cnpj_cpf'];
-        $cliente->codigoClienteIntegracao = $array['event_codigo_cliente_integracao'];
-        $cliente->codigoClienteOmie = $array['event_codigo_cliente_omie'];
-        $cliente->codigoPais = $array['event_codigo_pais'];
-        $cliente->complemento = $array['event_complemento'];
-        $cliente->contato = $array['event_contato'];
-        $cliente->contribuinte = $array['event_contribuinte'];
-        $cliente->agencia = $array['event_dadosBancarios_agencia'];
-        $cliente->cBanco = $array['event_dadosBancarios_codigo_banco'];
-        $cliente->nContaCorrente = $array['event_dadosBancarios_conta_corrente'];
-        $cliente->docTitular = $array['event_dadosBancarios_doc_titular'];
-        $cliente->nomeTitular = $array['event_dadosBancarios_nome_titular'];
-        $cliente->email = $array['event_email'];
-        $cliente->endereco = $array['event_endereco'];
-        $cliente->enderecoNumero = $array['event_endereco_numero'];
-        $cliente->estado = $array['event_estado'];
-        $cliente->exterior = $array['event_exterior'];
-        $cliente->faxDdd = $array['event_fax_ddd'];
-        $cliente->faxNumero = $array['event_fax_numero'];
-        $cliente->homepage = $array['event_homepage'];
-        $cliente->inativo = $array['event_inativo'];
-        $cliente->inscricaoEstadual = $array['event_inscricao_estadual'];
-        $cliente->inscricaoMunicipal = $array['event_inscricao_municipal'];
-        $cliente->inscricaoSuframa = $array['event_inscricao_suframa'];
-        $cliente->logradouro = $array['event_logradouro'];
-        $cliente->nif = $array['event_nif'];
-        $cliente->nomeFantasia = $array['event_nome_fantasia'];
-        $cliente->obsDetalhadas = $array['event_obs_detalhadas'];
-        $cliente->observacao = $array['event_observacao'];
-        $cliente->simplesNacional = $array['event_optante_simples_nacional'];
-        $cliente->pessoaFisica = $array['event_pessoa_fisica'];
-        $cliente->produtorRural = $array['event_produtor_rural'];
-        $cliente->razaoSocial = $array['event_razao_social'];
-        $cliente->recomendacaoAtraso = $array['event_recomendacao_atraso'];
-        $cliente->codigoVendedor = $array['event_recomendacoes_codigo_vendedor'];
-        $cliente->emailFatura = $array['event_recomendacoes_email_fatura'];
-        $cliente->gerarBoletos = $array['event_recomendacoes_gerar_boletos'];
-        $cliente->numeroParcelas = $array['event_recomendacoes_numero_parcelas'];
+        $cliente->codigoClienteOmie = $decoded['event']['codigo_cliente_omie'];
+
+        $c =  $omieServices->getClientById($omie, $cliente);
+        
+        $array = DiverseFunctions::achatarArray($c);
+
+        //$cliente->messageId = $array['messageId'];
+        // $cliente->topic = $array['topic'];
+        $cliente->bairro = $array['bairro'] ?? null;
+        $cliente->bloqueado = $array['bloqueado']  ?? null;
+        $cliente->bloquearFaturamento = $array['bloquear_faturamento']  ?? null;
+        $cep = (int)str_replace('-','',$array['cep'])  ?? null;
+        $cliente->cep = $cep  ?? null;
+        $cliente->cidade = $array['cidade']  ?? null;
+        $cliente->cidadeIbge = $array['cidade_ibge'] ?? null  ?? null;
+        $cliente->cnae = $array['cnae']  ?? null;
+        $cliente->cnpjCpf = $array['cnpj_cpf']  ?? null;
+        $cliente->codigoClienteIntegracao = $array['codigo_cliente_integracao']  ?? null;
+        $cliente->codigoClienteOmie = $array['codigo_cliente_omie']  ?? null;
+        $cliente->codigoPais = $array['codigo_pais']  ?? null;
+        $cliente->complemento = $array['complemento']  ?? null;
+        $cliente->contato = $array['contato']  ?? null;
+        $cliente->contribuinte = $array['contribuinte']  ?? null;
+        $cliente->agencia = $array['dadosBancarios_agencia']  ?? null;
+        $cliente->cBanco = $array['dadosBancarios_codigo_banco']  ?? null;
+        $cliente->nContaCorrente = $array['dadosBancarios_conta_corrente']  ?? null;
+        $cliente->docTitular = $array['dadosBancarios_doc_titular']  ?? null;
+        $cliente->nomeTitular = $array['dadosBancarios_nome_titular']  ?? null;
+        $cliente->email = $array['email']  ?? null;
+        $cliente->endereco = $array['endereco']  ?? null;
+        $cliente->enderecoNumero = $array['endereco_numero']  ?? null;
+        $cliente->estado = $array['estado']  ?? null;
+        $cliente->exterior = $array['exterior']  ?? null;
+        $cliente->faxDdd = $array['fax_ddd']  ?? null;
+        $cliente->faxNumero = $array['fax_numero']  ?? null;
+        $cliente->homepage = $array['homepage']  ?? null;
+        $cliente->inativo = $array['inativo']  ?? null;
+        $cliente->inscricaoEstadual = $array['inscricao_estadual']  ?? null;
+        $cliente->inscricaoMunicipal = $array['inscricao_municipal']  ?? null;
+        $cliente->inscricaoSuframa = $array['inscricao_suframa']  ?? null;
+        $cliente->logradouro = $array['logradouro']  ?? null;
+        $cliente->nif = $array['nif']  ?? null;
+        $cliente->nomeFantasia = $array['nome_fantasia']  ?? null;
+        $cliente->obsDetalhadas = $array['obs_detalhadas']  ?? null;
+        $cliente->observacao = $array['observacao']  ?? null;
+        $cliente->simplesNacional = $array['optante_simples_nacional']  ?? null;
+        $cliente->pessoaFisica = $array['pessoa_fisica']  ?? null;
+        $cliente->produtorRural = $array['produtor_rural']  ?? null;
+        $cliente->razaoSocial = $array['razao_social']  ?? null;
+        $cliente->recomendacaoAtraso = $array['recomendacao_atraso']  ?? null;
+        $cliente->codigoVendedor = $array['recomendacoes_codigo_vendedor'] ?? null;
+        $cliente->emailFatura = $array['recomendacoes_email_fatura'] ?? null;
+        $cliente->gerarBoletos = $array['recomendacoes_gerar_boletos'] ?? null;
+        $cliente->numeroParcelas = $array['recomendacoes_numero_parcelas'] ?? null;
+        $cliente->idTranspPadrao = $array['recomendacoes_codigo_transportadora'] ?? null;
+        $transp = new stdClass();
+        $transp->codigoClienteOmie = $cliente->idTranspPadrao;
+        $transp = $omieServices->getClientByid($omie,$transp );
+        $cliente->idTranspPadraoPloomes = $transp['codigo_cliente_integracao'];
         $tags=[];
      
         foreach($decoded['event']['tags'] as $t=>$v){
@@ -800,18 +833,18 @@ class ClientsFunctions{
            
         }
         $cliente->tags = $tags;
-        $cliente->telefoneDdd1 = $array['event_telefone1_ddd'];
-        $cliente->telefoneNumero1 = $array['event_telefone1_numero'];
-        $cliente->telefoneDdd2 = $array['event_telefone2_ddd'];
-        $cliente->telefoneNumero2 = $array['event_telefone2_numero'];
-        $cliente->tipoAtividade = $array['event_tipo_atividade'];
-        $cliente->limiteCredito = $array['event_valor_limite_credito'];
-        $cliente->authorEmail = $array['author_email'];
-        $cliente->authorName = $array['author_name'];
-        $cliente->authorUserId = $array['author_userId'];
-        $cliente->appKey = $array['appKey'];
-        $cliente->appHash = $array['appHash'];
-        $cliente->origin = $array['origin'];
+        $cliente->telefoneDdd1 = $array['telefone1_ddd'];
+        $cliente->telefoneNumero1 = $array['telefone1_numero'];
+        $cliente->telefoneDdd2 = $array['telefone2_ddd'];
+        $cliente->telefoneNumero2 = $array['telefone2_numero'];
+        $cliente->tipoAtividade = $array['tipo_atividade'];
+        $cliente->limiteCredito = $array['valor_limite_credito'];
+        // $cliente->authorEmail = $array['author_email'];
+        // $cliente->authorName = $array['author_name'];
+        // $cliente->authorUserId = $array['author_userId'];
+        $cliente->appKey = $decoded['appKey'];
+        // $cliente->appHash = $array['appHash'];
+        // $cliente->origin = $array['origin'];
 
         return $cliente;
     }
@@ -889,9 +922,12 @@ class ClientsFunctions{
 
     public static function createPloomesContactFromOmieObject($contact, $ploomesServices, $omieServices)
     {
+        // print'craeat ploome from omie object';
+        // print_r($contact);
+        // exit;
+        $omie = new stdClass();
         switch($contact->appKey){
             case '4194053472609': 
-                $omie = new stdClass();
                 $omie->appKey = $_ENV['APPK_DEMO'];
                 $omie->appSecret = $_ENV['SECRETS_DEMO'];
                 $contact->baseFaturamentoTitle = 'Engeparts';
@@ -901,18 +937,15 @@ class ClientsFunctions{
                 ];
                 break;
             case '2335095664902': 
-                $omie = new stdClass();
                 $omie->appKey = $_ENV['APPK_MHL'];
                 $omie->appSecret = $_ENV['SECRETS_MHL'];
                 $contact->baseFaturamentoTitle = 'Gamatermic';
                 $cOmie = [
                     'FieldKey'=>'contact_6DB7009F-1E58-4871-B1E6-65534737C1D0',
                     'StringValue'=>$contact->codigoClienteOmie,
-
                 ];
                 break;
             case '2597402735928':
-                $omie = new stdClass();
                 $omie->appKey = $_ENV['APPK_MSC'];
                 $omie->appSecret = $_ENV['SECRETS_MSC']; 
                 $contact->baseFaturamentoTitle = 'Semin';
@@ -1096,7 +1129,12 @@ class ClientsFunctions{
         $transpPadrao = [
             'FieldKey'=>'contact_77CCD2FB-53D7-4203-BE6B-14B671A06F33',
             //'IntegerValue'=>'',
-            'StringValue'=>$contact->codigoVendedor ?? null
+            'StringValue'=>$contact->idTranspPadrao ?? null
+        ];
+        $idTranspPadrao = [
+            'FieldKey'=>'contact_3E075EA9-320C-479E-A956-5A3734C55E51',
+            //'IntegerValue'=>'',
+            'IntegerValue'=>$contact->idTranspPadraoPloomes ?? null
         ];
         $cBanco = [
             'FieldKey'=>'contact_6BB80AEA-43D0-45E8-B9E4-28D89D9773B9',
@@ -1159,6 +1197,7 @@ class ClientsFunctions{
         $op[] = $inativo;
         $op[] = $bloqExclusao;
         $op[] = $transpPadrao;
+        $op[] = $idTranspPadrao;
         $op[] = $cBanco;
         $op[] = $agencia;
         $op[] = $nContaCorrente;
