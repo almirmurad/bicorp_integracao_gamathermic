@@ -11,7 +11,9 @@ interface OmieManagerInterface{
     //BUSCA ID DO PRODUTO NO OMIE
     public function buscaIdProductOmie(object $omie, string $idItem);
     //CRIA O PEDIDO NO OMIE 
-    public function criaPedidoOmie(object $omie, string $idClienteOmie, object $deal, array $productsOrder, string $codVendedorOmie, string $notes);
+    public function criaPedidoOmie(object $omie, object $order, array $productsOrder);
+    //CRIA O SERVIÇO NO OMIE 
+    public function criaOS(object $omie, object $os, array $serviceOrder, array $produtosUtilizados);
     //ENCONTRA O CNPJ DO CLIENTE NO OMIE
     public function clienteCnpjOmie(object $omie);
     //ENCONTRA O PEDIDO ATRAVÉS DO ID DO OMIE

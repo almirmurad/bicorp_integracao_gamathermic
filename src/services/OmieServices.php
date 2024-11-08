@@ -300,36 +300,27 @@ class OmieServices implements OmieManagerInterface{
     }
 
     //CRIA PEDIDO NO OMIE
-    public function criaPedidoOmie(object $omie, string $idClienteOmie, object $deal, array $productsOrder, string $codVendedorOmie, string $notes)
+    public function criaPedidoOmie(object $omie, object $order, array $productsOrder)
     {   
         
-        //$det = [];//informações dos produtos da venda(array de arrays)
-        //$ide=[];//array de informações do produto vai dentro do array det com por exemplo codigo_item_integracao(codigo do item no ploomes)
-        //$produto = [];//array de informações do produto específico, codigo quantidade valor unitário. infos do item no omie. dentro de det
-        //$parcela = []; //info de cada parcela individualmente data_vencimento, numero_parcela, percentual, valor (array de arrays) vai dentro de lista_parcelas
-        // print_r($deal);
-        // exit;
-        
-        // cabeçalho da requisição ($appKey,$appSecret, call(metodo))
         $top = [
             'app_key' =>   $omie->appKey,
             'app_secret' => $omie->appSecret,
             'call' => 'IncluirPedido',
             'param'=>[],
         ];
-        // $parcelas = explode('/',$parcelamento);
-        // $qtdeParcelas = count($parcelas);
+
         
         // cabecalho
         $cabecalho = [];//cabeçalho do pedido (array)
-        $cabecalho['codigo_cliente'] = $idClienteOmie;//int
-        $cabecalho['codigo_pedido_integracao'] = $deal->id;//string
-        $cabecalho['data_previsao'] = DiverseFunctions::convertDate($deal->previsaoFaturamento) ?? "";//string
+        $cabecalho['codigo_cliente'] = $order->idClienteOmie;//int
+        $cabecalho['codigo_pedido_integracao'] = $order->id;//string
+        $cabecalho['data_previsao'] = DiverseFunctions::convertDate($order->previsaoFaturamento) ?? "";//string
         $cabecalho['etapa'] = '10';//string
-        $cabecalho['numero_pedido'] = $deal->id;//string
+        $cabecalho['numero_pedido'] = $order->id;//string
         //$cabecalho['tipo_desconto_pedido'] = 'P';//string
         //$cabecalho['perc_desconto_pedido'] = 5;//string
-        $cabecalho['codigo_parcela'] = $deal->idParcelamento;//string'qtde_parcela'=>2
+        $cabecalho['codigo_parcela'] = $order->idParcelamento;//string'qtde_parcela'=>2
         //$cabecalho['qtde_parcelas'] = $qtdeParcelas;//string=>2
         $cabecalho['origem_pedido'] = 'API';//string
         //$cabecalho['quantidade_itens'] = 1;//int
@@ -349,8 +340,8 @@ class OmieServices implements OmieManagerInterface{
         
         //frete
         $frete = [];//array com infos do frete, por exemplo, modailidade;
-        $frete['modalidade'] = $deal->modalidadeFrete;//string
-        //$frete['previsao_entrega'] = DiverseFunctions::convertDate($deal->previsaoEntrega);//string
+        $frete['modalidade'] = $order->modalidadeFrete;//string
+        //$frete['previsao_entrega'] = DiverseFunctions::convertDate($order->previsaoEntrega);//string
         
         //informações adicionais
         $informacoes_adicionais = []; //informações adicionais por exemplo codigo_categoria = 1.01.03, codigo_conta_corrente = 123456789
@@ -358,10 +349,10 @@ class OmieServices implements OmieManagerInterface{
         $informacoes_adicionais['codigo_conta_corrente'] = $omie->ncc;//int
         // $informacoes_adicionais['consumidor_final'] = 'S';//string
         // $informacoes_adicionais['enviar_email'] = 'N';//string
-        $informacoes_adicionais['numero_pedido_cliente']=$deal->numPedidoCliente ?? "0";
-        $informacoes_adicionais['codVend']=$codVendedorOmie;
+        $informacoes_adicionais['numero_pedido_cliente']=$order->numPedidoCliente ?? "0";
+        $informacoes_adicionais['codVend']=$order->codVendedorOmie;
         $informacoes_adicionais['codproj']= $omie->codProjeto ?? null;
-        $informacoes_adicionais['dados_adicionais_nf'] = $notes;
+        $informacoes_adicionais['dados_adicionais_nf'] = $order->notes;
 
         //lista parcelas
         //$lista_parcelas = [];//array de parcelas
@@ -369,7 +360,7 @@ class OmieServices implements OmieManagerInterface{
         
         //observbacoes
         $observacoes =[];
-        $observacoes['obs_venda'] = $notes;
+        $observacoes['obs_venda'] = $order->notes;
         
         //exemplo de parcelsa
         //$totalParcelas = "10/15/20";
@@ -403,7 +394,7 @@ class OmieServices implements OmieManagerInterface{
 
     }
 
-    public function criaOS(object $omie, string $idClienteOmie, object $deal, array $serviceOrder, string $codVendedorOmie, string $notes, array $produtosUtilizados)
+    public function criaOS(object $omie, object $os, array $serviceOrder, array $produtosUtilizados)
     {
         $top = [
             'app_key' =>   $omie->appKey,
@@ -413,20 +404,20 @@ class OmieServices implements OmieManagerInterface{
         ];
 
         $cabecalho = [];//cabeçalho do pedido (array)
-        $cabecalho['nCodCli'] = $idClienteOmie;//int
-        $cabecalho['cCodIntOS'] = 'SRV/'.$deal->id;//string
-        $cabecalho['dDtPrevisao'] = DiverseFunctions::convertDate($deal->previsaoFaturamento) ?? "";//string
+        $cabecalho['nCodCli'] = $os->idClienteOmie;//int
+        $cabecalho['cCodIntOS'] = 'SRV/'.$os->id;//string
+        $cabecalho['dDtPrevisao'] = DiverseFunctions::convertDate($os->previsaoFaturamento) ?? "";//string
         $cabecalho['cEtapa'] = '10';//string
-        $cabecalho['cCodParc'] =  $deal->idParcelamento;//string'qtde_parcela'=>2
+        $cabecalho['cCodParc'] =  $os->idParcelamento;//string'qtde_parcela'=>2
         $cabecalho['nQtdeParc'] = 3;//string'qtde_parcela'=>2
-        $cabecalho['nCodVend'] = $codVendedorOmie;//string'qtde_parcela'=>2
+        $cabecalho['nCodVend'] = $os->codVendedorOmie;//string'qtde_parcela'=>2
 
         $InformacoesAdicionais = []; //informações adicionais por exemplo codigo_categoria = 1.01.02 p/ serviços
         $InformacoesAdicionais['cCodCateg'] = '1.01.02';//string
         $InformacoesAdicionais['nCodCC'] = $omie->ncc;//int
-        $InformacoesAdicionais['cDadosAdicNF'] = $notes;//string
-        $InformacoesAdicionais['cNumPedido']=$deal->numPedidoCliente ?? "0";
-        $InformacoesAdicionais['nCodProj']= $omie->codProjeto ?? null;
+        $InformacoesAdicionais['cDadosAdicNF'] = $os->notes;//string
+        $InformacoesAdicionais['cNumPedido']=$os->numPedidoCliente ?? "0";
+        $InformacoesAdicionais['nCodProj']= $omie->codProjeto;
 
         $pu = [];
 
@@ -441,10 +432,6 @@ class OmieServices implements OmieManagerInterface{
  
         $top['param'][]= $newOS;
         
-
-        // print_r(json_encode($top));
-        // exit;
-        
         $client = new Client([
             'handler' => new CurlHandler([
                  'handle_factory' => new CurlFactory(0)
@@ -454,7 +441,7 @@ class OmieServices implements OmieManagerInterface{
         $response = $client->post('https://app.omie.com.br/api/v1/servicos/os/',[
             "json" => $top
         ]);
-        //$code = $response->getStatusCode();
+
         $body = json_decode($response->getBody(),true); 
 
         return $body;        
