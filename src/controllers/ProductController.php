@@ -40,12 +40,6 @@ class ProductController extends Controller {
         $message = [];
         $json = file_get_contents('php://input');
 
-        ob_start();
-        var_dump($json);
-        $input = ob_get_contents();
-        ob_end_clean();
-        file_put_contents('./assets/products.log', $input . PHP_EOL . date('d/m/Y H:i:s') . PHP_EOL, FILE_APPEND);
-
         try{
             $productHandler = new ProductHandler($this->ploomesServices, $this->omieServices, $this->databaseServices);
             $response = $productHandler->saveProductHook($json);
@@ -79,18 +73,10 @@ class ProductController extends Controller {
                 $m = json_encode($message);
                  return print_r($m);
             }
-             //grava log
-             ob_start();
-             print_r($message);
-             $input = ob_get_contents();
-             ob_end_clean();
-             file_put_contents('./assets/log.log', $input . PHP_EOL, FILE_APPEND);
              
              $m = json_encode($message);
-                return print_r($m);
-           
+                return print_r($m);  
         }
-            
     }
     //processa webhook de produtos
     public function processNewProduct()
@@ -112,13 +98,6 @@ class ProductController extends Controller {
                 'status_message' => $response['success'],
             ];
              
-            //grava log
-            ob_start();
-            print_r($message);
-            $input = ob_get_contents();
-            ob_end_clean();
-            file_put_contents('./assets/logClient.log', $input . PHP_EOL, FILE_APPEND);
-        
         }catch(WebhookReadErrorException $e){
                 
         }
@@ -136,17 +115,11 @@ class ProductController extends Controller {
                     'status_message' => $e->getMessage(),
                 ];
                 $m = json_encode($message);
-                 return print_r($m);
+                return print_r($m);
             }
-             //grava log
-             ob_start();
-             print_r($message);
-             $input = ob_get_contents();
-             ob_end_clean();
-             file_put_contents('./assets/log.log', $input . PHP_EOL, FILE_APPEND);
              
              $m = json_encode($message);
-                return print_r($m);
+             return print_r($m);
         }
 
     } 
