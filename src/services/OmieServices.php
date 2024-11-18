@@ -357,7 +357,7 @@ class OmieServices implements OmieManagerInterface{
         $cabecalho = [];//cabeçalho do pedido (array)
         $cabecalho['codigo_cliente'] = $order->idClienteOmie;//int
         $cabecalho['codigo_pedido_integracao'] = 'VEN_PRD/'.$order->id;//string
-        $cabecalho['data_previsao'] = DiverseFunctions::convertDate($order->previsaoFaturamento) ?? date('d/m/Y');//string
+        $cabecalho['data_previsao'] = DiverseFunctions::convertDate($order->previsaoFaturamento);//string
         $cabecalho['etapa'] = '10';//string
         $cabecalho['numero_pedido'] = $order->id;//string
         //$cabecalho['tipo_desconto_pedido'] = 'P';//string
@@ -418,8 +418,6 @@ class OmieServices implements OmieManagerInterface{
        // $jsonPedido = json_encode($top, JSON_UNESCAPED_UNICODE);
         // print_r($jsonPedido);
         // exit;
-        // var_dump($order->previsaoFaturamento);
-        // exit;
         
         // $jsonOmie = json_encode($jsonOmie,JSON_UNESCAPED_UNICODE);
         $client = new Client([
@@ -450,7 +448,7 @@ class OmieServices implements OmieManagerInterface{
         $cabecalho = [];//cabeçalho do pedido (array)
         $cabecalho['nCodCli'] = $os->idClienteOmie;//int
         $cabecalho['cCodIntOS'] = 'VEN_SRV/'.$os->id;//string
-        $cabecalho['dDtPrevisao'] = DiverseFunctions::convertDate($os->previsaoFaturamento) ?? date('d/m/Y');//string
+        $cabecalho['dDtPrevisao'] = DiverseFunctions::convertDate($os->previsaoFaturamento);//string
         $cabecalho['cEtapa'] = '10';//string
         $cabecalho['cCodParc'] =  $os->idParcelamento ?? '000';//string'qtde_parcela'=>2
         $cabecalho['nQtdeParc'] = 3;//string'qtde_parcela'=>2

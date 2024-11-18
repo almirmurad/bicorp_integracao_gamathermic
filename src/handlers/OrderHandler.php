@@ -189,7 +189,7 @@ class OrderHandler
                 break;
         }
         //previsão de faturamento
-        $order->previsaoFaturamento =(isset($prop['order_5ABC5118-2AA4-493A-B016-67E26C723DD1']) && !empty($prop['order_5ABC5118-2AA4-493A-B016-67E26C723DD1']))? $prop['order_5ABC5118-2AA4-493A-B016-67E26C723DD1'] : null;//$m[] = 'Erro ao montar pedido para enviar ao Omie ERP: Previsão de Faturamento não foi preenchida';
+        $order->previsaoFaturamento =(isset($prop['order_5ABC5118-2AA4-493A-B016-67E26C723DD1']) && !empty($prop['order_5ABC5118-2AA4-493A-B016-67E26C723DD1']))? $prop['order_5ABC5118-2AA4-493A-B016-67E26C723DD1'] : date('Y-m-d');//$m[] = 'Erro ao montar pedido para enviar ao Omie ERP: Previsão de Faturamento não foi preenchida';
         //template id (tipo de venda produtos ou serviços)
         $order->templateId =(isset($prop['order_F90FC615-C3B1-4E9A-9061-88C0AF944CC5']) && !empty($prop['order_F90FC615-C3B1-4E9A-9061-88C0AF944CC5']))? $prop['order_F90FC615-C3B1-4E9A-9061-88C0AF944CC5'] : $m[] = 'Erro: não foi possível identificar o tipo de venda (Produtos ou serviços)';
         //numero do pedido do cliente (preenchido na venda) localizado em pedidos info. adicionais
@@ -274,7 +274,6 @@ class OrderHandler
                     $service['nCodServico'] = $opServices[$idItemOmie];
                     $service['nQtde'] = $prdItem['Quantity'];
                     $service['nValUnit'] = $prdItem['UnitPrice'];
-                    $service['cDescServ'] = $order->descricaoServico;
 
                     $serviceOrder[] = $service;
                 }
@@ -313,16 +312,19 @@ class OrderHandler
 
             //se incluiu a OS
             if(isset($incluiOS['cCodStatus']) && $incluiOS['cCodStatus'] == "0"){
-                //monta mensagem pra enviar ao ploomes
-                $msg=[
-                    'ContactId' => $order->contactId,
-                    'DealId' => $order->id ?? null,
-                    'Content' => 'Ordem de Serviço ('.intval($incluiOS['cNumOS']).') criada no OMIE via API BICORP na base '.$order->baseFaturamentoTitle.'.',
-                    'Title' => 'Ordem de Serviço Criada'
-                ];
 
-                //cria uma interação no card
-                ($this->ploomesServices->createPloomesIteraction(json_encode($msg)))?$message['winDeal']['interactionMessage'] = 'Integração concluída com sucesso!<br> Pedido Ploomes: '.$order->id.' card nº: '.$order->dealId.' e client id: '.$order->contactId.' gravados no Omie ERP com o numero: '.intval($incluiOS['cNumOS']).' e mensagem enviada com sucesso em: '.$current : throw new WebhookReadErrorException('Não foi possível gravar a mensagem na venda',500);
+                $message['winDeal']['interactionMessage'] = 'Integração concluída com sucesso!<br> Pedido Ploomes: '.$order->id.' card nº: '.$order->dealId.' e client id: '.$order->contactId.' gravados no Omie ERP com o numero: '.intval($incluiOS['cNumOS']).' em: '.$current ;
+
+                //monta mensagem pra enviar ao ploomes
+                // $msg=[
+                //     'ContactId' => $order->contactId,
+                //     'DealId' => $order->id ?? null,
+                //     'Content' => 'Ordem de Serviço ('.intval($incluiOS['cNumOS']).') criada no OMIE via API BICORP na base '.$order->baseFaturamentoTitle.'.',
+                //     'Title' => 'Ordem de Serviço Criada'
+                // ];
+
+                // //cria uma interação no card
+                // ($this->ploomesServices->createPloomesIteraction(json_encode($msg)))?$message['winDeal']['interactionMessage'] = 'Integração concluída com sucesso!<br> Pedido Ploomes: '.$order->id.' card nº: '.$order->dealId.' e client id: '.$order->contactId.' gravados no Omie ERP com o numero: '.intval($incluiOS['cNumOS']).' e mensagem enviada com sucesso em: '.$current : throw new WebhookReadErrorException('Não foi possível gravar a mensagem na venda',500);
 
                 $message['winDeal']['incluiOS']['Success'] = $incluiOS['cDescStatus']. 'Numero: ' . intval($incluiOS['cNumOS']);
             }else{
@@ -356,18 +358,20 @@ class OrderHandler
             $incluiPedidoOmie = $this->omieServices->criaPedidoOmie($omie, $order, $productsOrder);
 
             //verifica se criou o pedido no omie
-            if (isset($incluiPedidoOmie['codigo_status']) && $incluiPedidoOmie['codigo_status'] == "0") {
+            if (isset($incluiPedidoOmie['codigo_status']) && $incluiPedidoOmie['codigo_status'] == "0") 
+            {
+                $message['winDeal']['interactionMessage'] = 'Integração concluída com sucesso!<br> Pedido Ploomes: '.$order->id.' card nº: '.$order->id.' e client id: '.$order->contactId.' gravados no Omie ERP com o numero: '.intval($incluiPedidoOmie['numero_pedido']).' e mensagem enviada com sucesso em: '.$current;
 
                 //monta a mensagem para atualizar o card do ploomes
-                $msg=[
-                    'ContactId' => $order->contactId,
-                    'DealId' => $order->id ?? null,
-                    'Content' => 'Venda ('.intval($incluiPedidoOmie['numero_pedido']).') criada no OMIE via API BICORP na base '.$order->baseFaturamentoTitle.'.',
-                    'Title' => 'Pedido Criado'
-                ];
+                // $msg=[
+                //     'ContactId' => $order->contactId,
+                //     'DealId' => $order->id ?? null,
+                //     'Content' => 'Venda ('.intval($incluiPedidoOmie['numero_pedido']).') criada no OMIE via API BICORP na base '.$order->baseFaturamentoTitle.'.',
+                //     'Title' => 'Pedido Criado'
+                // ];
             
-                //cria uma interação no card
-                ($this->ploomesServices->createPloomesIteraction(json_encode($msg)))?$message['winDeal']['interactionMessage'] = 'Integração concluída com sucesso!<br> Pedido Ploomes: '.$order->id.' card nº: '.$order->id.' e client id: '.$order->contactId.' gravados no Omie ERP com o numero: '.intval($incluiPedidoOmie['numero_pedido']).' e mensagem enviada com sucesso em: '.$current : throw new WebhookReadErrorException('Não foi possível gravar a mensagem na venda',500);
+                // //cria uma interação no card
+                // ($this->ploomesServices->createPloomesIteraction(json_encode($msg)))?$message['winDeal']['interactionMessage'] = 'Integração concluída com sucesso!<br> Pedido Ploomes: '.$order->id.' card nº: '.$order->id.' e client id: '.$order->contactId.' gravados no Omie ERP com o numero: '.intval($incluiPedidoOmie['numero_pedido']).' e mensagem enviada com sucesso em: '.$current : throw new WebhookReadErrorException('Não foi possível gravar a mensagem na venda',500);
                 
                 $message['winDeal']['returnPedidoOmie'] ='Pedido criado no Omie via BICORP INTEGRAÇÃO pedido numero: '.intval($incluiPedidoOmie['numero_pedido']);
 
@@ -402,11 +406,7 @@ class OrderHandler
 
         return $message;
     }
-
-
-
-   
-
+    
     // public function newOmieOrder(string $json):array
     // {
     //     $current = $this->current;

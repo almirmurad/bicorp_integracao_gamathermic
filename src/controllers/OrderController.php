@@ -209,28 +209,18 @@ class OrderController extends Controller {
 
     public function ploomesOrder()
     {
-        // print'aqui';
-        // exit;
         /*
         *Recebe o webhook de card ganho, salva na base e retorna 200
         */
         $json = file_get_contents('php://input');
-        // ob_start();
-        // var_dump($json);
-        // $input = ob_get_contents();
-        // ob_end_clean();
-        // file_put_contents('./assets/all.log', $input . PHP_EOL, FILE_APPEND);
 
         try{
-            
             $orderHandler = new OrderHandler($this->ploomesServices, $this->omieServices, $this->databaseServices);
             $response = $orderHandler->saveDealHook($json);
-
-            
                         
-             // $rk = origem.entidade.ação
-             $rk = array('Ploomes','Orders');
-             $this->rabbitMQServices->publicarMensagem('orders_exc', $rk, 'ploomes_orders',  $json);
+            // $rk = origem.entidade.ação
+            $rk = array('Ploomes','Orders');
+            $this->rabbitMQServices->publicarMensagem('orders_exc', $rk, 'ploomes_orders',  $json);
 
             if ($response > 0) {
 
@@ -238,8 +228,7 @@ class OrderController extends Controller {
                 $message =[
                     'status_code' => 200,
                     'status_message' => 'SUCCESS: '. $response['msg'],
-                ];
-                
+                ];  
             }
 
         }catch(WebhookReadErrorException $e){        
@@ -260,15 +249,8 @@ class OrderController extends Controller {
 
                 return print 'ERROR:'. $message['status_code'].'. MESSAGE: ' .$message['status_message'];
             }
-             //grava log
-             ob_start();
-             print_r($message);
-             $input = ob_get_contents();
-             ob_end_clean();
-             file_put_contents('./assets/log.log', $input . PHP_EOL, FILE_APPEND);
              
-             return print $message['status_message'];
-           
+            return print $message['status_message'];
         }        
     }
 
