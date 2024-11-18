@@ -10,13 +10,13 @@ use stdClass;
 class ProductsFunctions{
 
     // encontra o processo a ser executado caso haja cadastro, exclusão ou alteração no webhook
-    public static function findAction($webhook)
+    public static function findAction($json)
     {
-        //decodifica o json de clientes vindos do webhook
-        $json = $webhook['json'];
+
+        //decodifica o json de clientes vindos do json
         $decoded = json_decode($json,true);
         $current = date('d/m/Y H:i:s');
-        //identifica qual action do webhook
+        //identifica qual action do json
         if(isset($decoded['Action'])){
 
             $action = match($decoded['Action']){
@@ -34,16 +34,15 @@ class ProductsFunctions{
         }else{
             throw new WebhookReadErrorException('Não foi encontrda nenhuma ação no webhook '.$current, 500);
         }
-
+      
         return $action;
 
     }
 
     //cria um objeto do webhook vindo do omie para enviar ao ploomes
-    public static function createOmieObj($webhook, $omieServices)
+    public static function createOmieObj($json, $omieServices)
     {
         //decodifica o json de produto vindos do webhook
-        $json = $webhook['json'];
         $decoded = json_decode($json,true);
         //achata o array multidimensional decoded em um array simples
         $array = DiverseFunctions::achatarArray($decoded);
@@ -372,10 +371,10 @@ class ProductsFunctions{
 
     }
 
-    public static function createProductFromPloomesWebhook($webhook)
+    public static function createProductFromPloomesWebhook($json)
     {
         
-        $decoded = json_decode($webhook['json'],true);
+        $decoded = json_decode($json, true);
    
         $product = new stdClass();
         $product->idPloomes = $decoded['New']['Id'];
@@ -450,9 +449,9 @@ class ProductsFunctions{
 
     }
 
-    public static function moveStock($webhook,  $ploomesServices)
+    public static function moveStock($json,  $ploomesServices)
     {
-        $decoded = json_decode($webhook['json'], true);
+        $decoded = json_decode($json, true);
         //1 - preciso montar a tabela html cm estoque do produto 
         $stock = [];
         foreach($decoded['event'] as $k => $v){

@@ -1,87 +1,128 @@
 <?php
-
-require_once 'C:/xampp/htdocs/gamatermic/vendor/autoload.php';
-require_once 'C:/xampp/htdocs/gamatermic/src/services/RabbitMQServices.php';
-
+require '/opt/consumers/vendor/autoload.php';
+use Dotenv\Dotenv;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Message\AMQPMessage;
 
-// Conectar ao RabbitMQ
-$connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
+$dotenv = Dotenv::createUnsafeImmutable('/opt/consumers/gamatermic', '.env');
+$dotenv->load();
+
+// Função para criar e retornar a conexão RabbitMQ
+function createConnection() {
+    try {
+        $connection = new AMQPStreamConnection(
+            $_ENV['IP'],
+            $_ENV['PORT'],
+            $_ENV['RABBITMQ_USER'],
+            $_ENV['RABBITMQ_PASS'],
+            $_ENV['RABBITMQ_VHOST']
+        );
+        return $connection;
+    } catch (Exception $e) {
+        echo "Erro na conexão: " . $e->getMessage() . "\n";
+        sleep(5); // Espera 5 segundos antes de tentar reconectar
+        return createConnection(); // Tenta reconectar
+    }
+}
+
+$connection = createConnection();
 $channel = $connection->channel();
 
-// Declarar a exchange
-$channel->exchange_declare('contacts_exc', 'topic', false, true, false);
+try {
+    // Declarar exchanges
+    $channel->exchange_declare('contacts_exc', 'x-delayed-message', false, true, false, false, false, [
+        'x-delayed-type' => ['S', 'topic']
+    ]);
+    $channel->exchange_declare('contacts_exc_trash', 'direct', false, true, false);
 
-// Declarar a fila de clientes
-$queue_name = 'ploomes_contacts';
-$channel->queue_declare($queue_name, false, true, false, false);
+    // Declarar as filas
+    $queue_name = 'ploomes_contacts';
+    $trash_queue_name = 'ploomes_contacts_trash';
 
-//binding_keys = origem.entidade.ação
-$binding_key = 'Ploomes.Contacts';
-//bind entre a fila e a exchange
-$channel->queue_bind($queue_name, 'contacts_exc', $binding_key);
+    // Fila principal com DLX
+    $channel->queue_declare($queue_name, false, true, false, false, false, [
+        'x-dead-letter-exchange' => ['S', 'contacts_exc_wait'],
+        'x-dead-letter-routing-key' => ['S', 'Ploomes.Contacts.Wait']
+    ]);
+    // Fila de trash
+    $channel->queue_declare($trash_queue_name, false, true, false, false, false);
 
+    // Binding entre a fila e a exchange
+    $binding_key = 'Ploomes.Contacts';
+    $trash_binding_key = 'Ploomes.Contacts.Trash';
+    $channel->queue_bind($queue_name, 'contacts_exc', $binding_key);
+    $channel->queue_bind($trash_queue_name, 'contacts_exc_trash', $trash_binding_key);
+
+} catch (Exception $e) {
+    echo "Erro na configuração: " . $e->getMessage() . "\n";
+    exit;
+}
+$isAcked = false;
 // Função callback para processar as mensagens da fila
-$callback = function($msg) {
+$callback = function($msg) use ($channel, $trash_binding_key) {
+	$isAcked = false;
     try {
-          echo ' [x] ', $msg->getRoutingKey(), ':', $msg->getBody(), "\n";
+        $application_headers = $msg->get('application_headers');
+        $xDeath = isset($application_headers['x-death']) ? $application_headers['x-death'] : [];
+        $retryCount = !empty($xDeath) ? $xDeath[0]['count'] : 0;
 
-        // Processa a mensagem aqui
-        // $headers = [
-    
-        //     'Content-Type: application/json',
-        // ];
+        if ($retryCount >= 3) {
+            // Enviar para fila de trash após 3 tentativas
+            $newMsg = new AMQPMessage($msg->getBody(), [
+                'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT
+            ]);
 
-        // $uri = 'http://localhost/gamatermic/public/processNewContact';
+            $channel->basic_publish($newMsg, 'contacts_exc_trash', $trash_binding_key);
+            $msg->ack(); // Reconhece a mensagem na fila wait para removê-la
+	    $isAcked = true;
+            throw new Exception('Mensagem reprocessada mais de 3x, enviada para o lixo', 500);
+        }
 
-        // $curl = curl_init();
-
-        // curl_setopt_array($curl, array(
-        //     CURLOPT_URL => $uri,
-        //     CURLOPT_RETURNTRANSFER => true,
-        //     CURLOPT_ENCODING => '',
-        //     CURLOPT_MAXREDIRS => 10,
-        //     CURLOPT_TIMEOUT => 0,
-        //     CURLOPT_FOLLOWLOCATION => true,
-        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        //     CURLOPT_CUSTOMREQUEST => 'POST',
-        //     CURLOPT_POSTFIELDS =>$msg->getBody(),
-        //     CURLOPT_HTTPHEADER => $headers
-
-        // ));
-
-        // $response = curl_exec($curl);
-
-        // curl_close($curl);
+        // Processa a mensagem
+       $headers = ['Content-Type: application/json'];
+        $uri = 'https://gamatermic.bicorp.online/public/processNewContact';
         
-       // print_r($response);
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $uri,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POSTFIELDS => $msg->getBody(),
+            CURLOPT_HTTPHEADER => $headers
+        ]);
 
+        $response = json_decode(curl_exec($curl), true);
+	//$response = curl_exec($curl);
+        curl_close($curl);
 
-        // Reconhece a mensagem
-        $msg->ack();
+	//print_r($response);
+        //exit;
+
+        if (isset($response['status_code']) && $response['status_code'] === 200) {
+            $msg->ack(); // Mensagem processada com sucesso
+            echo "Mensagem processada: " . $response['status_message']. PHP_EOL;
+        } else {
+            $statusMessage = $response['status_message'] ?? 'Mensagem indefinida';
+            throw new Exception($statusMessage, 500);
+        }
     } catch (Exception $e) {
-        // Lida com o erro
-        echo 'Erro ao processar a mensagem: ', $e->getMessage(), "\n";
+        echo "Erro ao processar mensagem: " . $e->getMessage() . PHP_EOL;
+
+        // Se a mensagem falhar e ainda não atingiu o limite de tentativas, ela volta para a DLX
+        if (!$isAcked) {
+    	    $msg->nack(false, false); // Retorna para a DLX
+    	}
     }
 };
 
 // Consumir as mensagens da fila
-//$channel->basic_qos(null, 1, false); //dispacha a mensagem apenas quando a anterior estiver sido processada
+$channel->basic_qos(null, 1, false); // Dispacha a mensagem apenas quando a anterior for processada
 $channel->basic_consume($queue_name, '', false, false, false, false, $callback);
 
-try {
-    $channel->consume();
-} catch (\Throwable $exception) {
-    echo $exception->getMessage();
-}
-
 // Loop para manter o script rodando
-while($channel->is_consuming()) {
+while ($channel->is_consuming()) {
     $channel->wait();
 }
 
 // Fechar conexões
 $channel->close();
 $connection->close();
-
-

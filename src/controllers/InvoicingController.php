@@ -54,11 +54,11 @@ class InvoicingController extends Controller {
     {
         $json = file_get_contents('php://input');
 
-        // ob_start();
-        // var_dump($json);
-        // $input = ob_get_contents();
-        // ob_end_clean();
-        // file_put_contents('./assets/all.log', $input . PHP_EOL, FILE_APPEND);
+        ob_start();
+        var_dump($json);
+        $input = ob_get_contents();
+        ob_end_clean();
+        file_put_contents('./assets/all.log', $input . PHP_EOL, FILE_APPEND);
 
         try{
             $invoiceHandler = new InvoiceHandler($this->ploomesServices, $this->omieServices, $this->databaseServices);

@@ -10,6 +10,7 @@ use src\handlers\ServiceHandler;
 use src\services\DatabaseServices;
 use src\services\OmieServices;
 use src\services\PloomesServices;
+use src\services\RabbitMQServices;
 
 class ServiceController extends Controller {
     
@@ -17,6 +18,7 @@ class ServiceController extends Controller {
     private $ploomesServices;
     private $omieServices;
     private $databaseServices;
+    private $rabbitMQServices;
 
     public function __construct()
     {
@@ -30,6 +32,7 @@ class ServiceController extends Controller {
         $this->ploomesServices = new PloomesServices();
         $this->omieServices = new OmieServices();
         $this->databaseServices = new DatabaseServices();
+        $this->rabbitMQServices = new RabbitMQServices();
 
     }
     //recebe webhook do omie
@@ -47,6 +50,8 @@ class ServiceController extends Controller {
         try{
             $serviceHandler = new ServiceHandler($this->ploomesServices, $this->omieServices, $this->databaseServices);
             $response = $serviceHandler->saveServiceHook($json);
+            $rk = array('Omie','Services');
+            $this->rabbitMQServices->publicarMensagem('services_exc', $rk, 'omie_services',  $json);
             
             if ($response > 0) {
                 
@@ -85,16 +90,16 @@ class ServiceController extends Controller {
     public function processNewService()
     {
         $json = file_get_contents('php://input');
-        $decoded = json_decode($json,true);
-        $status = $decoded['status'];
-        $entity = $decoded['entity'];
+        //$decoded = json_decode($json,true);
+        // $status = $decoded['status'];
+        // $entity = $decoded['entity'];
         $message = [];
 
         // processa o webhook 
         try{
             
             $ServiceHandler = new ServiceHandler($this->ploomesServices, $this->omieServices, $this->databaseServices);
-            $response = $ServiceHandler->startProcess($status, $entity);
+            $response = $ServiceHandler->startProcess($json);
 
             $message =[
                 'status_code' => 200,
@@ -126,11 +131,12 @@ class ServiceController extends Controller {
                 ];
                
                 // return print 'ERROR: '.$message['status_code'].' MENSAGEM: '.$message['status_message'];
-                return print_r($message);
-               }
-
-               //return print 'SUCCESS: '.$message['status_code'].' MENSAGEM: '.$message['status_message'];
-               return print_r($message);
+                $m = json_encode($message);
+                 return print_r($m);
+            }
+             
+                $m = json_encode($message);
+                return print_r($m);
         }
 
     } 

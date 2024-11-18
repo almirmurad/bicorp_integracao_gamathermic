@@ -9,13 +9,13 @@ use stdClass;
 class ServicesFunctions{
 
     // encontra o processo a ser executado caso haja cadastro, exclusão ou alteração no webhook
-    public static function findAction($webhook)
+    public static function findAction($json)
     {
-        //decodifica o json de clientes vindos do webhook
-        $json = $webhook['json'];
-        $decoded = json_decode($json,true);
+        //decodifica o json de clientes vindos do json
+        //$json = $json['json'];
+        $decoded = json_decode($json, true);
         $current = date('d/m/Y H:i:s');
-        //identifica qual action do webhook
+        //identifica qual action do json
         if(isset($decoded['Action'])){
 
             $action = match($decoded['Action']){
@@ -38,11 +38,11 @@ class ServicesFunctions{
     }
 
     //cria um objeto do webhook vindo do omie para enviar ao ploomes
-    public static function createOmieObj($webhook)
+    public static function createOmieObj($json)
     {
         //decodifica o json de produto vindos do webhook
-        $json = $webhook['json'];
-        $decoded = json_decode($json,true);
+        //$json = $webhook['json'];
+        $decoded = json_decode($json, true);
         //achata o array multidimensional decoded em um array simples
         $array = DiverseFunctions::achatarArray($decoded);
         //cria o objeto de produtos

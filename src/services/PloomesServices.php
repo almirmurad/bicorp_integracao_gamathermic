@@ -175,7 +175,7 @@ class PloomesServices implements PloomesManagerInterface{
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->baseApi . '/InteractionRecords',//ENDPOINT PLOOMES
+            CURLOPT_URL => $this->baseApi . 'InteractionRecords',//ENDPOINT PLOOMES
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -195,13 +195,14 @@ class PloomesServices implements PloomesManagerInterface{
         return ($idIntegration !== null)?true:false;
        
     }
+
     //encontra cliente no ploomes pelo CNPJ
     public function consultaClientePloomesCnpj(string $cnpj){
 
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->baseApi .'/Contacts?$filter=CNPJ+eq+'."'$cnpj'",
+            CURLOPT_URL => $this->baseApi .'Contacts?$filter=CNPJ+eq+'."'$cnpj'",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -221,6 +222,7 @@ class PloomesServices implements PloomesManagerInterface{
         return $response['value'][0]['Id'] ?? null;
 
     }
+
     //ALTERA O ESTÁGIO DA VENDA NO PLOOMES
     public function alterStageOrder($stage, $orderId)
     {
@@ -255,7 +257,7 @@ class PloomesServices implements PloomesManagerInterface{
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->baseApi .'/Contacts?$filter=Id+eq+'.$id.'&$expand=OtherProperties,City,State,Country,Owner($select=Id,Name,Email,Phone),Tags($expand=Tag),Phones($expand=Type),LineOfBusiness',
+            CURLOPT_URL => $this->baseApi .'Contacts?$filter=Id+eq+'.$id.'&$expand=OtherProperties,City,State,Country,Owner($select=Id,Name,Email,Phone),Tags($expand=Tag),Phones($expand=Type),LineOfBusiness',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -283,7 +285,7 @@ class PloomesServices implements PloomesManagerInterface{
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->baseApi .'/Products?$filter=Id+eq+'.$id.'&$expand=OtherProperties',
+            CURLOPT_URL => $this->baseApi .'Products?$filter=Id+eq+'.$id.'&$expand=OtherProperties',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -311,7 +313,7 @@ class PloomesServices implements PloomesManagerInterface{
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->baseApi .'/Products?$filter=Code+eq+'."'$codigo'".'&$expand=OtherProperties',
+            CURLOPT_URL => $this->baseApi .'Products?$filter=Code+eq+'."'$codigo'".'&$expand=OtherProperties',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -362,7 +364,6 @@ class PloomesServices implements PloomesManagerInterface{
     //encontra a cidade pelo codigo IBGE
     public function getCitiesByIBGECode(string $ibgeCode):array|null
     {
-
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -423,7 +424,7 @@ class PloomesServices implements PloomesManagerInterface{
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->baseApi . '/Contacts?$expand=OtherProperties',//ENDPOINT PLOOMES
+            CURLOPT_URL => $this->baseApi . 'Contacts?$expand=OtherProperties',//ENDPOINT PLOOMES
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -444,34 +445,34 @@ class PloomesServices implements PloomesManagerInterface{
        
     }
 
-  //CRIA Produto NO PLOOMES
-  public function createPloomesProduct(string $json):bool
-  {
-  
-      //CHAMADA CURL PRA CRIAR WEBHOOK NO PLOOMES
-      $curl = curl_init();
+    //CRIA Produto NO PLOOMES
+    public function createPloomesProduct(string $json):bool
+    {
 
-      curl_setopt_array($curl, array(
-          CURLOPT_URL => $this->baseApi . '/Products?$expand=OtherProperties',//ENDPOINT PLOOMES
-          CURLOPT_RETURNTRANSFER => true,
-          CURLOPT_ENCODING => '',
-          CURLOPT_MAXREDIRS => 10,
-          CURLOPT_TIMEOUT => 0,
-          CURLOPT_FOLLOWLOCATION => true,
-          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-          CURLOPT_CUSTOMREQUEST =>strtoupper($this->method[1]),
-          CURLOPT_POSTFIELDS => $json,
-          CURLOPT_HTTPHEADER => $this->headers
-      ));
+        //CHAMADA CURL PRA CRIAR WEBHOOK NO PLOOMES
+        $curl = curl_init();
 
-      $response = json_decode(curl_exec($curl),true);
-      curl_close($curl);
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->baseApi . 'Products?$expand=OtherProperties',//ENDPOINT PLOOMES
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST =>strtoupper($this->method[1]),
+            CURLOPT_POSTFIELDS => $json,
+            CURLOPT_HTTPHEADER => $this->headers
+        ));
 
-      $idIntegration = $response['value'][0]['Id']??Null;
+        $response = json_decode(curl_exec($curl),true);
+        curl_close($curl);
 
-      return ($idIntegration !== null)?true:false;
-     
-  }
+        $idIntegration = $response['value'][0]['Id']??Null;
+
+        return ($idIntegration !== null)?true:false;
+        
+    }
 
     //ATUALIZA CONTACT NO PLOOMES
     public function updatePloomesContact(string $json, int $idContact):bool
@@ -483,7 +484,7 @@ class PloomesServices implements PloomesManagerInterface{
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->baseApi . '/Contacts('.$idContact.')',//ENDPOINT PLOOMES
+            CURLOPT_URL => $this->baseApi . 'Contacts('.$idContact.')',//ENDPOINT PLOOMES
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -511,7 +512,7 @@ class PloomesServices implements PloomesManagerInterface{
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->baseApi . '/Products('.$idProduct.')',//ENDPOINT PLOOMES
+            CURLOPT_URL => $this->baseApi . 'Products('.$idProduct.')',//ENDPOINT PLOOMES
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -539,7 +540,7 @@ class PloomesServices implements PloomesManagerInterface{
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->baseApi . '/Contacts('.$idPloomes.')',//ENDPOINT PLOOMES
+            CURLOPT_URL => $this->baseApi . 'Contacts('.$idPloomes.')',//ENDPOINT PLOOMES
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -565,7 +566,7 @@ class PloomesServices implements PloomesManagerInterface{
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->baseApi . '/Products('.$idPloomes.')',//ENDPOINT PLOOMES
+            CURLOPT_URL => $this->baseApi . 'Products('.$idPloomes.')',//ENDPOINT PLOOMES
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,

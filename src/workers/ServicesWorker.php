@@ -1,11 +1,10 @@
 <?php
+require '/opt/consumers/vendor/autoload.php';
 use Dotenv\Dotenv;
-use Exception;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-
-$dotenv = Dotenv::createUnsafeImmutable('./', '.env');
+$dotenv = Dotenv::createUnsafeImmutable('/opt/consumers/gamatermic', '.env');
 $dotenv->load();
 
 // Função para criar e retornar a conexão RabbitMQ
@@ -31,36 +30,37 @@ $channel = $connection->channel();
 
 try {
     // Declarar exchanges
-    $channel->exchange_declare('orders_exc', 'x-delayed-message', false, true, false, false, false, [
+    $channel->exchange_declare('services_exc', 'x-delayed-message', false, true, false, false, false, [
         'x-delayed-type' => ['S', 'topic']
     ]);
-    $channel->exchange_declare('orders_exc_trash', 'direct', false, true, false);
+    $channel->exchange_declare('services_exc_trash', 'direct', false, true, false);
 
     // Declarar as filas
-    $queue_name = 'ploomes_orders';
-    $trash_queue_name = 'ploomes_orders_trash';
+    $queue_name = 'omie_services';
+    $trash_queue_name = 'omie_services_trash';
 
     // Fila principal com DLX
     $channel->queue_declare($queue_name, false, true, false, false, false, [
-        'x-dead-letter-exchange' => ['S', 'orders_exc_wait'],
-        'x-dead-letter-routing-key' => ['S', 'Ploomes.Orders.Wait']
+        'x-dead-letter-exchange' => ['S', 'services_exc_wait'],
+        'x-dead-letter-routing-key' => ['S', 'Omie.Services.Wait']
     ]);
     // Fila de trash
     $channel->queue_declare($trash_queue_name, false, true, false, false, false);
 
     // Binding entre a fila e a exchange
-    $binding_key = 'Ploomes.Orders';
-    $trash_binding_key = 'Ploomes.Orders.Trash';
-    $channel->queue_bind($queue_name, 'orders_exc', $binding_key);
-    $channel->queue_bind($trash_queue_name, 'orders_exc_trash', $trash_binding_key);
+    $binding_key = 'Omie.Services';
+    $trash_binding_key = 'Omie.Services.Trash';
+    $channel->queue_bind($queue_name, 'services_exc', $binding_key);
+    $channel->queue_bind($trash_queue_name, 'services_exc_trash', $trash_binding_key);
 
 } catch (Exception $e) {
     echo "Erro na configuração: " . $e->getMessage() . "\n";
     exit;
 }
-
+$isAcked = false;
 // Função callback para processar as mensagens da fila
 $callback = function($msg) use ($channel, $trash_binding_key) {
+	$isAcked = false;
     try {
         $application_headers = $msg->get('application_headers');
         $xDeath = isset($application_headers['x-death']) ? $application_headers['x-death'] : [];
@@ -72,15 +72,15 @@ $callback = function($msg) use ($channel, $trash_binding_key) {
                 'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT
             ]);
 
-            $channel->basic_publish($newMsg, 'orders_exc_trash', $trash_binding_key);
+            $channel->basic_publish($newMsg, 'services_exc_trash', $trash_binding_key);
             $msg->ack(); // Reconhece a mensagem na fila wait para removê-la
-
+	    $isAcked = true;
             throw new Exception('Mensagem reprocessada mais de 3x, enviada para o lixo', 500);
         }
 
         // Processa a mensagem
-        $headers = ['Content-Type: application/json'];
-        $uri = 'http://gamatermic.bicorp.online/public/processNewOrder';
+       $headers = ['Content-Type: application/json'];
+        $uri = 'https://gamatermic.bicorp.online/public/processNewService';
         
         $curl = curl_init();
         curl_setopt_array($curl, [
@@ -91,11 +91,15 @@ $callback = function($msg) use ($channel, $trash_binding_key) {
         ]);
 
         $response = json_decode(curl_exec($curl), true);
+	//$response = curl_exec($curl);
         curl_close($curl);
+
+	//print_r($response);
+        //exit;
 
         if (isset($response['status_code']) && $response['status_code'] === 200) {
             $msg->ack(); // Mensagem processada com sucesso
-            echo "Mensagem processada: " . $response['status_message']['success']['winDeal']['interactionMessage'] . PHP_EOL;
+            echo "Mensagem processada: " . $response['status_message']. PHP_EOL;
         } else {
             $statusMessage = $response['status_message'] ?? 'Mensagem indefinida';
             throw new Exception($statusMessage, 500);
@@ -104,9 +108,9 @@ $callback = function($msg) use ($channel, $trash_binding_key) {
         echo "Erro ao processar mensagem: " . $e->getMessage() . PHP_EOL;
 
         // Se a mensagem falhar e ainda não atingiu o limite de tentativas, ela volta para a DLX
-        if (!$msg->isAcknowledged()) {
-          $msg->nack(false, false); // Retorna para a DLX
-      }
+        if (!$isAcked) {
+    	    $msg->nack(false, false); // Retorna para a DLX
+    	}
     }
 };
 

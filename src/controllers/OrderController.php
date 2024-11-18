@@ -164,48 +164,48 @@ class OrderController extends Controller {
     //     }
     // }
 
-    // public function alterOrderStage(){
-    //     $json = file_get_contents('php://input');
-    //         //$decoded = json_decode($json, true);
+    public function alterOrderStage(){
+        $json = file_get_contents('php://input');
+            //$decoded = json_decode($json, true);
 
-    //         // ob_start();
-    //         // var_dump($json);
-    //         // $input = ob_get_contents();
-    //         // ob_end_clean();
+            // ob_start();
+            // var_dump($json);
+            // $input = ob_get_contents();
+            // ob_end_clean();
 
-    //         // file_put_contents('./assets/whkAlterStageOrder.log', $input . PHP_EOL . date('d/m/Y H:i:s') . PHP_EOL, FILE_APPEND);
+            // file_put_contents('./assets/whkAlterStageOrder.log', $input . PHP_EOL . date('d/m/Y H:i:s') . PHP_EOL, FILE_APPEND);
 
-    //     try{
-    //         $omieOrderHandler = new OmieOrderHandler($this->ploomesServices, $this->omieServices, $this->databaseServices);
-    //         $response = $omieOrderHandler->alterOrderStage($json);
-    //         // if ($response) {
-    //         //     echo"<pre>";
-    //         //     json_encode($response);
-    //         //     //grava log
-    //         //     //$decoded = json_decode($response, true);
-    //         //     ob_start();
-    //         //     var_dump($response);
-    //         //     $input = ob_get_contents();
-    //         //     ob_end_clean();
-    //         //     file_put_contents('./assets/log.log', $input . PHP_EOL, FILE_APPEND);  
-    //         // }
+        try{
+            $OrderHandler = new OrderHandler($this->ploomesServices, $this->omieServices, $this->databaseServices);
+            $response = $OrderHandler->alterOrderStage($json);
+            // if ($response) {
+            //     echo"<pre>";
+            //     json_encode($response);
+            //     //grava log
+            //     //$decoded = json_decode($response, true);
+            //     ob_start();
+            //     var_dump($response);
+            //     $input = ob_get_contents();
+            //     ob_end_clean();
+            //     file_put_contents('./assets/log.log', $input . PHP_EOL, FILE_APPEND);  
+            // }
 
-    //     }catch(WebhookReadErrorException $e){
-    //         // echo $e->getMessage();
-    //     }catch(InteracaoNaoAdicionadaException $e){
-    //         // echo $e->getMessage();
-    //     }finally{
-    //         if (isset($e)){
-    //             ob_start();
-    //             echo $e->getMessage();
-    //             $input = ob_get_contents();
-    //             ob_end_clean();
-    //             file_put_contents('./assets/log.log', $input . PHP_EOL, FILE_APPEND); 
-    //             return print $e->getMessage();
-    //         }
-    //     }
-    //     return print_r($response);
-    // }
+        }catch(WebhookReadErrorException $e){
+            // echo $e->getMessage();
+        }catch(InteracaoNaoAdicionadaException $e){
+            // echo $e->getMessage();
+        }finally{
+            if (isset($e)){
+                ob_start();
+                echo $e->getMessage();
+                $input = ob_get_contents();
+                ob_end_clean();
+                file_put_contents('./assets/log.log', $input . PHP_EOL, FILE_APPEND); 
+                return print $e->getMessage();
+            }
+        }
+        return print_r($response);
+    }
 
     public function ploomesOrder()
     {

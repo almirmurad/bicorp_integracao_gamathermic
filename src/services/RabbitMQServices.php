@@ -65,9 +65,9 @@ class RabbitMQServices {
         }
 
         // Associar a Dead Letter Queue à Dead Letter Exchange
-        $this->channel->queue_bind($fila, 'orders_exc', $routing_key);                  
+        $this->channel->queue_bind($fila, $exName, $routing_key);                  
         $this->channel->queue_bind($fila.'_wait', $exName.'_wait',$routing_key_dlx);
-        $this->channel->queue_bind($fila.'_trash', 'orders_exc_trash', $routing_key_trash);                  
+        $this->channel->queue_bind($fila.'_trash', $exName.'_trash', $routing_key_trash);                  
         // Cria a mensagem com atraso de 4 segundos
         $headers = new AMQPTable(['x-delay' => 4000]);
         $msg = new AMQPMessage($mensagem, ['delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT, 'application_headers' => $headers]);

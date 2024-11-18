@@ -45,93 +45,95 @@ class ProductHandler
     }
 
     //PROCESSA E CRIA O cliente. CHAMA O REPROCESS CASO DE ERRO
-    public function startProcess($status, $entity)
+    public function startProcess($json)
     {   
-        $webhook = $this->databaseServices->getWebhook($status, $entity);
+        //$webhook = $this->databaseServices->getWebhook($status, $entity);
         
-        $status = 2; //processando
-        $alterStatus = $this->databaseServices->alterStatusWebhook($webhook['id'], $status);
+        //$status = 2; //processando
+        //$alterStatus = $this->databaseServices->alterStatusWebhook($webhook['id'], $status);
         
         //talvez o ideal fosse devolver ao controller o ok de que o processo foi iniciado e um novo processo deve ser inciado 
-        if($alterStatus){
-
-            $action = ProductsFunctions::findAction($webhook);
+       // if($alterStatus){
+      
+            $action = ProductsFunctions::findAction($json);
 
             if($action){
                 //se tiver action cria o objeto de contacs
                 switch($action){
                     case 'createERPToCRM':
-                        $product  = ProductsFunctions::createOmieObj($webhook, $this->omieServices);
+                        $product  = ProductsFunctions::createOmieObj($json, $this->omieServices);
                         $process = ProductServices::createProductFromERPToCRM($product);
                         break;
                     case 'updateERPToCRM':
-                        $product  = ProductsFunctions::createOmieObj($webhook, $this->omieServices);
+                        $product  = ProductsFunctions::createOmieObj($json, $this->omieServices);
                         $productJson = ProductsFunctions::createPloomesProductFromOmieObject($product, $this->ploomesServices, $this->omieServices);
                         $process = ProductServices::updateProductFromERPToCRM($productJson, $product, $this->ploomesServices);
                         break;
                     case 'deleteERPToCRM':
-                        $product = ProductsFunctions::createOmieObj($webhook, $this->omieServices);
+                        $product = ProductsFunctions::createOmieObj($json, $this->omieServices);
                         $process = ProductServices::deleteProductFromERPToCRM($product, $this->ploomesServices);
                         break;
                     case 'stockMovementERPtoCRM':
-                        $process = ProductsFunctions::moveStock($webhook, $this->ploomesServices);
+                        $process = ProductsFunctions::moveStock($json, $this->ploomesServices);
                         //$process = ProductServices::attStockTablePloomes($stockTable, $this->ploomesServices);
                         break;
                     case 'createCRMToERP':
                         //quando o produto é criado no crm ele apenas atualiza o código de integração na base correta
-                        $product = ProductsFunctions::createProductFromPloomesWebhook($webhook);
+                        $product = ProductsFunctions::createProductFromPloomesWebhook($json);
                         $process = ProductServices::setProductIntegrationCode($product, $this->omieServices);
                         break;
                 } 
             }
 
-            return self::response($webhook, $process);
+           // return self::response($webhook, $process);
 
-        }
+            return $process;
+
+       // }
                  
     }
 
     //Trata a respostas para devolver ao controller
-    public function response($webhook, $process)
-    {
+    // public function response($webhook, $process)
+    // {
 
 
-            if(!empty($process['error'])){
+    //         if(!empty($process['error'])){
 
-                $status = 4; //falhou
-                $alterStatus = $this->databaseServices->alterStatusWebhook($webhook['id'], $status);
+    //             $status = 4; //falhou
+    //             $alterStatus = $this->databaseServices->alterStatusWebhook($webhook['id'], $status);
                 
-                //$reprocess = Self::reprocessWebhook($webhook);
-                $this->databaseServices->registerLog($webhook['id'], $process['error'], $webhook['entity']); 
-                throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
+    //             //$reprocess = Self::reprocessWebhook($webhook);
+    //             $this->databaseServices->registerLog($webhook['id'], $process['error'], $webhook['entity']); 
+    //             throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
 
-                //$decoded = json_decode($webhook['json'],true);
+    //             //$decoded = json_decode($webhook['json'],true);
             
-                // if($decoded['topic'] === 'Produto.Incluido'){
-                //     throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id:'. $webhook['id']. ' em: '.$this->current, 500);
-                // }elseif($decoded['topic'] === 'Produto.Excluido'){
-                //     throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
-                // }elseif($decoded['topic'] === 'Produto.Alterado'){
-                //     throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
-                // }elseif($decoded['topic'] === 'Produto.MovimentacaoEstoque'){
-                //     throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
-                // }
-            }
+    //             // if($decoded['topic'] === 'Produto.Incluido'){
+    //             //     throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id:'. $webhook['id']. ' em: '.$this->current, 500);
+    //             // }elseif($decoded['topic'] === 'Produto.Excluido'){
+    //             //     throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
+    //             // }elseif($decoded['topic'] === 'Produto.Alterado'){
+    //             //     throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
+    //             // }elseif($decoded['topic'] === 'Produto.MovimentacaoEstoque'){
+    //             //     throw new WebhookReadErrorException($process['error']. 'Verifique em logs do sistema. Webhook id: '.$webhook['id']. ' em: '.$this->current, 500);
+    //             // }
+    //         }
 
-            $status = 3; //Success
-            $alterStatus = $this->databaseServices->alterStatusWebhook($webhook['id'], $status);
+    //         $status = 3; //Success
+    //         $alterStatus = $this->databaseServices->alterStatusWebhook($webhook['id'], $status);
             
-            if($alterStatus){
-                $this->databaseServices->registerLog($webhook['id'], $process['success'], $webhook['entity']);
+    //         if($alterStatus){
+    //             $this->databaseServices->registerLog($webhook['id'], $process['success'], $webhook['entity']);
                 
-                return $process;//card processado cliente criado no Omie retorna mensagem winDeal para salvar no log
-            }
+    //             return $process;//card processado cliente criado no Omie retorna mensagem winDeal para salvar no log
+    //         }
 
 
          
         
 
-    }
+    // }
     
 
 }

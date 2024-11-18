@@ -145,8 +145,27 @@ class ClientsFunctions{
         $contact->nomeTitular = $prop['contact_DDD76E27-8EFA-416B-B7DF-321C1FB31066'] ?? null;
         //contact_847FE760-74D0-462D-B464-9E89C7E1C28E = chave pix
         $contact->chavePix = $prop['contact_847FE760-74D0-462D-B464-9E89C7E1C28E'] ?? null;
-        //contact_3E075EA9-320C-479E-A956-5A3734C55E51 = Transportadora Padrão
+        //contact_3E075EA9-320C-479E-A956-5A3734C55E51 = Transportadora Padrão (código cliente ploomes)
         $contact->idTranspPadrao = $prop['contact_3E075EA9-320C-479E-A956-5A3734C55E51'] ?? null;
+        if($contact->idTranspPadrao !== null){
+            $c = $ploomesServices->getClientById($contact->idTranspPadrao);
+            $transpOP = [];
+            foreach($c['OtherProperties']  as $cOthers){
+
+                $fk = $cOthers['FieldKey'];
+                $vl = $cOthers['StringValue'];
+
+                 $transpOP[$fk] = $vl;
+            }
+            
+            $contact->cTranspOmie = [];
+            $contact->cTranspOmie[0] = $transpOP['contact_4F0C36B9-5990-42FB-AEBC-5DCFD7A837C3'] ?? null;
+            $contact->cTranspOmie[1] = $transpOP['contact_6DB7009F-1E58-4871-B1E6-65534737C1D0'] ?? null;
+            $contact->cTranspOmie[2] = $transpOP['contact_AE3D1F66-44A8-4F88-AAA5-F10F05E662C2'] ?? null;
+            $contact->cTranspOmie[3] = $transpOP['contact_07784D81-18E1-42DC-9937-AB37434176FB'] ?? null;
+
+        }   
+
         //contact_33015EDD-B3A7-464E-81D0-5F38D31F604A = Transferência Padrão
         $contact->transferenciaPadrao = $prop['contact_33015EDD-B3A7-464E-81D0-5F38D31F604A'] ?? null;
         (isset($contact->transferenciaPadrao) && $contact->transferenciaPadrao !== false) ? $contact->transferenciaPadrao = 'S' : $contact->transferenciaPadrao = 'N';
@@ -158,7 +177,7 @@ class ClientsFunctions{
         (isset($prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B']) && $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] !== false) ? $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] = 1 : $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'] = 0;
         //contact_E497C521-4275-48E7-B44E-7A057844B045 = Integrar com base omie 4? (s/n)
         (isset($prop['contact_E497C521-4275-48E7-B44E-7A057844B045']) && $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] !== false) ? $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] = 1 : $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] = 0;
-    
+        
         $contact->codOmie = [];
         $contact->codOmie[0] = $prop['contact_4F0C36B9-5990-42FB-AEBC-5DCFD7A837C3'] ?? null;
         $contact->codOmie[1] = $prop['contact_6DB7009F-1E58-4871-B1E6-65534737C1D0'] ?? null;
@@ -278,11 +297,10 @@ class ClientsFunctions{
     }
 
     //cria Old obj cliente
-    public static function createOldObj($webhook, $ploomesServices)
+    public static function createOldObj($json, $ploomesServices)
     {
 
         //decodifica o json de clientes vindos do webhook, não dá pra buscar pela api ploomes pq o cliente foi deletado 
-        $json = $webhook['json'];
         $decoded = json_decode($json,true);
         $cliente = $decoded['Old'];
         $contact = new Contact();     
@@ -825,7 +843,7 @@ class ClientsFunctions{
         $transp = new stdClass();
         $transp->codigoClienteOmie = $cliente->idTranspPadrao;
         $transp = $omieServices->getClientByid($omie,$transp );
-        $cliente->idTranspPadraoPloomes = $transp['codigo_cliente_integracao'];
+        $cliente->idTranspPadraoPloomes = $transp['codigo_cliente_integracao'] ?? null;
         $tags=[];
      
         foreach($decoded['event']['tags'] as $t=>$v){
@@ -922,9 +940,6 @@ class ClientsFunctions{
 
     public static function createPloomesContactFromOmieObject($contact, $ploomesServices, $omieServices)
     {
-        // print'craeat ploome from omie object';
-        // print_r($contact);
-        // exit;
         $omie = new stdClass();
         switch($contact->appKey){
             case '4194053472609': 
@@ -965,7 +980,8 @@ class ClientsFunctions{
                 ];
                 break;
         }
-
+        // print_r($contact);
+        
         $data = [];
         $data['TypeId'] = 1;
         $data['Name'] = $contact->nomeFantasia;
@@ -1007,7 +1023,7 @@ class ClientsFunctions{
         // $person['id'] = '';
         // $person['TypeId'] = 2;
         // $person['Name'] = $contact->contato;
-
+        
         // $data['Contacts'] = $person;
         $data['Phones'] = [];
         $ddd1 = preg_replace("/[^0-9]/", "", $contact->telefoneDdd1);
@@ -1017,7 +1033,7 @@ class ClientsFunctions{
             'TypeId'=>1,
             'CountryId'=>76,
         ];
-
+        
         $phone2 = [
             'PhoneNumber'=>"($ddd2) $contact->telefoneNumero2",
             'TypeId' => 2,
@@ -1026,19 +1042,22 @@ class ClientsFunctions{
         $data['Phones'][] = $phone1 ?? null;
         $data['Phones'][] = $phone2 ?? null;
         $op = [];
-        $id = match($contact->tipoAtividade){  
-            '0'=>420130572,
-            '1'=>420130568,
-            '2'=>420130574,
-            '3'=>420130569,
-            '4'=>420130565,
-            '5'=>420130566,           
-            '6'=>420130571,
-            '7'=>420130570,
-            '8'=>420130563,
-            '9'=>420130573,
-        };
-
+        if(!empty($contact->tipoAtividade)){
+            
+            $id = match($contact->tipoAtividade){  
+                '0'=>420130572,
+                '1'=>420130568,
+                '2'=>420130574,
+                '3'=>420130569,
+                '4'=>420130565,
+                '5'=>420130566,           
+                '6'=>420130571,
+                '7'=>420130570,
+                '8'=>420130563,
+                '9'=>420130573,
+            };
+        }
+        
         $tags = [];
         $tag = [];
         foreach($contact->tags as $t)
@@ -1052,18 +1071,19 @@ class ClientsFunctions{
                 "Diretor"=>40203497,
                 "Cliente"=>40203778,
             };
-    
+            
             $tag['TagId'] = $idTag;
             $tag['Tag']['Name'] = $t['tag'];
             
             $tags[]=$tag;
         }
         
+        
         $data['Tags'] = $tags;
 
         $ramo = [
             'FieldKey'=> 'contact_FF485334-CE8C-4FB9-B3CA-4FF000E75227',
-            'IntegerValue'=>$id,//ramo teste
+            'IntegerValue'=>$id ?? null,//ramo teste
         ];
         
         $tipo = [
@@ -1213,8 +1233,7 @@ class ClientsFunctions{
    
         $data['OtherProperties'] = $op;
         $json = json_encode($data,JSON_UNESCAPED_UNICODE);
-        // print_r($data);
-        // exit;
+     
         return $json;
 
     }

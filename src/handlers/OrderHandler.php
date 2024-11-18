@@ -122,6 +122,7 @@ class OrderHandler
         //order_E768DCD5-D0B0-4417-9F58-6A4333C1846C // valor anterior da venda
         //order_F90FC615-C3B1-4E9A-9061-88C0AF944CC5 // Template Id (Jéssica)
         //order_B14B38B7-FB43-4E8E-A57A-61EFC97725A6 // codigo do parcelamento
+        //order_C59D726E-A2A5-42B7-A18E-9898E12F203A // descrição do serviço
         $prop = [];
         foreach ($decoded['New']['OtherProperties'] as $key => $op) {
             $prop[$key] = $op;
@@ -188,19 +189,25 @@ class OrderHandler
                 break;
         }
         //previsão de faturamento
-        $order->previsaoFaturamento =(isset($prop['order_5ABC5118-2AA4-493A-B016-67E26C723DD1']) && !empty($prop['order_5ABC5118-2AA4-493A-B016-67E26C723DD1']))? $prop['order_5ABC5118-2AA4-493A-B016-67E26C723DD1'] : $m[] = 'Erro ao montar pedido para enviar ao Omie ERP: Previsão de Faturamento não foi preenchida';
+        $order->previsaoFaturamento =(isset($prop['order_5ABC5118-2AA4-493A-B016-67E26C723DD1']) && !empty($prop['order_5ABC5118-2AA4-493A-B016-67E26C723DD1']))? $prop['order_5ABC5118-2AA4-493A-B016-67E26C723DD1'] : null;//$m[] = 'Erro ao montar pedido para enviar ao Omie ERP: Previsão de Faturamento não foi preenchida';
         //template id (tipo de venda produtos ou serviços)
         $order->templateId =(isset($prop['order_F90FC615-C3B1-4E9A-9061-88C0AF944CC5']) && !empty($prop['order_F90FC615-C3B1-4E9A-9061-88C0AF944CC5']))? $prop['order_F90FC615-C3B1-4E9A-9061-88C0AF944CC5'] : $m[] = 'Erro: não foi possível identificar o tipo de venda (Produtos ou serviços)';
         //numero do pedido do cliente (preenchido na venda) localizado em pedidos info. adicionais
         $order->numPedidoCliente = (isset($prop['order_E31797C6-2BC7-4AE5-8A38-1388DD8FD84A']) && !empty($prop['order_E31797C6-2BC7-4AE5-8A38-1388DD8FD84A']))?$prop['order_E31797C6-2BC7-4AE5-8A38-1388DD8FD84A']:null;//$m[] = 'Erro ao montar pedido para enviar ao Omie ERP: O número do Pedido do Cliente não foi preenchido';
+        $order->descricaoServico = (isset($prop['order_C59D726E-A2A5-42B7-A18E-9898E12F203A']) && !empty($prop['order_C59D726E-A2A5-42B7-A18E-9898E12F203A']))?$prop['order_C59D726E-A2A5-42B7-A18E-9898E12F203A']:null;//$m[] = 'Erro ao montar pedido para enviar ao Omie ERP: O número do Pedido do Cliente não foi preenchido';
         //Numero pedido de compra (id da proposta) localizado em item da venda info. adicionais
         $order->numPedidoCompra = (isset($prop['order_4AF9E1C1-6DB9-45B2-89E4-9062B2E07B87']) && !empty($prop['order_4AF9E1C1-6DB9-45B2-89E4-9062B2E07B87'])? $prop['order_4AF9E1C1-6DB9-45B2-89E4-9062B2E07B87']: null); //$m[]='Erro ao montar pedido para enviar ao Omie ERP:  Não havia Número do Pedido de Compra');//em caso de obrigatoriedade deste campo $m[]='Erro ao criar pedido. Não havia Ordem de compra         //array de produtos da venda
         //id modalidade do frete
-        $order->modalidadeFrete =  (isset($prop['order_2FBCDD5C-2985-464A-B465-6F3AB3E7BC0D']) && !empty($prop['order_2FBCDD5C-2985-464A-B465-6F3AB3E7BC0D']) || $prop['order_2FBCDD5C-2985-464A-B465-6F3AB3E7BC0D'] === "0")?$prop['order_2FBCDD5C-2985-464A-B465-6F3AB3E7BC0D']:null;//$m[]='Erro ao montar pedido para enviar ao Omie ERP:  Modalidade de Frete não informado';
+        if ((isset($prop['order_2FBCDD5C-2985-464A-B465-6F3AB3E7BC0D'])) && (!empty($prop['order_2FBCDD5C-2985-464A-B465-6F3AB3E7BC0D']) || $prop['order_2FBCDD5C-2985-464A-B465-6F3AB3E7BC0D'] === "0"))
+        {
+            $order->modalidadeFrete = $prop['order_2FBCDD5C-2985-464A-B465-6F3AB3E7BC0D'];
+        }
+        else{$order->modalidadeFrete = null;
+        }//$m[]='Erro ao montar pedido para enviar ao Omie ERP:  Modalidade de Frete não informado';
         //projeto 
         $order->projeto = ($prop['order_BBBEB889-6888-4451-81A7-29AB821B1402']) ?? $m[]='Erro ao montar pedido para enviar ao Omie ERP: Não foi informado o Projeto';
         //observações da nota
-        $order->notes = strip_tags($prop['order_F438939E-F11E-4024-8F3D-6496F2B11778']) ?? null;  
+        $order->notes = (isset($prop['order_F438939E-F11E-4024-8F3D-6496F2B11778']) ? strip_tags($prop['order_F438939E-F11E-4024-8F3D-6496F2B11778']): null);  
         $order->idParcelamento = $prop['order_B14B38B7-FB43-4E8E-A57A-61EFC97725A6'] ?? null;//$m[]='Erro ao montar pedido para enviar ao Omie ERP: Não foi informado o código do parcelamento';
         //insere o projeto e retorna o id
         $id = $this->omieServices->insertProject($omie,  $order->projeto);
@@ -208,7 +215,7 @@ class OrderHandler
         //pega o id do cliente do Omie através do CNPJ do contact do ploomes           
         (!empty($idClienteOmie = $this->omieServices->clienteIdOmie($omie, $contactCnpj))) ? $order->idClienteOmie = $idClienteOmie : $m[] = 'Erro ao montar pedido para enviar ao Omie ERP: Id do cliente não encontrado no Omie ERP! Id do card Ploomes CRM: '.$order->dealId.' e pedido de venda Ploomes CRM: '.$order->id.' em: '.$current;
         //pega o id do vendedor Omie através do email do vendedor do ploomes           
-        (!empty($codVendedorOmie = $this->omieServices->vendedorIdOmie($omie, $mailVendedor))) ? $order->codVendedor = $codVendedorOmie : $m[] = 'Erro ao montar pedido para enviar ao Omie ERP: Id do vendedor não encontrado no Omie ERP!Id do card Ploomes CRM: '.$order->dealId.' e pedido de venda Ploomes CRM: '.$order->id.' em: '.$current;
+        (!empty($codVendedorOmie = $this->omieServices->vendedorIdOmie($omie, $mailVendedor))) ? $order->codVendedorOmie = $codVendedorOmie : $m[] = 'Erro ao montar pedido para enviar ao Omie ERP: Id do vendedor não encontrado no Omie ERP!Id do card Ploomes CRM: '.$order->dealId.' e pedido de venda Ploomes CRM: '.$order->id.' em: '.$current;
         
         //Array de detalhes do item da venda
         $arrayRequestOrder = $this->ploomesServices->requestOrder($order);
@@ -267,6 +274,7 @@ class OrderHandler
                     $service['nCodServico'] = $opServices[$idItemOmie];
                     $service['nQtde'] = $prdItem['Quantity'];
                     $service['nValUnit'] = $prdItem['UnitPrice'];
+                    $service['cDescServ'] = $order->descricaoServico;
 
                     $serviceOrder[] = $service;
                 }
@@ -318,9 +326,8 @@ class OrderHandler
 
                 $message['winDeal']['incluiOS']['Success'] = $incluiOS['cDescStatus']. 'Numero: ' . intval($incluiOS['cNumOS']);
             }else{
-            
-                $message['winDeal']['error'] ='Não foi possível gravar o Ordem de Serviço no Omie! '.$incluiOS['faultstring'];
-            
+                
+                $deleteProject = $this->omieServices->deleteProject($omie);
                 $msg=[
                     'ContactId' => $order->contactId,
                     'DealId' => $order->id ?? null,
@@ -330,6 +337,17 @@ class OrderHandler
             
                 //cria uma interação no card
                 ($this->ploomesServices->createPloomesIteraction(json_encode($msg)))?$message['deal']['interactionMessage'] = 'Erro na integração, dados incompatíveis, pedido: '.$order->id.' card nº: '.$order->dealId.' e client id: '.$order->contactId.' - '.$incluiOS['faultstring']. 'Mensagem enviada com sucesso em: '.$current : throw new WebhookReadErrorException('Não foi possível gravar a mensagem na venda',500);
+
+
+                if($deleteProject['codigo'] === "0"){
+
+                    $message['winDeal']['error'] ='Não foi possível gravar o Ordem de Serviço no Omie! '. $incluiOS['faultstring'] . $deleteProject['descricao'];
+
+                }else{
+
+                    $message['winDeal']['error'] ='Não foi possível gravar o Ordem de Serviço no Omie! '. $incluiOS['faultstring'] . $deleteProject['faultstring'];
+
+                }
         
             }
 
@@ -352,37 +370,12 @@ class OrderHandler
                 ($this->ploomesServices->createPloomesIteraction(json_encode($msg)))?$message['winDeal']['interactionMessage'] = 'Integração concluída com sucesso!<br> Pedido Ploomes: '.$order->id.' card nº: '.$order->id.' e client id: '.$order->contactId.' gravados no Omie ERP com o numero: '.intval($incluiPedidoOmie['numero_pedido']).' e mensagem enviada com sucesso em: '.$current : throw new WebhookReadErrorException('Não foi possível gravar a mensagem na venda',500);
                 
                 $message['winDeal']['returnPedidoOmie'] ='Pedido criado no Omie via BICORP INTEGRAÇÃO pedido numero: '.intval($incluiPedidoOmie['numero_pedido']);
-                //inclui o id do pedido no omie na tabela deal
-                // if($incluiPedidoOmie['codigo_pedido']){
-                //     //salva um deal no banco
-                //     $order->omieOrderId = $incluiPedidoOmie['codigo_pedido'];
-                //     $dealCreatedId = $this->databaseServices->saveDeal($deal);   
-                //     $message['winDeal']['dealMessage'] ='Id do Deal no Banco de Dados: '.$dealCreatedId;  
-                //     if($dealCreatedId){
-
-                //         $omie->idOmie = $order->omieOrderId;
-                //         $omie->codCliente = $idClienteOmie;
-                //         $omie->codPedidoIntegracao = $order->id;
-                //         $omie->numPedidoOmie = intval($incluiPedidoOmie['numero_pedido']);
-                //         $omie->codClienteIntegracao = $order->contactId;
-                //         $omie->dataPrevisao = $order->finishDate;
-                //         $omie->codVendedorOmie = $codVendedorOmie;
-                //         $omie->idVendedorPloomes = $order->ownerId;   
-                //         $omie->appKey = $omie->appKey;             
-                //         try{
-                //             $id = $this->databaseServices->saveOrder($omie);
-                //             $message['winDeal']['newOrder'] = 'Novo pedido salvo na base de dados de pedidos '.$omie->baseFaturamentoTitle.' id '.$id.'em: '.$current;
-
-                //         }catch(PedidoDuplicadoException $e){
-                //             $message['winDeal']['error'] ='Não foi possível gravar o pedido no Omie! '.$e->getMessage();
-                //         }
-                //     }
-                    
-                // }
 
             }else{
                 
-                $message['winDeal']['error'] ='Não foi possível gravar o pedido no Omie! '.$incluiPedidoOmie['faultstring'];
+               
+                $deleteProject = $this->omieServices->deleteProject($omie); 
+                
                 //monta a mensagem para atualizar o card do ploomes
                 $msg=[
                     'ContactId' => $order->contactId,
@@ -393,6 +386,17 @@ class OrderHandler
             
                 //cria uma interação no card
                 ($this->ploomesServices->createPloomesIteraction(json_encode($msg)))?$message['deal']['interactionMessage'] = 'Erro na integração, dados incompatíveis: '.$order->id.' card nº: '.$order->id.' e client id: '.$order->contactId.' - '.$incluiPedidoOmie['faultstring']. 'Mensagem enviada com sucesso em: '.$current : throw new WebhookReadErrorException('Não foi possível gravar a mensagem na venda',500);
+
+                
+                if($deleteProject['codigo'] === "0"){
+
+                    $message['winDeal']['error'] ='Não foi possível gravar o peddido no Omie! '. $incluiPedidoOmie['faultstring'] . $deleteProject['descricao'];
+
+                }else{
+
+                    $message['winDeal']['error'] ='Não foi possível gravar o peddido no Omie! '. $incluiPedidoOmie['faultstring'] . $deleteProject['faultstring'];
+
+                }
             }  
         }           
 
@@ -803,8 +807,7 @@ class OrderHandler
 
     // public function alterOrderStage($json)
     // {
-      
-    //     $current = $this->current;
+    //     $current = date('d/m/Y H:i:s');
     //     $message = [];
     //     $decoded =json_decode($json, true);
     //     $omie = new stdClass();

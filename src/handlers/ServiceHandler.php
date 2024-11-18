@@ -46,40 +46,40 @@ class ServiceHandler
     }
 
     //PROCESSA E CRIA O cliente. CHAMA O REPROCESS CASO DE ERRO
-    public function startProcess($status, $entity)
+    public function startProcess($json)
     {   
-        $webhook = $this->databaseServices->getWebhook($status, $entity);
+        //$webhook = $this->databaseServices->getWebhook($status, $entity);
     
-        $status = 2; //processando
-        $alterStatus = $this->databaseServices->alterStatusWebhook($webhook['id'], $status);
+        //$status = 2; //processando
+        //$alterStatus = $this->databaseServices->alterStatusWebhook($webhook['id'], $status);
      
         //talvez o ideal fosse devolver ao controller o ok de que o processo foi iniciado e um novo processo deve ser inciado 
-        if($alterStatus){
+        //if($alterStatus){
             
-            $action = ServicesFunctions::findAction($webhook);
+            $action = ServicesFunctions::findAction($json);
             
             if($action){
                 //se tiver action cria o objeto de contacs
                 switch($action){
                     case 'createERPToCRM':
-                        $service  = ServicesFunctions::createOmieObj($webhook);
+                        $service  = ServicesFunctions::createOmieObj($json);
                         $process = ServiceServices::createServiceFromERPToCRM($service);
                         break;
                     case 'updateERPToCRM':
-                        $service  = ServicesFunctions::createOmieObj($webhook);
+                        $service  = ServicesFunctions::createOmieObj($json);
                         $serviceJson = ServicesFunctions::createPloomesServiceFromOmieObject($service, $this->ploomesServices, $this->omieServices);
                         $process = ServiceServices::updateServiceFromERPToCRM($serviceJson, $service, $this->ploomesServices);
                         break;
                     case 'deleteERPToCRM':
-                        $service = ServicesFunctions::createOmieObj($webhook);
+                        $service = ServicesFunctions::createOmieObj($json);
                         $process = ServiceServices::deleteServiceFromERPToCRM($service, $this->ploomesServices);
                         break;
                 } 
             }
+         
+            return $process;
 
-            return self::response($webhook, $service, $process);
-
-        }
+        //}
                  
     }
 

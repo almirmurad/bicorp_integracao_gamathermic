@@ -10,6 +10,8 @@ use src\services\ContactServices;
 use src\services\DatabaseServices;
 use src\services\OmieServices;
 use src\services\PloomesServices;
+use stdClass;
+
 class ClientHandler
 {
     private $current;
@@ -58,8 +60,8 @@ class ClientHandler
         //if($alterStatus){
             // $action = ClientsFunctions::findAction($webhook);
             
-            $action = ClientsFunctions::findAction($json);     
-         
+            $action = ClientsFunctions::findAction($json);  
+                     
             if($action){
                 //se tiver action cria o objeto de contacs
                 switch($action){
@@ -85,7 +87,12 @@ class ClientHandler
                         $process = ContactServices::updateContactERP($contactJson, $contact, $this->ploomesServices);
                         break;
                     case 'deleteERPToCRM':
-                        $contact = ClientsFunctions::createOmieObj($json, $this->omieServices);
+                        $decoded = json_decode($json, true);
+
+                        $contact = new stdClass();
+                        $contact->cnpjCpf = $decoded['event']['cnpj_cpf'];
+                        $contact->nomeFantasia = $decoded['event']['nome_fantasia'];
+                        
                         $process = ContactServices::deleteContactERP($contact, $this->ploomesServices);
                         break;
                 } 
