@@ -77,7 +77,7 @@ class ProductHandler
                         $process = ProductsFunctions::moveStock($json, $this->ploomesServices);
                         //$process = ProductServices::attStockTablePloomes($stockTable, $this->ploomesServices);
                         break;
-                    case 'createCRMToERP':
+                    case 'createCRMToERP' || 'updateCRMToERP':
                         //quando o produto é criado no crm ele apenas atualiza o código de integração na base correta
                         $product = ProductsFunctions::createProductFromPloomesWebhook($json);
                         $process = ProductServices::setProductIntegrationCode($product, $this->omieServices);

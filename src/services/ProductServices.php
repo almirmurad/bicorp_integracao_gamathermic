@@ -2,6 +2,7 @@
 
 namespace src\services;
 
+use Dotenv\Util\Str;
 use src\exceptions\WebhookReadErrorException;
 use src\functions\ClientsFunctions;
 use src\functions\DiverseFunctions;
@@ -265,6 +266,7 @@ class ProductServices
                 $messages['error'] = 'Erro ao cadastrar o produto ('.$product->descricao.') Data:' .$current;
             }else{
                 //aqui poderia enviar ao omie o codigo do produto de integração (id produto no ploomes)
+                $omieServices->setProductIntegrationCodeAction($product);
                 $messages['success'] = 'Produto ('.$product->descricao.') Cadastrado no Ploomes CRM com sucesso! Data: '.$current;
             }
 
@@ -274,6 +276,7 @@ class ProductServices
                 $messages['error'] = 'Erro ao cadastrar/alterar o produto ('.$product->descricao.') Data:' .$current;
             }else{
                 //aqui poderia enviar ao omie o codigo do produto de integração (id produto no ploomes)
+                $omieServices->setProductIntegrationCodeAction($product);
                 $messages['success'] = 'Produto ('.$product->descricao.') Cadastrado/alterado no Ploomes CRM com sucesso! Data: '.$current;
             }
         }
@@ -281,26 +284,29 @@ class ProductServices
         return $messages;
     }
 
-    public static function updateProductFromERPToCRM($json, $product, $ploomesServices)
+    public static function updateProductFromERPToCRM(string $json, object $product, PloomesServices $ploomesServices)
     {
         $messages = [
             'success'=>[],
             'error'=>[],
         ];
         $current = date('d/m/Y H:i:s');
-        $ploomesProduct = $ploomesServices->getProductByCode($product->codigo);        
+        $ploomesProduct = $ploomesServices->getProductByCode($product->codigo);  
 
         if(!$ploomesProduct){
             $messages['error'] = 'Erro: produto  não foi encontrado no Ploomes CRM - '.$current;
         }else{
+            // print_r($product);
+            // exit;
+            //self::setProductIntegrationCode($product, new OmieServices);
             $ploomesServices->updatePloomesProduct($json, $ploomesProduct['Id']);
             $messages['success'] = 'Produto  alterado no Ploomes CRM com sucesso! - '.$current;
         }
-
+        var_dump($messages);
         return $messages;
     }
 
-    public static function deleteProductFromERPToCRM($product, $ploomesServices)
+    public static function deleteProductFromERPToCRM(object $product, PloomesServices $ploomesServices)
     {
         $messages = [
             'success'=>[],
@@ -328,15 +334,26 @@ class ProductServices
             'success'=>[],
             'error'=>[],
         ];
+        $t = 0;
         $current = date('d/m/Y H:i:s');
-        $setProduct = $omieServices->setProductIntegrationCodeAction($product);
+        foreach($product->baseFaturamento as $bf){
+            $product->baseFaturamento = [];
+            $product->baseFaturamento ['appKey'] = $bf['appKey'];
+            $product->baseFaturamento ['appSecret'] = $bf['appSecret'];
+            $product->baseFaturamento ['idOmie'] = $bf['idOmie'];
+            $product->baseFaturamento ['title'] = $bf['title'];
+            $t++;
 
-        if(!$setProduct){
-            $messages['error'] = 'Erro: código de integração ['.$product->idPloomes.'], não pode ser associado ao produto: '.$product->descricao.' ['.$product->baseFaturamento['idOmie'].'] - '.$current;
-        }else{
-            $messages['success'] = 'Código de integração ['.$product->idPloomes.'] associado o produto '.$product->descricao.' com sucesso! - '.$current;
+            $setProduct = $omieServices->setProductIntegrationCodeAction($product);
+
+            if(!$setProduct){
+                $messages['error'][$t] = 'Erro: código de integração ['.$product->idPloomes.'], não pode ser associado ao produto: '.$product->descricao.' ['.$product->baseFaturamento['title'].'] na base de faturamento ['.$product->baseFaturamento['idOmie'].'] - '.$current;
+            }else{
+                $messages['success'][$t] = 'Código de integração ['.$product->idPloomes.'] associado o produto '.$product->descricao.' com sucesso na base de faturamento ['.$product->baseFaturamento['title'].'] - '.$current;
+            }
+
         }
-
+  
         return $messages;
     }
 }

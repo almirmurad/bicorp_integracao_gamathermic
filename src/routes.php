@@ -2,8 +2,8 @@
 use core\Router;
 
 $router = new Router();
-
 $router->get('/', 'HomeController@index');
+
 //Dashboard
 $router->get('/dashboard', 'DashboardController@index');
 
@@ -18,28 +18,14 @@ $router->post('/integrar', 'IntegracaoController@integraAction');
 $router->get('/getAll', 'IntegracaoController@getAll');
 $router->get('/delHook/{id}', 'IntegracaoController@delHook');
 
-
 //Orders
-//$router->post('/newOmieOrder', 'OrderController@newOmieOrder');//novo pedido no omie
 $router->post('/ploomesOrder', 'OrderController@ploomesOrder');//novo pedido no omie
 $router->post('/processNewOrder', 'OrderController@processNewOrder');
-//$router->post('/deletedOrder', 'OrderController@deletedOrder');//Pedido deletado no omie
-//$router->post('/alterOrderStage', 'OrderController@alterOrderStage');//Pedido Alterado no kanban de vendas de produtos do omie
 
-
-//contacts ploomes
+//contacts ploomes clientes Omie
 $router->post('/ploomesContacts', 'ContactController@ploomesContacts');//Novo cliente no ploomes
-
-//clientes Omie
 $router->post('/omieClients', 'ContactController@omieClients');//Novo cliente no omie
-
-//start Process Clientes Omie x Ploomes
 $router->post('/processNewContact', 'ContactController@processNewContact'); //inicia o processo com cron job
-//processo de alterar cliente no omie pelo cron job 
-// $router->post('/proccessAlterClientOmie', 'ClientController@proccessAlterClientOmie'); //recebe um webhhok de cliente alterado no 
-
-
-
 
 //products
 $router->post('/omieProducts', 'ProductController@omieProducts');//Novo produto no Omie
@@ -54,7 +40,6 @@ $router->post('/processNewService', 'ServiceController@processNewService'); //in
 $router->post('/invoiceIssue', 'InvoicingController@invoiceIssue');
 $router->post('/deletedInvoice', 'InvoicingController@deletedInvoice');
 
-
 //Interactions
 $router->get('/interactions', 'InteractionController@index');
 $router->post('/newInteraction', 'InteractionController@createInteraction');
@@ -68,7 +53,6 @@ $router->get('/permissions', 'PermissionController@index');
 $router->get('/addPermissionGroup', 'PermissionController@addPermissionGroup');
 $router->get('/delGroupPermission/{id}', 'PermissionController@delGroupPermission');
 $router->post('/addPermissionGroupAction', 'PermissionController@addPermissionGroupAction');
-
 $router->get('/editPermissionGroup/{id}', 'PermissionController@editPermissionGroup');
 $router->post('/editPermissionGroupAction/{id}', 'PermissionController@editPermissionGroupAction');
 
@@ -79,5 +63,3 @@ $router->post('/addUser','UserController@addUserAction');
 $router->get('/delUser/{id}', 'UserController@delUser');
 $router->get('/user/{id}/editUser', 'UserController@editUser');
 $router->post('/user/{id}/editUser','UserController@editUserAction');
-
-

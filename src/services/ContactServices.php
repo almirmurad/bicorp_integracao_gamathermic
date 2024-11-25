@@ -181,8 +181,7 @@ class ContactServices
         $total = 0;
         $current = date('d/m/Y H:i:s');
         if(!empty($contact)){
-            // print_r($contact);
-            // exit;
+            
             foreach($contact->basesFaturamento as $k => $bf)
             {
                 $omie[$k] = new stdClass();
@@ -196,7 +195,7 @@ class ContactServices
                         $contact->idIntegracao = $contact->id;
                         $contact->idOmie = $contact->codOmie[$k];
                         $contact->cVendedorOmie = (isset($contact->ownerEmail) && $contact->ownerEmail !== null) ? $omieServices->vendedorIdOmie($omie[$k],$contact->ownerEmail) : null;
-                        $contact->cTransportadora = $contact->cTranspOmie[$k];
+                        $contact->cTransportadora = $contact->cTranspOmie[$k] ?? null;
                         // $alterar = $omieServices->alteraCliente($omie[$k], $diff);
                         $alterar = $omieServices->alteraClienteCRMToERP($omie[$k], $contact);
 
@@ -222,25 +221,26 @@ class ContactServices
                             // $messages['success'][] = $message;
                             
                         }else{
+                           
                             //monta a mensagem para atualizar o card do ploomes
                             $msg=[
                                 'ContactId' => $contact->id,
                                 'Content' => 'Erro ao alterar cliente no Omie: '. $alterar['faultstring'].' na base '.$omie[$k]->baseFaturamentoTitle.' Data = '.$current,
                                 'Title' => 'Erro ao alterar cliente'
                             ];
-                            
                             //cria uma interação no card
                             ($ploomesServices->createPloomesIteraction(json_encode($msg)))?$message = 'Erro ao alterar cliente no Omie base '.$omie[$k]->baseFaturamentoTitle.': '. $alterar['faultstring'].' Data = '.$current: $message = 'Erro ao alterar cliente no Omie base '.$omie[$k]->baseFaturamentoTitle.': '. $alterar['faultstring'].' e erro ao enviar mensagem no card do cliente do Ploomes Data = '.$current;
                             $messages['error'][]=$message;
                         }       
+                    }else{
+                        $messages['error'][]='Base de faturamento ['.$bf['title'].'], não selecionada para integração';
                     }
-
-                
             }   
         }else{
             $messages['error'][]='Esta alteração já foi feita';
         }
-            return $messages;       
+
+        return $messages;       
     }
 
     public static function deleteContact($contact)
@@ -321,7 +321,14 @@ class ContactServices
         $cnpj = DiverseFunctions::limpa_cpf_cnpj($contact->cnpjCpf);
         $pContact = $ploomesServices->consultaClientePloomesCnpj($cnpj);
         if($pContact !== null){
-            $messages['error'] = 'Erro ao cadastrar o cliente '.$contact->nomeFantasia .'('.$contact->cnpjCpf.') Cliente já cadastrado no Ploomes com o código: '.$pContact.' Data:' .$current;
+            // $messages['error'] = 'Erro ao cadastrar o cliente '.$contact->nomeFantasia .'('.$contact->cnpjCpf.') Cliente já cadastrado no Ploomes com o código: '.$pContact.' Data:' .$current;
+
+            $contactJson = ClientsFunctions::createPloomesContactFromOmieObject($contact, $ploomesServices, $omieServices);
+            $process = ContactServices::updateContactERP($contactJson, $contact, $ploomesServices);
+
+            if($process){
+                return $process;
+            }
 
         }else{
   
@@ -344,27 +351,27 @@ class ContactServices
         $idContact = $ploomesServices->consultaClientePloomesCnpj(DiverseFunctions::limpa_cpf_cnpj($contact->cnpjCpf));
 
         if(!$idContact)
-        {
-            $messages['error'] = 'Erro: cliente '.$contact->nomeFantasia.' não foi encontrado no Ploomes CRM';
-        }
+            {
+                $messages['error'] = 'Erro: cliente '.$contact->nomeFantasia.' não foi encontrado no Ploomes CRM';
+            }
         else
-        {
-            $ploomesServices->updatePloomesContact($json, $idContact);
-            // $messages['success'] = 'Cliente '.$contact->nomeFantasia.' alterado no Ploomes CRM com sucesso!';
-            //monta a mensagem para atualizar o cliente do ploomes
-            $message = 'Integração concluída com sucesso! Cliente Ploomes id: '.$idContact.' alterado no Omie ERP ('.$contact->baseFaturamentoTitle.') e mensagem enviada com sucesso em: '.$current;
-            
-            // $msg=[
-            //     'ContactId' => $idContact,
-            //     'Content' => 'Cliente '.$contact->nomeFantasia.' alterado no Omie ERP na base: '.$contact->baseFaturamentoTitle.' via Bicorp Integração',
-            //     'Title' => 'Cliente Alterado'
-            // ];
-            
-            // //cria uma interação no card
-            // ($ploomesServices->createPloomesIteraction(json_encode($msg)))?$message = 'Integração concluída com sucesso! Cliente Ploomes id: '.$idContact.' alterado no Ploomes CRM ('.$contact->baseFaturamentoTitle.') e mensagem enviada com sucesso em: '.$current : $message = 'Integração concluída com sucesso! Cliente Ploomes id: '.$idContact.' alterado no PLoomes CRM, porém não foi possível gravar a mensagem no card do cliente do Ploomes: '.$current;
-            
-            $messages['success'] = $message;
-        }
+            {
+                $ploomesServices->updatePloomesContact($json, $idContact);
+                // $messages['success'] = 'Cliente '.$contact->nomeFantasia.' alterado no Ploomes CRM com sucesso!';
+                //monta a mensagem para atualizar o cliente do ploomes
+                $message = 'Integração concluída com sucesso! Cliente Ploomes id: '.$idContact.' alterado no Ploomes CRM com sucesso em: '.$current;
+                
+                // $msg=[
+                //     'ContactId' => $idContact,
+                //     'Content' => 'Cliente '.$contact->nomeFantasia.' alterado no Omie ERP na base: '.$contact->baseFaturamentoTitle.' via Bicorp Integração',
+                //     'Title' => 'Cliente Alterado'
+                // ];
+                
+                // //cria uma interação no card
+                // ($ploomesServices->createPloomesIteraction(json_encode($msg)))?$message = 'Integração concluída com sucesso! Cliente Ploomes id: '.$idContact.' alterado no Ploomes CRM ('.$contact->baseFaturamentoTitle.') e mensagem enviada com sucesso em: '.$current : $message = 'Integração concluída com sucesso! Cliente Ploomes id: '.$idContact.' alterado no PLoomes CRM, porém não foi possível gravar a mensagem no card do cliente do Ploomes: '.$current;
+                
+                $messages['success'] = $message;
+            }
 
         return $messages;
     }

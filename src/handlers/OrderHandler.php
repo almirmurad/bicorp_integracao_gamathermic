@@ -151,10 +151,10 @@ class OrderHandler
             case '420197141':
                 $order->baseFaturamentoTitle = 'GAMATERMIC';
                 $omie->baseFaturamentoTitle = 'GAMATERMIC'; 
-                $omie->target = 'MPR'; 
-                $omie->ncc = $_ENV['NCC_MPR'];
-                $omie->appSecret = $_ENV['SECRETS_MPR'];
-                $omie->appKey = $_ENV['APPK_MPR'];
+                $omie->target = 'DEMO2'; 
+                $omie->ncc = $_ENV['NCC_DEMO2'];
+                $omie->appSecret = $_ENV['SECRETS_DEMO2'];
+                $omie->appKey = $_ENV['APPK_DEMO2'];
                 break;
                 
             case '420197143':
@@ -215,7 +215,7 @@ class OrderHandler
         //pega o id do cliente do Omie através do CNPJ do contact do ploomes           
         (!empty($idClienteOmie = $this->omieServices->clienteIdOmie($omie, $contactCnpj))) ? $order->idClienteOmie = $idClienteOmie : $m[] = 'Erro ao montar pedido para enviar ao Omie ERP: Id do cliente não encontrado no Omie ERP! Id do card Ploomes CRM: '.$order->dealId.' e pedido de venda Ploomes CRM: '.$order->id.' em: '.$current;
         //pega o id do vendedor Omie através do email do vendedor do ploomes           
-        (!empty($codVendedorOmie = $this->omieServices->vendedorIdOmie($omie, $mailVendedor))) ? $order->codVendedorOmie = $codVendedorOmie : $m[] = 'Erro ao montar pedido para enviar ao Omie ERP: Id do vendedor não encontrado no Omie ERP!Id do card Ploomes CRM: '.$order->dealId.' e pedido de venda Ploomes CRM: '.$order->id.' em: '.$current;
+        (!empty($codVendedorOmie = $this->omieServices->vendedorIdOmie($omie, $mailVendedor))) ? $order->codVendedorOmie = $codVendedorOmie : null;//$m[] = 'Erro ao montar pedido para enviar ao Omie ERP: Id do vendedor não encontrado no Omie ERP!Id do card Ploomes CRM: '.$order->dealId.' e pedido de venda Ploomes CRM: '.$order->id.' em: '.$current;
         
         //Array de detalhes do item da venda
         $arrayRequestOrder = $this->ploomesServices->requestOrder($order);
@@ -274,6 +274,7 @@ class OrderHandler
                     $service['nCodServico'] = $opServices[$idItemOmie];
                     $service['nQtde'] = $prdItem['Quantity'];
                     $service['nValUnit'] = $prdItem['UnitPrice'];
+                    $service['cDescServ'] = $order->descricaoServico;
 
                     $serviceOrder[] = $service;
                 }

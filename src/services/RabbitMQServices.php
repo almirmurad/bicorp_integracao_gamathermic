@@ -69,7 +69,7 @@ class RabbitMQServices {
         $this->channel->queue_bind($fila.'_wait', $exName.'_wait',$routing_key_dlx);
         $this->channel->queue_bind($fila.'_trash', $exName.'_trash', $routing_key_trash);                  
         // Cria a mensagem com atraso de 4 segundos
-        $headers = new AMQPTable(['x-delay' => 4000]);
+        $headers = new AMQPTable(['x-delay' => 3000]);
         $msg = new AMQPMessage($mensagem, ['delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT, 'application_headers' => $headers]);
         
         // Publica a mensagem na fila

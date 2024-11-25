@@ -124,55 +124,40 @@ class ProductController extends Controller {
 
     } 
 
-    // public function ploomesProducts()
-    // {
-    //     $message = [];
-    //     $json = file_get_contents('php://input');
+    public function ploomesProducts()
+    {
+        $message = [];
+        $json = file_get_contents('php://input');
 
-    //     ob_start();
-    //     var_dump($json);
-    //     $input = ob_get_contents();
-    //     ob_end_clean();
-    //     file_put_contents('./assets/products.log', $input . PHP_EOL . date('d/m/Y H:i:s') . PHP_EOL, FILE_APPEND);
-
-    //     try{
-    //         $productHandler = new ProductHandler($this->ploomesServices, $this->omieServices, $this->databaseServices);
-    //         $response = $productHandler->saveProductHook($json);
-    //         // $rk = origem.entidade.ação
-    //         $rk = array('Omie','Products');
-    //         $this->rabbitMQServices->publicarMensagem('products_exc', $rk, 'ploomes_products',  $json);
+        try{
+            $productHandler = new ProductHandler($this->ploomesServices, $this->omieServices, $this->databaseServices);
+            $response = $productHandler->saveProductHook($json);
+            // $rk = origem.entidade.ação
+            $rk = array('Ploomes','Products');
+            $this->rabbitMQServices->publicarMensagem('products_exc', $rk, 'ploomes_products',  $json);
             
-    //         if ($response > 0) {
+            if ($response > 0) {
                 
-    //             $message =[
-    //                 'status_code' => 200,
-    //                 'status_message' => 'Success: '. $response['msg'],
-    //             ];
-                
-    //         }
+                $message =[
+                    'status_code' => 200,
+                    'status_message' => 'Success: '. $response['msg'],
+                ];    
+            }
 
-    //     }catch(WebhookReadErrorException $e){        
-    //     }
-    //     finally{
-    //         if(isset($e)){
-    //             ob_start();
-    //             var_dump($e->getMessage());
-    //             $input = ob_get_contents();
-    //             ob_end_clean();
-    //             file_put_contents('./assets/log.log', $input . PHP_EOL . date('d/m/Y H:i:s'), FILE_APPEND);
+        }catch(WebhookReadErrorException $e){        
+        }
+        finally{
+            if(isset($e)){
+                ob_start();
+                var_dump($e->getMessage());
+                $input = ob_get_contents();
+                ob_end_clean();
+                file_put_contents('./assets/log.log', $input . PHP_EOL . date('d/m/Y H:i:s'), FILE_APPEND);
                 
-    //             return print $e->getMessage();
-    //         }
-    //          //grava log
-    //          ob_start();
-    //          print_r($message);
-    //          $input = ob_get_contents();
-    //          ob_end_clean();
-    //          file_put_contents('./assets/log.log', $input . PHP_EOL, FILE_APPEND);
-             
-    //          return print $message['status_message'];
-           
-    //     }
-            
-    // }
+                return print $e->getMessage();
+            }
+                         
+             return print $message['status_message'];
+        }     
+    }
 }

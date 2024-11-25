@@ -59,10 +59,10 @@ class ServicesFunctions{
                 //     'StringValue'=>$service->codigoClienteOmie,
                 // ];
                 break;
-            case '2335095664902': 
+            case '5270544396117': 
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_MHL'];
-                $omie->appSecret = $_ENV['SECRETS_MHL'];
+                $omie->appKey = $_ENV['APPK_DEMO2'];
+                $omie->appSecret = $_ENV['SECRETS_DEMO2'];
                 $service->baseFaturamentoTitle = 'Gamatermic';
                 // $cOmie = [
                 //     'FieldKey'=>'contact_6DB7009F-1E58-4871-B1E6-65534737C1D0',
@@ -154,10 +154,10 @@ class ServicesFunctions{
                     'StringValue'=>$service->codServ,
                 ];
                 break;
-            case '2335095664902': 
+            case '5270544396117': 
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_MHL'];
-                $omie->appSecret = $_ENV['SECRETS_MHL'];
+                $omie->appKey = $_ENV['APPK_DEMO2'];
+                $omie->appSecret = $_ENV['SECRETS_DEMO2'];
                 $service->baseFaturamentoTitle = 'Gamatermic';
                 $cOmie = [
                     'FieldKey'=>'product_E241BF1D-7622-45DF-9658-825331BD1C2D',

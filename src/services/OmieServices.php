@@ -392,7 +392,7 @@ class OmieServices implements OmieManagerInterface{
         // $informacoes_adicionais['consumidor_final'] = 'S';//string
         // $informacoes_adicionais['enviar_email'] = 'N';//string
         $informacoes_adicionais['numero_pedido_cliente']=$order->numPedidoCliente ?? "0";
-        $informacoes_adicionais['codVend']=$order->codVendedorOmie;
+        $informacoes_adicionais['codVend']=$order->codVendedorOmie ?? null;
         $informacoes_adicionais['codproj']= $omie->codProjeto ?? null;
         $informacoes_adicionais['dados_adicionais_nf'] = $order->notes;
 
@@ -473,7 +473,8 @@ class OmieServices implements OmieManagerInterface{
         $newOS['produtosUtilizados'] = $pu;
  
         $top['param'][]= $newOS;
-              
+        // print_r($top);
+        // exit;      
         $client = new Client([
             'handler' => new CurlHandler([
                  'handle_factory' => new CurlFactory(0)
@@ -726,11 +727,11 @@ class OmieServices implements OmieManagerInterface{
             'call'=>'IncluirCliente',
             'param'=>[]
         ];
-
+        
         $clienteJson = [];
         $clienteJson['codigo_cliente_integracao'] = $contact->id;
-        $clienteJson['razao_social'] = $contact->legalName;
-        $clienteJson['nome_fantasia'] = $contact->name;
+        $clienteJson['razao_social'] = htmlspecialchars_decode($contact->legalName) ?? null; 
+        $clienteJson['nome_fantasia'] = htmlspecialchars_decode($contact->name) ?? null;
         $clienteJson['cnpj_cpf'] = $contact->cnpj ?? $contact->cpf;
         $clienteJson['email'] = $contact->email ?? null;
         $clienteJson['homepage'] = $contact->website ?? null;
@@ -882,9 +883,10 @@ class OmieServices implements OmieManagerInterface{
     
         $clienteJson = [];
 
-        ($diff['idOmie'] === null)?$clienteJson['codigo_cliente_integracao'] = $diff['idIntegracao']:$clienteJson['codigo_cliente_omie'] = $diff['idOmie'];        
-        $clienteJson['razao_social'] = $diff['legalName']['new'] ?? null; 
-        $clienteJson['nome_fantasia'] = $diff['name']['new'] ?? null;
+        ($diff['idOmie'] === null)?$clienteJson['codigo_cliente_integracao'] = $diff['idIntegracao']:$clienteJson['codigo_cliente_omie'] = $diff['idOmie'];   
+        
+        $clienteJson['razao_social'] = htmlspecialchars_decode($diff['legalName']['new']) ?? null; 
+        $clienteJson['nome_fantasia'] = htmlspecialchars_decode($diff['name']['new']) ?? null;
         $clienteJson['cnpj_cpf'] = $diff['cnpj']['new'] ?? $diff['cpf']['new'] ?? null;
         $clienteJson['email'] = $diff['email']['new'] ?? null;
         $clienteJson['homepage'] = $diff['website']['new'] ?? null;
@@ -991,12 +993,21 @@ class OmieServices implements OmieManagerInterface{
     
         $clienteJson = [];
 
-        ($contact->idOmie === null)?$clienteJson['codigo_cliente_integracao'] = $contact->idIntegracao : $clienteJson['codigo_cliente_omie'] = $contact->idOmie;        
+        // print_r($contact);
+        // exit;
+
+        if(empty($contact->idOmie) || $contact->idOmie === null)
+        {
+                $clienteJson['codigo_cliente_integracao'] = $contact->idIntegracao;
+            }
+        else{
+            $clienteJson['codigo_cliente_omie'] = $contact->idOmie;        
+        } 
        // $clienteJson['cVendedorOmie'] = $contact->cVendedorOmie;
 
 
-        $clienteJson['razao_social'] = $contact->legalName ?? null; 
-        $clienteJson['nome_fantasia'] = $contact->name ?? null;
+        $clienteJson['razao_social'] = htmlspecialchars_decode($contact->legalName) ?? null; 
+        $clienteJson['nome_fantasia'] = htmlspecialchars_decode($contact->name) ?? null;
         $clienteJson['cnpj_cpf'] = $contact->cnpj ?? $contact->cpf ?? null;
         $clienteJson['email'] = $contact->email ?? null;
         $clienteJson['homepage'] = $contact->website ?? null;
