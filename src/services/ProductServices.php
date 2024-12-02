@@ -291,6 +291,7 @@ class ProductServices
             'error'=>[],
         ];
         $current = date('d/m/Y H:i:s');
+  
         $ploomesProduct = $ploomesServices->getProductByCode($product->codigo);  
 
         if(!$ploomesProduct){

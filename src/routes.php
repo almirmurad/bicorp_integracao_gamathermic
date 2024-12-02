@@ -23,11 +23,14 @@ $router->post('/ploomesOrder', 'OrderController@ploomesOrder');//novo pedido no 
 $router->post('/processNewOrder', 'OrderController@processNewOrder');
 
 //contacts ploomes clientes Omie
+//https://gamatermic.bicorp.online/public/ploomesContacts
 $router->post('/ploomesContacts', 'ContactController@ploomesContacts');//Novo cliente no ploomes
+//https://gamatermic.bicorp.online/public/omieClients
 $router->post('/omieClients', 'ContactController@omieClients');//Novo cliente no omie
 $router->post('/processNewContact', 'ContactController@processNewContact'); //inicia o processo com cron job
 
 //products
+//https://gamatermic.bicorp.online/public/ploomesProducts
 $router->post('/omieProducts', 'ProductController@omieProducts');//Novo produto no Omie
 $router->post('/processNewProduct', 'ProductController@processNewProduct'); //inicia o processo com cron job
 $router->post('/ploomesProducts', 'ProductController@ploomesProducts'); //Novo produto no ploomes

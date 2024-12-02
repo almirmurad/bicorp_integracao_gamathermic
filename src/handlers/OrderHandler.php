@@ -194,7 +194,7 @@ class OrderHandler
         $order->templateId =(isset($prop['order_F90FC615-C3B1-4E9A-9061-88C0AF944CC5']) && !empty($prop['order_F90FC615-C3B1-4E9A-9061-88C0AF944CC5']))? $prop['order_F90FC615-C3B1-4E9A-9061-88C0AF944CC5'] : $m[] = 'Erro: não foi possível identificar o tipo de venda (Produtos ou serviços)';
         //numero do pedido do cliente (preenchido na venda) localizado em pedidos info. adicionais
         $order->numPedidoCliente = (isset($prop['order_E31797C6-2BC7-4AE5-8A38-1388DD8FD84A']) && !empty($prop['order_E31797C6-2BC7-4AE5-8A38-1388DD8FD84A']))?$prop['order_E31797C6-2BC7-4AE5-8A38-1388DD8FD84A']:null;//$m[] = 'Erro ao montar pedido para enviar ao Omie ERP: O número do Pedido do Cliente não foi preenchido';
-        $order->descricaoServico = (isset($prop['order_C59D726E-A2A5-42B7-A18E-9898E12F203A']) && !empty($prop['order_C59D726E-A2A5-42B7-A18E-9898E12F203A']))?strip_tags($prop['order_C59D726E-A2A5-42B7-A18E-9898E12F203A'],'\n'):null;//$m[] = 'Erro ao montar pedido para enviar ao Omie ERP: O número do Pedido do Cliente não foi preenchido';
+        $order->descricaoServico = (isset($prop['order_C59D726E-A2A5-42B7-A18E-9898E12F203A']) && !empty($prop['order_C59D726E-A2A5-42B7-A18E-9898E12F203A']))?htmlspecialchars_decode(strip_tags($prop['order_C59D726E-A2A5-42B7-A18E-9898E12F203A'],'\n')):null;//$m[] = 'Erro ao montar pedido para enviar ao Omie ERP: O número do Pedido do Cliente não foi preenchido';
         //Numero pedido de compra (id da proposta) localizado em item da venda info. adicionais
         $order->numPedidoCompra = (isset($prop['order_4AF9E1C1-6DB9-45B2-89E4-9062B2E07B87']) && !empty($prop['order_4AF9E1C1-6DB9-45B2-89E4-9062B2E07B87'])? $prop['order_4AF9E1C1-6DB9-45B2-89E4-9062B2E07B87']: null); //$m[]='Erro ao montar pedido para enviar ao Omie ERP:  Não havia Número do Pedido de Compra');//em caso de obrigatoriedade deste campo $m[]='Erro ao criar pedido. Não havia Ordem de compra         //array de produtos da venda
         //id modalidade do frete
@@ -207,7 +207,7 @@ class OrderHandler
         //projeto 
         $order->projeto = ($prop['order_BBBEB889-6888-4451-81A7-29AB821B1402']) ?? $m[]='Erro ao montar pedido para enviar ao Omie ERP: Não foi informado o Projeto';
         //observações da nota
-        $order->notes = (isset($prop['order_F438939E-F11E-4024-8F3D-6496F2B11778']) ? strip_tags($prop['order_F438939E-F11E-4024-8F3D-6496F2B11778']): null);  
+        $order->notes = (isset($prop['order_F438939E-F11E-4024-8F3D-6496F2B11778']) ? htmlspecialchars_decode(strip_tags($prop['order_F438939E-F11E-4024-8F3D-6496F2B11778'])): null);  
         $order->idParcelamento = $prop['order_B14B38B7-FB43-4E8E-A57A-61EFC97725A6'] ?? null;//$m[]='Erro ao montar pedido para enviar ao Omie ERP: Não foi informado o código do parcelamento';
         //insere o projeto e retorna o id
         $id = $this->omieServices->insertProject($omie,  $order->projeto);
@@ -237,7 +237,7 @@ class OrderHandler
         if(!empty($m)){
             
             throw new PedidoInexistenteException($m[0],500);            
-
+            
         }
         
         //separa e monta os arrays de produtos e serviços
@@ -250,7 +250,7 @@ class OrderHandler
         $pu = [];
         $service = [];
         $produtosUtilizados = [];
-
+        
         foreach($arrayRequestOrder['Products'] as $prdItem)
         {   
             foreach($prdItem['Product']['OtherProperties'] as $otherp){
@@ -267,15 +267,15 @@ class OrderHandler
                     $pu['nQtdePU'] = $prdItem['Quantity'];
                     
                     $produtosUtilizados[] = $pu;
-
+                    
                 }else{
-
+                    
                     //monta o serviço
                     $service['nCodServico'] = $opServices[$idItemOmie];
                     $service['nQtde'] = $prdItem['Quantity'];
                     $service['nValUnit'] = $prdItem['UnitPrice'];
                     $service['cDescServ'] = $order->descricaoServico;
-
+                    
                     $serviceOrder[] = $service;
                 }
 

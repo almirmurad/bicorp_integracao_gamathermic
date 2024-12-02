@@ -310,10 +310,11 @@ class PloomesServices implements PloomesManagerInterface{
     public function getProductByCode(string $codigo):array|null
     {
 
+        $codigoEncoded = urlencode($codigo);
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->baseApi .'Products?$filter=Code+eq+'."'$codigo'".'&$expand=OtherProperties',
+            CURLOPT_URL => $this->baseApi .'Products?$filter=Code+eq+'."'$codigoEncoded'".'&$expand=OtherProperties',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,

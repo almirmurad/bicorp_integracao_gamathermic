@@ -496,7 +496,7 @@ class ProductsFunctions{
                 ];
 
                 break;
-            case '2335095664902': 
+            case '5270544396117': 
                 
                 // tabela de estoque por base de faturamento
                 $stockTable = [

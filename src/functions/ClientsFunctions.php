@@ -273,7 +273,7 @@ class ClientsFunctions{
         
         $tags= [];
         $tag=[];
-        if($decoded['New']['Tags']){
+        if(isset($decoded['New']['Tags']) && !empty($decoded['New']['Tags'])){
     
             foreach($decoded['New']['Tags'] as $iTag){
 
@@ -828,13 +828,13 @@ class ClientsFunctions{
         $cliente->inscricaoSuframa = $array['inscricao_suframa']  ?? null;
         $cliente->logradouro = $array['logradouro']  ?? null;
         $cliente->nif = $array['nif']  ?? null;
-        $cliente->nomeFantasia = $array['nome_fantasia']  ?? null;
+        $cliente->nomeFantasia = htmlspecialchars_decode($array['nome_fantasia'])  ?? null;
         $cliente->obsDetalhadas = $array['obs_detalhadas']  ?? null;
         $cliente->observacao = $array['observacao']  ?? null;
         $cliente->simplesNacional = $array['optante_simples_nacional']  ?? null;
         $cliente->pessoaFisica = $array['pessoa_fisica']  ?? null;
         $cliente->produtorRural = $array['produtor_rural']  ?? null;
-        $cliente->razaoSocial = $array['razao_social']  ?? null;
+        $cliente->razaoSocial = htmlspecialchars_decode($array['razao_social'])  ?? null;
         $cliente->recomendacaoAtraso = $array['recomendacao_atraso']  ?? null;
         $cliente->codigoVendedor = $array['recomendacoes_codigo_vendedor'] ?? null;
         $cliente->emailFatura = $array['recomendacoes_email_fatura'] ?? null;
@@ -1063,7 +1063,7 @@ class ClientsFunctions{
         $tags = [];
         $tag = [];
         if(isset($contact->tags) && !empty($contact->tags)){
-           
+            
             foreach($contact->tags as $t)
             {
                 $idTag = match($t['tag']){
@@ -1074,6 +1074,7 @@ class ClientsFunctions{
                     "Banco e Inst. Financeiras"=>40203495,
                     "Diretor"=>40203497,
                     "Cliente"=>40203778,
+                    "GAMATERMIC"=>40203778,
                 };
                 
                 $tag['TagId'] = $idTag;
@@ -1082,6 +1083,8 @@ class ClientsFunctions{
                 $tags[]=$tag;
             }
             $data['Tags'] = $tags;
+        }else{
+            $data['Tags'] = null;
         }
         
         $ramo = [

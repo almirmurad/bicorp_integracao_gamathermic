@@ -486,7 +486,7 @@ class OmieServices implements OmieManagerInterface{
         ]);
 
         $body = json_decode($response->getBody(),true); 
-
+    
         return $body;        
     }
 
@@ -987,22 +987,19 @@ class OmieServices implements OmieManagerInterface{
         $array = [
             'app_key'=>$omie->appKey,
             'app_secret'=>$omie->appSecret,
-            'call'=>'AlterarCliente',
+            'call'=>'UpsertClienteCpfCnpj',
             'param'=>[]
         ];
     
         $clienteJson = [];
 
-        // print_r($contact);
-        // exit;
-
-        if(empty($contact->idOmie) || $contact->idOmie === null)
-        {
-                $clienteJson['codigo_cliente_integracao'] = $contact->idIntegracao;
-            }
-        else{
-            $clienteJson['codigo_cliente_omie'] = $contact->idOmie;        
-        } 
+        // if(empty($contact->idOmie) || $contact->idOmie === null)
+        // {
+        //         $clienteJson['codigo_cliente_integracao'] = $contact->idIntegracao;
+        //     }
+        // else{
+        //     $clienteJson['codigo_cliente_omie'] = $contact->idOmie;        
+        // } 
        // $clienteJson['cVendedorOmie'] = $contact->cVendedorOmie;
 
 
@@ -1063,9 +1060,11 @@ class OmieServices implements OmieManagerInterface{
         //fim array recomendações
         
         $clienteJson['tags']=$contact->tags ?? null;
-   
+        
          
         $array['param'][] = array_filter($clienteJson);
+
+        
 
         
         $json = json_encode($array);
