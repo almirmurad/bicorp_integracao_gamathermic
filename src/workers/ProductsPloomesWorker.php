@@ -1,128 +1,157 @@
 <?php
+
 require '/opt/consumers/vendor/autoload.php';
+
 use Dotenv\Dotenv;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
+// Carregar variáveis de ambiente
 $dotenv = Dotenv::createUnsafeImmutable('/opt/consumers/gamatermic', '.env');
 $dotenv->load();
 
+// Constantes para configuração do consumidor
+define('EXCHANGE_MAIN', 'products_exc');
+define('EXCHANGE_TRASH', 'products_exc_trash');
+define('QUEUE_MAIN', 'ploomes_products');
+define('QUEUE_TRASH', 'ploomes_products_trash');
+define('BINDING_KEY_MAIN', 'Ploomes.Clientes');
+define('BINDING_KEY_TRASH', 'Ploomes.Clientes.Trash');
+define('RETRY_LIMIT', 2);
+define('PROCESS_URI', 'https://gamatermic.bicorp.online/public/processNewproduct');
+
+// Variável de controle para encerramento
+$stop = false;
+
+// Captura sinais do sistema para encerramento seguro
+pcntl_signal(SIGTERM, function () use (&$stop) {
+    $stop = true;
+});
+pcntl_signal(SIGINT, function () use (&$stop) {
+    $stop = true;
+});
+
 // Função para criar e retornar a conexão RabbitMQ
-function createConnection() {
+function createConnection()
+{
     try {
-        $connection = new AMQPStreamConnection(
+        return new AMQPStreamConnection(
             $_ENV['IP'],
             $_ENV['PORT'],
             $_ENV['RABBITMQ_USER'],
             $_ENV['RABBITMQ_PASS'],
             $_ENV['RABBITMQ_VHOST']
         );
-        return $connection;
     } catch (Exception $e) {
-        echo "Erro na conexão: " . $e->getMessage() . "\n";
-        sleep(5); // Espera 5 segundos antes de tentar reconectar
+        echo "[Erro] Conexão: " . $e->getMessage() . "\n";
+        sleep(5); // Aguarda antes de tentar novamente
         return createConnection(); // Tenta reconectar
     }
 }
 
+// Configuração inicial
 $connection = createConnection();
 $channel = $connection->channel();
 
-try {
-    // Declarar exchanges
-    $channel->exchange_declare('products_exc', 'x-delayed-message', false, true, false, false, false, [
-        'x-delayed-type' => ['S', 'topic']
-    ]);
-    $channel->exchange_declare('products_exc_trash', 'direct', false, true, false);
+// Função para declarar a estrutura das filas e exchanges
+function setupRabbitMQ($channel)
+{
+    try {
+        // Declarar exchanges
+        $channel->exchange_declare(EXCHANGE_MAIN, 'x-delayed-message', false, true, false, false, false, [
+            'x-delayed-type' => ['S', 'topic']
+        ]);
+        $channel->exchange_declare(EXCHANGE_TRASH, 'direct', false, true, false);
 
-    // Declarar as filas
-    $queue_name = 'ploomes_products';
-    $trash_queue_name = 'ploomes_products_trash';
+        // Declarar as filas
+        $channel->queue_declare(QUEUE_MAIN, false, true, false, false, false, [
+            'x-dead-letter-exchange' => ['S', EXCHANGE_MAIN . '_wait'],
+            'x-dead-letter-routing-key' => ['S', BINDING_KEY_MAIN . '.Wait']
+        ]);
+        $channel->queue_declare(QUEUE_TRASH, false, true, false, false, false);
 
-    // Fila principal com DLX
-    $channel->queue_declare($queue_name, false, true, false, false, false, [
-        'x-dead-letter-exchange' => ['S', 'products_exc_wait'],
-        'x-dead-letter-routing-key' => ['S', 'Ploomes.Products.Wait']
-    ]);
-    // Fila de trash
-    $channel->queue_declare($trash_queue_name, false, true, false, false, false);
+        // Binding entre filas e exchanges
+        $channel->queue_bind(QUEUE_MAIN, EXCHANGE_MAIN, BINDING_KEY_MAIN);
+        $channel->queue_bind(QUEUE_TRASH, EXCHANGE_TRASH, BINDING_KEY_TRASH);
 
-    // Binding entre a fila e a exchange
-    $binding_key = 'Ploomes.Products';
-    $trash_binding_key = 'Ploomes.Products.Trash';
-    $channel->queue_bind($queue_name, 'products_exc', $binding_key);
-    $channel->queue_bind($trash_queue_name, 'products_exc_trash', $trash_binding_key);
-
-} catch (Exception $e) {
-    echo "Erro na configuração: " . $e->getMessage() . "\n";
-    exit;
+        return [QUEUE_MAIN, BINDING_KEY_TRASH];
+    } catch (Exception $e) {
+        echo "[Erro] Configuração RabbitMQ: " . $e->getMessage() . "\n";
+        exit;
+    }
 }
-$isAcked = false;
-// Função callback para processar as mensagens da fila
-$callback = function($msg) use ($channel, $trash_binding_key) {
-	$isAcked = false;
+
+// Configurar estrutura RabbitMQ
+[$queue_name, $trash_binding_key] = setupRabbitMQ($channel);
+
+// Callback para processar mensagens
+$callback = function ($msg) use ($channel, $trash_binding_key) {
+    $isAcked = false;
+
     try {
         $application_headers = $msg->get('application_headers');
         $xDeath = isset($application_headers['x-death']) ? $application_headers['x-death'] : [];
         $retryCount = !empty($xDeath) ? $xDeath[0]['count'] : 0;
 
-        if ($retryCount >= 3) {
-            // Enviar para fila de trash após 3 tentativas
+        if ($retryCount >= RETRY_LIMIT) {
+            // Envia para fila de trash após 3 tentativas
             $newMsg = new AMQPMessage($msg->getBody(), [
                 'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT
             ]);
-
-            $channel->basic_publish($newMsg, 'products_exc_trash', $trash_binding_key);
-            $msg->ack(); // Reconhece a mensagem na fila wait para removê-la
-	    $isAcked = true;
-            throw new Exception('Mensagem reprocessada mais de 3x, enviada para o lixo', 500);
+            $channel->basic_publish($newMsg, EXCHANGE_TRASH, $trash_binding_key);
+            $msg->ack(); // Remove mensagem da fila wait
+            $isAcked = true;
+            throw new Exception('Mensagem reprocessada mais de 3 vezes, enviada para o lixo', 500);
         }
 
         // Processa a mensagem
-       $headers = ['Content-Type: application/json'];
-        $uri = 'https://gamatermic.bicorp.online/public/processNewProduct';
-        
+        $headers = ['Content-Type: application/json'];
         $curl = curl_init();
         curl_setopt_array($curl, [
-            CURLOPT_URL => $uri,
+            CURLOPT_URL => PROCESS_URI,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POSTFIELDS => $msg->getBody(),
-            CURLOPT_HTTPHEADER => $headers
+            CURLOPT_HTTPHEADER => $headers,
         ]);
-
         $response = json_decode(curl_exec($curl), true);
-	//$response = curl_exec($curl);
         curl_close($curl);
 
-	//print_r($response);
-        //exit;
-
         if (isset($response['status_code']) && $response['status_code'] === 200) {
-            $msg->ack(); // Mensagem processada com sucesso
-            echo "Mensagem processada: " . $response['status_message']. PHP_EOL;
+            $msg->ack(); // Marca mensagem como processada
+            echo "[Sucesso] Mensagem processada: " . $response['status_message'] . PHP_EOL;
         } else {
             $statusMessage = $response['status_message'] ?? 'Mensagem indefinida';
             throw new Exception($statusMessage, 500);
         }
     } catch (Exception $e) {
-        echo "Erro ao processar mensagem: " . $e->getMessage() . PHP_EOL;
+        echo "[Erro] Processamento: " . $e->getMessage() . PHP_EOL;
 
-        // Se a mensagem falhar e ainda não atingiu o limite de tentativas, ela volta para a DLX
         if (!$isAcked) {
-    	    $msg->nack(false, false); // Retorna para a DLX
-    	}
+            $msg->nack(false, false); // Retorna mensagem para DLX
+        }
     }
 };
 
-// Consumir as mensagens da fila
-$channel->basic_qos(null, 1, false); // Dispacha a mensagem apenas quando a anterior for processada
+// Configurar consumo
+$channel->basic_qos(null, 1, false); // Mensagem por vez
 $channel->basic_consume($queue_name, '', false, false, false, false, $callback);
 
-// Loop para manter o script rodando
-while ($channel->is_consuming()) {
-    $channel->wait();
+// Loop principal
+while (!$stop) {
+    try {
+        $channel->wait();
+        pcntl_signal_dispatch(); // Verifica sinais do sistema
+    } catch (\PhpAmqpLib\Exception\AMQPConnectionClosedException $e) {
+        echo "[Erro] Conexão perdida. Tentando reconectar...\n";
+        $connection = createConnection();
+        $channel = $connection->channel();
+        [$queue_name, $trash_binding_key] = setupRabbitMQ($channel);
+        $channel->basic_consume($queue_name, '', false, false, false, false, $callback);
+    } catch (Exception $e) {
+        echo "[Erro] Geral: " . $e->getMessage() . "\n";
+    }
 }
 
-// Fechar conexões
+// Encerrar conexões
 $channel->close();
 $connection->close();
