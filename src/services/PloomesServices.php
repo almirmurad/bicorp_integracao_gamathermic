@@ -508,7 +508,8 @@ class PloomesServices implements PloomesManagerInterface{
 
     //ATUALIZA Product NO PLOOMES
     public function updatePloomesProduct(string $json, int $idProduct):bool
-    {
+    {    
+      
         //CHAMADA CURL PRA CRIAR WEBHOOK NO PLOOMES
         $curl = curl_init();
 

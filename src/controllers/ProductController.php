@@ -51,7 +51,7 @@ class ProductController extends Controller {
                 
                 $message =[
                     'status_code' => 200,
-                    'status_message' => 'Success: '. $response,
+                    'status_message' => 'Success: '. $response['msg'],
                 ];
                 
             }

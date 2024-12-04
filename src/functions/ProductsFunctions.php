@@ -43,9 +43,43 @@ class ProductsFunctions{
     public static function createOmieObj($json, $omieServices)
     {
         //decodifica o json de produto vindos do webhook
+     
         $decoded = json_decode($json,true);
+    
+// Função recursiva para limpar todos os campos do array
+function auto_clean_json($data) {
+    $entidades_customizadas = [
+        "+Chr(39)+" => "'", // Aspas simples
+        "Chr(34)"   => '"', // Aspas duplas
+        "&apos;"    => "'", // Entidade HTML para aspas simples
+    ];
+
+    foreach ($data as $key => &$value) {
+        if (is_array($value)) {
+            $value = auto_clean_json($value);
+        } elseif (is_string($value)) {
+            // Decodifica entidades HTML
+            $value = htmlspecialchars_decode($value, ENT_QUOTES);
+
+            // Substitui padrões específicos
+            $value = strtr($value, $entidades_customizadas);
+
+            // Substitui múltiplas aspas simples (3 ou mais) por uma única
+            $value = preg_replace("/'{2,}/", "'", $value);
+        }
+    }
+    return $data;
+}
+
+
+// Aplica a função para limpar todos os campos do JSON decodificado
+$cleaned_data = auto_clean_json($decoded);
+
+// print_r($cleaned_data);
+
+
         //achata o array multidimensional decoded em um array simples
-        $array = DiverseFunctions::achatarArray($decoded);
+        $array = DiverseFunctions::achatarArray($cleaned_data);
         //cria o objeto de produtos
         $product = new stdClass();
 
@@ -396,8 +430,8 @@ class ProductsFunctions{
         $op[] = $stockTable;
    
         $data['OtherProperties'] = $op;
-        $json = json_encode($data);
-
+        $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        
         return $json;
 
     }

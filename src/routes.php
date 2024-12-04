@@ -19,6 +19,7 @@ $router->get('/getAll', 'IntegracaoController@getAll');
 $router->get('/delHook/{id}', 'IntegracaoController@delHook');
 
 //Orders
+//https://gamatermic.bicorp.online/public/ploomesOrder
 $router->post('/ploomesOrder', 'OrderController@ploomesOrder');//novo pedido no omie
 $router->post('/processNewOrder', 'OrderController@processNewOrder');
 
@@ -33,7 +34,7 @@ $router->post('/processNewContact', 'ContactController@processNewContact'); //in
 //https://gamatermic.bicorp.online/public/ploomesProducts
 $router->post('/omieProducts', 'ProductController@omieProducts');//Novo produto no Omie
 $router->post('/processNewProduct', 'ProductController@processNewProduct'); //inicia o processo com cron job
-$router->post('/ploomesProducts', 'ProductController@ploomesProducts'); //Novo produto no ploomes
+// $router->post('/ploomesProducts', 'ProductController@ploomesProducts'); //Novo produto no ploomes
 
 //services
 $router->post('/omieServices', 'ServiceController@omieServices');//Novo cliente no ploomes

@@ -292,18 +292,19 @@ class ProductServices
         ];
         $current = date('d/m/Y H:i:s');
   
-        $ploomesProduct = $ploomesServices->getProductByCode($product->codigo);  
+        $ploomesProduct = $ploomesServices->getProductByCode($product->codigo);
 
         if(!$ploomesProduct){
             $messages['error'] = 'Erro: produto  não foi encontrado no Ploomes CRM - '.$current;
         }else{
-            // print_r($product);
+            // print_r(json_decode($json));
+            // print_r($ploomesProduct);
             // exit;
             //self::setProductIntegrationCode($product, new OmieServices);
             $ploomesServices->updatePloomesProduct($json, $ploomesProduct['Id']);
             $messages['success'] = 'Produto  alterado no Ploomes CRM com sucesso! - '.$current;
         }
-        var_dump($messages);
+        
         return $messages;
     }
 
