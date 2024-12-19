@@ -55,12 +55,10 @@ class ClientsFunctions{
     
         //decodifica o json de clientes vindos do webhook
     
-        $decoded = json_decode($json,true);
-
-        $cliente = $ploomesServices->getClientById($decoded['New']['Id']);
+        $decoded = json_decode($json,true);      
         
-        $contact = new Contact();        
-    
+        $contact = new Contact();       
+            
         /************************************************************
          *                   Other Properties                        *
          *                                                           *
@@ -185,7 +183,7 @@ class ClientsFunctions{
         $contact->codOmie[3] = $prop['contact_07784D81-18E1-42DC-9937-AB37434176FB'] ?? null;
         
         $phones = [];
-        foreach($cliente['Phones'] as $phone){
+        foreach($decoded['New']['Phones'] as $phone){
             
             $partes = explode(' ',$phone['PhoneNumber']);
             $ddd = $partes[0];
@@ -196,38 +194,51 @@ class ClientsFunctions{
             ];        
         }
       
-        $contact->id = $cliente['Id']; //Id do Contact
-        $contact->name = $cliente['Name']; // Nome ou nome fantasia do contact !obrigatório!
-        $contact->legalName = $cliente['LegalName']; // Razão social do contact !obrigatório!
-        $contact->cnpj = $cliente['CNPJ'] ?? null; // Contatos CNPJ !obrigatório!
-        $contact->cpf = $cliente['CPF'] ?? null; // Contatos CPF !obrigatório!
-        $contact->documentoExterior = $cliente['IdentityDocument'] ?? null; // Documento extrangeiro CPF
-        $contact->segmento = $cliente['LineOfBusiness']['Id'] ?? null; // Segmento CPF
-        $contact->email = $cliente['Email']; // Contatos Email obrigatório
-        $contact->website = $cliente['Website'] ?? null; // Contatos website obrigatório
+        $contact->id = $decoded['New']['Id']; //Id do Contact
+        $contact->name = $decoded['New']['Name']; // Nome ou nome fantasia do contact !obrigatório!
+        $contact->legalName = $decoded['New']['LegalName']; // Razão social do contact !obrigatório!
+        $contact->cnpj = $decoded['New']['CNPJ'] ?? null; // Contatos CNPJ !obrigatório!
+        $contact->cpf = $decoded['New']['CPF'] ?? null; // Contatos CPF !obrigatório!
+        $contact->documentoExterior = $decoded['New']['IdentityDocument'] ?? null; // Documento extrangeiro CPF
+        $contact->segmento = $decoded['New']['LineOfBusiness']['Id'] ?? null; // Segmento CPF
+        $contact->email = $decoded['New']['Email']; // Contatos Email obrigatório
+        $contact->website = $decoded['New']['Website'] ?? null; // Contatos website obrigatório
         $contact->ddd1 = $phones[0]['ddd'] ?? null; //"telefone1_ddd": "011",
         $contact->phone1 = $phones[0]['nPhone'] ?? null; //"telefone1_numero": "2737-2737",
         $contact->ddd2 = $phones[1]['ddd'] ?? null; //"telefone1_ddd": "011",
         $contact->phone2 = $phones[1]['nPhone'] ?? null; //"telefone1_numero": "2737-2737",
         //$contact->contato1 = $prop['contact_E6008BF6-A43D-4D1C-813E-C6BD8C077F77'] ?? null;
-        $contact->streetAddress = $cliente['StreetAddress']; // Endereço !obrigatório!
-        $contact->streetAddressNumber = $cliente['StreetAddressNumber']; // Número Endereço !obrigatório!
-        $contact->streetAddressLine2 = $cliente['StreetAddressLine2'] ?? null; // complemento do Endereço 
-        $contact->neighborhood = $cliente['Neighborhood']; // bairro do Endereço é !obrigatório!
-        $contact->zipCode = $cliente['ZipCode']; // CEP do Endereço é !obrigatório!
-        $contact->cityId = $cliente['City']['IBGECode'] ?? null; // Id da cidade é obrigatório
-        $contact->cityName = $cliente['City']['Name'] ?? null; // estamos pegando o IBGE code
-        $contact->cityLagitude = $cliente['City']['Latitude'] ?? null; // Latitude da cidade 
-        $contact->cityLongitude = $cliente['City']['Longitude'] ?? null; // Longitude da cidade 
-        $contact->stateShort = $cliente['State']['Short']; // Sigla do estado é !obrigatório!
-        $contact->stateName = $cliente['State']['Name'] ?? null; //estamos pegando a sigla do estado
-        $contact->countryId = $cliente['CountryId'] ?? null; // Omie preenche o país automaticamente
-        $contact->cnaeCode = $cliente['CnaeCode'] ?? null; // Id do cnae 
-        $contact->cnaeName = $cliente['CnaeName'] ?? null; // Name do cnae 
-        $contact->ownerId = $cliente['Owner']['Id'] ?? null; // Responsável (Vendedor)
+        $contact->streetAddress = $decoded['New']['StreetAddress']; // Endereço !obrigatório!
+        $contact->streetAddressNumber = $decoded['New']['StreetAddressNumber']; // Número Endereço !obrigatório!
+        $contact->streetAddressLine2 = $decoded['New']['StreetAddressLine2'] ?? null; // complemento do Endereço 
+        $contact->neighborhood = $decoded['New']['Neighborhood']; // bairro do Endereço é !obrigatório!
+        $contact->zipCode = $decoded['New']['ZipCode']; // CEP do Endereço é !obrigatório!
+
+        if($decoded['New']['CityId'] !== null){
+            $cities=$ploomesServices->getCitiesById($decoded['New']['CityId']);
+        }else{
+            $cities = null;
+        }
+        
+        $contact->cityId = $cities['IBGECode'] ?? null; // Id da cidade é obrigatório
+        $contact->cityName = $cities['Name'] ?? null; // estamos pegando o IBGE code
+        $contact->cityLagitude = $cities['Latitude'] ?? null; // Latitude da cidade 
+        $contact->cityLongitude = $cities['Longitude'] ?? null; // Longitude da cidade 
+        $contact->stateShort = $cities['State']['Short']??null; // Sigla do estado é !obrigatório!
+        $contact->stateName = $cities['State']['Name'] ?? null; //estamos pegando a sigla do estado
+        $contact->countryId = $cities['Country']['Id'] ?? null; // Omie preenche o país automaticamente
+        $contact->cnaeCode = $decoded['New']['CNAECode'] ?? null; // Id do cnae 
+        $contact->cnaeName = $decoded['New']['CNAEName'] ?? null; // Name do cnae 
+        
+        $contact->ownerId = $decoded['New']['OwnerId'] ?? null; // Responsável (Vendedor)
         //$contact->ownerEmail = 'tecnologia@bicorp.com.br';// Responsável (Vendedor) 
-        $contact->ownerEmail = $cliente['Owner']['Email'] ?? null; // Responsável (Vendedor) 
-        $contact->observacao = $cliente['Note']; // Observação 
+        if($contact->ownerId !== null){
+            $ownerMail=$ploomesServices->ownerMail($contact);
+        }else{
+            $ownerMail = null;
+        }
+        $contact->ownerEmail = $ownerMail ?? null; // Responsável (Vendedor) 
+        $contact->observacao = $decoded['New']['Note']; // Observação 
         
         // Base de Faturamento para fiel não precisa pois integra e depois a automação distribui em todas as bases, em gamathermic precisa
         $bases = [];
