@@ -1248,4 +1248,49 @@ class OmieServices implements OmieManagerInterface{
         return $infoIntegracao;
 
         }
+
+        public function getFamiliaById(object $product)
+        {
+
+            $array = [
+                'app_key' => $product->appKey,
+                'app_secret' => $product->appSecret,
+                'call' => 'ConsultarFamilia',
+                'param' => [
+                    [
+                        'codigo' => $product->codigo_familia
+                    ]
+                ]
+            ];
+    
+            $json = json_encode($array);
+    
+            $curl = curl_init();
+    
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://app.omie.com.br/api/v1/geral/familias/',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => $json,
+                CURLOPT_HTTPHEADER => array(
+                    'Content-Type: application/json'
+                ),
+            ));
+    
+            $response = curl_exec($curl);
+    
+            curl_close($curl);
+    
+            $familia = json_decode($response, true);
+    
+            return $familia['nomeFamilia'];
+    
+
+
+        }
 }

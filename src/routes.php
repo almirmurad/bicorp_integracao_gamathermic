@@ -32,6 +32,7 @@ $router->post('/processNewContact', 'ContactController@processNewContact'); //in
 
 //products
 //https://gamatermic.bicorp.online/public/ploomesProducts
+//https://gamatermic.bicorp.online/public/omieProducts
 $router->post('/omieProducts', 'ProductController@omieProducts');//Novo produto no Omie
 $router->post('/processNewProduct', 'ProductController@processNewProduct'); //inicia o processo com cron job
 // $router->post('/ploomesProducts', 'ProductController@ploomesProducts'); //Novo produto no ploomes

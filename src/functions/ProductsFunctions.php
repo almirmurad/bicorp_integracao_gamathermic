@@ -46,36 +46,36 @@ class ProductsFunctions{
      
         $decoded = json_decode($json,true);
     
-// Função recursiva para limpar todos os campos do array
-function auto_clean_json($data) {
-    $entidades_customizadas = [
-        "+Chr(39)+" => "'", // Aspas simples
-        "Chr(34)"   => '"', // Aspas duplas
-        "&apos;"    => "'", // Entidade HTML para aspas simples
-    ];
+        // Função recursiva para limpar todos os campos do array
+        function auto_clean_json($data) {
+            $entidades_customizadas = [
+                "+Chr(39)+" => "'", // Aspas simples
+                "Chr(34)"   => '"', // Aspas duplas
+                "&apos;"    => "'", // Entidade HTML para aspas simples
+            ];
 
-    foreach ($data as $key => &$value) {
-        if (is_array($value)) {
-            $value = auto_clean_json($value);
-        } elseif (is_string($value)) {
-            // Decodifica entidades HTML
-            $value = htmlspecialchars_decode($value, ENT_QUOTES);
+            foreach ($data as $key => &$value) {
+                if (is_array($value)) {
+                    $value = auto_clean_json($value);
+                } elseif (is_string($value)) {
+                    // Decodifica entidades HTML
+                    $value = htmlspecialchars_decode($value, ENT_QUOTES);
 
-            // Substitui padrões específicos
-            $value = strtr($value, $entidades_customizadas);
+                    // Substitui padrões específicos
+                    $value = strtr($value, $entidades_customizadas);
 
-            // Substitui múltiplas aspas simples (3 ou mais) por uma única
-            $value = preg_replace("/'{2,}/", "'", $value);
+                    // Substitui múltiplas aspas simples (3 ou mais) por uma única
+                    $value = preg_replace("/'{2,}/", "'", $value);
+                }
+            }
+            return $data;
         }
-    }
-    return $data;
-}
 
 
-// Aplica a função para limpar todos os campos do JSON decodificado
-$cleaned_data = auto_clean_json($decoded);
+        // Aplica a função para limpar todos os campos do JSON decodificado
+        $cleaned_data = auto_clean_json($decoded);
 
-// print_r($cleaned_data);
+        // print_r($cleaned_data);
 
 
         //achata o array multidimensional decoded em um array simples
@@ -127,7 +127,9 @@ $cleaned_data = auto_clean_json($decoded);
                 // ];
                 break;
         }
-        
+
+        $product->appKey = $array['appKey'];
+        $product->appSecret = $omie->appSecret;
         $product->grupo = 'Produtos';
         $product->idGrupo = '400345485';
         $product->messageId = $array['messageId'];
@@ -136,6 +138,8 @@ $cleaned_data = auto_clean_json($decoded);
         $product->cnpj_fabricante = $array['event_cnpj_fabricante'];
         $product->codigo = $array['event_codigo'];
         $product->codigo_familia = $array['event_codigo_familia'];
+        ($product->codigo_familia == 0 || $product->codigo_familia == null) ? $product->nome_familia = null :  
+        $product->nome_familia = $omieServices->getFamiliaById($product);
         $product->codigo_produto = $array['event_codigo_produto'];
         $product->codigo_produto_integracao = $array['event_codigo_produto_integracao'];
         $product->combustivel_codigo_anp = $array['event_combustivel_codigo_anp'];
@@ -168,7 +172,7 @@ $cleaned_data = auto_clean_json($decoded);
         $product->author_email = $array['author_email'];
         $product->author_name = $array['author_name'];
         $product->author_userId = $array['author_userId'];
-        $product->appKey = $array['appKey'];
+        
         $product->appHash = $array['appHash'];
         $product->origin = $array['origin'];      
         //estoque
@@ -392,6 +396,52 @@ $cleaned_data = auto_clean_json($decoded);
         // $data['LastUpdateDate'] = $product->codigoClienteOmie ?? null;//chave externa do cliente(código Omie)
         //$data['ImportationIdCreate'] = $product->latitude ?? null;(inexistente no omie)
         //$data['ImportationIdUpdate'] = $product->longitude ?? null;(inexistente no omie)
+
+        $pProduct = $ploomesServices->getProductByCode($product->codigo);
+        
+        if(!$pProduct){
+            $data['Lists']=null;
+        }else{
+
+            $marcador = $ploomesServices->getListByTagName($product->nome_familia);
+     
+            if($marcador){
+        
+                $data['Lists'] = [
+                    [
+                        'ListId'=> $marcador['Id'],
+                        'ProductId'=> $pProduct['Id']
+                    ]
+                ];
+    
+            }else{
+
+                $array = [
+                    'Name'=>$product->nome_familia,
+                    'Editable'=>true
+                ];
+                $json = json_encode($array);
+    
+                $nMarcador = $ploomesServices->createNewListTag($json);
+
+    
+                $data['Lists'] = [
+                    [
+
+                        'ListId'=> $nMarcador['Id'],
+                        'ProductId'=> $pProduct['Id']
+                    ]
+                ];
+    
+            }
+
+        }
+
+        
+        
+
+        // $product->nome_familia;
+
         
         $op = [];
         $ncm = [
