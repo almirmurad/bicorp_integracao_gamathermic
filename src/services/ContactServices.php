@@ -323,8 +323,8 @@ class ContactServices
         if($pContact !== null){
             // $messages['error'] = 'Erro ao cadastrar o cliente '.$contact->nomeFantasia .'('.$contact->cnpjCpf.') Cliente já cadastrado no Ploomes com o código: '.$pContact.' Data:' .$current;
 
-            $contactJson = ClientsFunctions::createPloomesContactFromOmieObject($contact, $ploomesServices, $omieServices);
-            $process = ContactServices::updateContactERP($contactJson, $contact, $ploomesServices);
+           
+            $process = ContactServices::updateContactERP($json, $contact, $ploomesServices);
 
             if($process){
                 return $process;
@@ -333,6 +333,7 @@ class ContactServices
         }else{
   
             if(!$ploomesServices->createPloomesContact($json)){
+
             }else{
                 $messages['success'] = 'Cliente '.$contact->nomeFantasia.' Cadastrado no Ploomes CRM com sucesso! Data: '.$current;
             }
