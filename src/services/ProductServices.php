@@ -261,11 +261,12 @@ class ProductServices
         $pPloomes = $ploomesServices->getProductByCode($product->codigo);
         if($pPloomes === null)
         {
-        
-            if(!$ploomesServices->createPloomesProduct($json)){
+            $codIntegracao = $ploomesServices->createPloomesProduct($json);
+            if(!$codIntegracao){
                 $messages['error'] = 'Erro ao cadastrar o produto ('.$product->descricao.') Data:' .$current;
             }else{
                 //aqui poderia enviar ao omie o codigo do produto de integração (id produto no ploomes)
+                $product->idPloomes = $codIntegracao;
                 $omieServices->setProductIntegrationCodeAction($product);
                 $messages['success'] = 'Produto ('.$product->descricao.') Cadastrado no Ploomes CRM com sucesso! Data: '.$current;
             }

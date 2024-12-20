@@ -499,7 +499,7 @@ class PloomesServices implements PloomesManagerInterface{
     }
 
     //CRIA Produto NO PLOOMES
-    public function createPloomesProduct(string $json):bool
+    public function createPloomesProduct(string $json):bool|string|int
     {
 
         //CHAMADA CURL PRA CRIAR WEBHOOK NO PLOOMES
@@ -523,7 +523,7 @@ class PloomesServices implements PloomesManagerInterface{
 
         $idIntegration = $response['value'][0]['Id']??Null;
 
-        return ($idIntegration !== null)?true:false;
+        return ($idIntegration !== null)?$idIntegration:false;
         
     }
 
