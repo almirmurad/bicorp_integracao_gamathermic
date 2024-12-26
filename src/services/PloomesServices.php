@@ -279,11 +279,15 @@ class PloomesServices implements PloomesManagerInterface{
     }
 
     public function getListByTagName($tagName)
-    {
+    { 
         $curl = curl_init();
 
+        // Codifica os parâmetros da URL
+    $encodedFilter = urlencode("Name eq '$tagName'");
+    $url = $this->baseApi . "Products@Lists?\$filter=" . $encodedFilter;
+
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->baseApi .'Products@Lists?$filter=Name+eq+'."'$tagName'",
+            CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -296,8 +300,14 @@ class PloomesServices implements PloomesManagerInterface{
         ));
 
         $response = curl_exec($curl);
+
+        if (curl_errno($curl)) {
+           return 'cURL Error: ' . curl_error($curl);
+        }
+    
+        // $info = curl_getinfo($curl); // Informações da requisição
+        // var_dump($info);
         $response =json_decode($response, true);
-        
         curl_close($curl);
 
         return $response['value'][0] ?? false;

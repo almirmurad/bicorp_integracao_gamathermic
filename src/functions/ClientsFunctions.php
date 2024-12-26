@@ -237,37 +237,37 @@ class ClientsFunctions{
         $bases[0]['title'] = 'ENGEPARTS';
         $bases[0]['sigla'] = 'EPT';
         $bases[0]['integrar'] = $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'];
-        $bases[0]['appKey'] = $_ENV['APPK_DEMO']??null;
-        $bases[0]['appSecret'] = $_ENV['SECRETS_DEMO']??null;
-        // $bases[0]['appKey'] = $_ENV['APPK_EPT']??null;
-        // $bases[0]['appSecret'] = $_ENV['SECRETS_EPT']??null;
+        // $bases[0]['appKey'] = $_ENV['APPK_DEMO']??null;
+        // $bases[0]['appSecret'] = $_ENV['SECRETS_DEMO']??null;
+        $bases[0]['appKey'] = $_ENV['APPK_EPT']??null;
+        $bases[0]['appSecret'] = $_ENV['SECRETS_EPT']??null;
 
         $bases[1]['fieldKey'] = 'contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C';
         $bases[1]['title'] = 'GAMATERMIC';
         $bases[1]['sigla'] = 'GTC';
         $bases[1]['integrar'] = $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'];
-        // $bases[1]['appKey'] = $_ENV['APPK_GTC']??null;
-        // $bases[1]['appSecret'] = $_ENV['SECRETS_GTC']??null;
-        $bases[1]['appKey'] = $_ENV['APPK_DEMO2']??null;
-        $bases[1]['appSecret'] = $_ENV['SECRETS_DEMO2']??null;
+        $bases[1]['appKey'] = $_ENV['APPK_GTC']??null;
+        $bases[1]['appSecret'] = $_ENV['SECRETS_GTC']??null;
+        // $bases[1]['appKey'] = $_ENV['APPK_DEMO2']??null;
+        // $bases[1]['appSecret'] = $_ENV['SECRETS_DEMO2']??null;
 
         $bases[2]['fieldKey'] = 'contact_02AA406F-F955-4AE0-B380-B14301D1188B';
         $bases[2]['title'] = 'SEMIN';
         $bases[2]['sigla'] = 'SMN';
         $bases[2]['integrar'] = $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'];
-        // $bases[2]['appKey'] = $_ENV['APPK_SMN']??null;
-        // $bases[2]['appSecret'] = $_ENV['SECRETS_SMN']??null;
-        $bases[2]['appKey'] = $_ENV['APPK_MHL']??null;
-        $bases[2]['appSecret'] = $_ENV['SECRETS_MHL']??null;
+        $bases[2]['appKey'] = $_ENV['APPK_SMN']??null;
+        $bases[2]['appSecret'] = $_ENV['SECRETS_SMN']??null;
+        // $bases[2]['appKey'] = $_ENV['APPK_MHL']??null;
+        // $bases[2]['appSecret'] = $_ENV['SECRETS_MHL']??null;
         
         $bases[3]['fieldKey'] = 'contact_E497C521-4275-48E7-B44E-7A057844B045';
         $bases[3]['title'] = 'GSU';
         $bases[3]['sigla'] = 'GSU';
         $bases[3]['integrar'] = $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] ?? null;
-        // $bases[3]['appKey'] = $_ENV['APPK_GSU']??null;
-        // $bases[3]['appSecret'] = $_ENV['SECRETS_GSU']??null;
-        $bases[3]['appKey'] = $_ENV['APPK_MSC']??null;
-        $bases[3]['appSecret'] = $_ENV['SECRETS_MSC']??null;
+        $bases[3]['appKey'] = $_ENV['APPK_GSU']??null;
+        $bases[3]['appSecret'] = $_ENV['SECRETS_GSU']??null;
+        // $bases[3]['appKey'] = $_ENV['APPK_MSC']??null;
+        // $bases[3]['appSecret'] = $_ENV['SECRETS_MSC']??null;
         
         // (!empty($contact->baseFaturamento))? $contact->baseFaturamento : $m[] = 'Base de faturamento inexistente';
         $contact->basesFaturamento = $bases;     
@@ -463,37 +463,37 @@ class ClientsFunctions{
         $bases[0]['title'] = 'ENGEPARTS';
         $bases[0]['sigla'] = 'EPT';
         $bases[0]['integrar'] = $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'];
-        $bases[0]['appKey'] = $_ENV['APPK_DEMO']??null;
-        $bases[0]['appSecret'] = $_ENV['SECRETS_DEMO']??null;
-        // $bases[0]['appKey'] = $_ENV['APPK_EPT']??null;
-        // $bases[0]['appSecret'] = $_ENV['SECRETS_EPT']??null;
+        // $bases[0]['appKey'] = $_ENV['APPK_DEMO']??null;
+        // $bases[0]['appSecret'] = $_ENV['SECRETS_DEMO']??null;
+        $bases[0]['appKey'] = $_ENV['APPK_EPT']??null;
+        $bases[0]['appSecret'] = $_ENV['SECRETS_EPT']??null;
 
         $bases[1]['fieldKey'] = 'contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C';
         $bases[1]['title'] = 'GAMATERMIC';
         $bases[1]['sigla'] = 'GTC';
         $bases[1]['integrar'] = $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'];
-        // $bases[1]['appKey'] = $_ENV['APPK_GTC']??null;
-        // $bases[1]['appSecret'] = $_ENV['SECRETS_GTC']??null;
-        $bases[1]['appKey'] = $_ENV['APPK_DEMO2']??null;
-        $bases[1]['appSecret'] = $_ENV['SECRETS_DEMO2']??null;
+        $bases[1]['appKey'] = $_ENV['APPK_GTC']??null;
+        $bases[1]['appSecret'] = $_ENV['SECRETS_GTC']??null;
+        // $bases[1]['appKey'] = $_ENV['APPK_DEMO2']??null;
+        // $bases[1]['appSecret'] = $_ENV['SECRETS_DEMO2']??null;
 
         $bases[2]['fieldKey'] = 'contact_02AA406F-F955-4AE0-B380-B14301D1188B';
         $bases[2]['title'] = 'SEMIN';
         $bases[2]['sigla'] = 'SMN';
         $bases[2]['integrar'] = $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'];
-        // $bases[2]['appKey'] = $_ENV['APPK_SMN']??null;
-        // $bases[2]['appSecret'] = $_ENV['SECRETS_SMN']??null;
-        $bases[2]['appKey'] = $_ENV['APPK_MHL']??null;
-        $bases[2]['appSecret'] = $_ENV['SECRETS_MHL']??null;
+        $bases[2]['appKey'] = $_ENV['APPK_SMN']??null;
+        $bases[2]['appSecret'] = $_ENV['SECRETS_SMN']??null;
+        // $bases[2]['appKey'] = $_ENV['APPK_MHL']??null;
+        // $bases[2]['appSecret'] = $_ENV['SECRETS_MHL']??null;
         
         $bases[3]['fieldKey'] = 'contact_E497C521-4275-48E7-B44E-7A057844B045';
         $bases[3]['title'] = 'GSU';
         $bases[3]['sigla'] = 'GSU';
         $bases[3]['integrar'] = $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] ?? null;
-        // $bases[3]['appKey'] = $_ENV['APPK_GSU']??null;
-        // $bases[3]['appSecret'] = $_ENV['SECRETS_GSU']??null;
-        $bases[2]['appKey'] = $_ENV['APPK_MSC']??null;
-        $bases[2]['appSecret'] = $_ENV['SECRETS_MSC']??null;
+        $bases[3]['appKey'] = $_ENV['APPK_GSU']??null;
+        $bases[3]['appSecret'] = $_ENV['SECRETS_GSU']??null;
+        // $bases[3]['appKey'] = $_ENV['APPK_MSC']??null;
+        // $bases[3]['appSecret'] = $_ENV['SECRETS_MSC']??null;
     
         $contact->basesFaturamento = $bases;        
 
@@ -689,37 +689,37 @@ class ClientsFunctions{
         $bases[0]['title'] = 'ENGEPARTS';
         $bases[0]['sigla'] = 'EPT';
         $bases[0]['integrar'] = $prop['contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C'];
-        $bases[0]['appKey'] = $_ENV['APPK_DEMO']??null;
-        $bases[0]['appSecret'] = $_ENV['SECRETS_DEMO']??null;
-        // $bases[0]['appKey'] = $_ENV['APPK_EPT']??null;
-        // $bases[0]['appSecret'] = $_ENV['SECRETS_EPT']??null;
+        // $bases[0]['appKey'] = $_ENV['APPK_DEMO']??null;
+        // $bases[0]['appSecret'] = $_ENV['SECRETS_DEMO']??null;
+        $bases[0]['appKey'] = $_ENV['APPK_EPT']??null;
+        $bases[0]['appSecret'] = $_ENV['SECRETS_EPT']??null;
 
         $bases[1]['fieldKey'] = 'contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C';
         $bases[1]['title'] = 'GAMATERMIC';
         $bases[1]['sigla'] = 'GTC';
         $bases[1]['integrar'] = $prop['contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C'];
-        // $bases[1]['appKey'] = $_ENV['APPK_GTC']??null;
-        // $bases[1]['appSecret'] = $_ENV['SECRETS_GTC']??null;
-        $bases[1]['appKey'] = $_ENV['APPK_DEMO2']??null;
-        $bases[1]['appSecret'] = $_ENV['SECRETS_DEMO2']??null;
+        $bases[1]['appKey'] = $_ENV['APPK_GTC']??null;
+        $bases[1]['appSecret'] = $_ENV['SECRETS_GTC']??null;
+        // $bases[1]['appKey'] = $_ENV['APPK_DEMO2']??null;
+        // $bases[1]['appSecret'] = $_ENV['SECRETS_DEMO2']??null;
 
         $bases[2]['fieldKey'] = 'contact_02AA406F-F955-4AE0-B380-B14301D1188B';
         $bases[2]['title'] = 'SEMIN';
         $bases[2]['sigla'] = 'SMN';
         $bases[2]['integrar'] = $prop['contact_02AA406F-F955-4AE0-B380-B14301D1188B'];
-        // $bases[2]['appKey'] = $_ENV['APPK_SMN']??null;
-        // $bases[2]['appSecret'] = $_ENV['SECRETS_SMN']??null;
-        $bases[2]['appKey'] = $_ENV['APPK_MHL']??null;
-        $bases[2]['appSecret'] = $_ENV['SECRETS_MHL']??null;
+        $bases[2]['appKey'] = $_ENV['APPK_SMN']??null;
+        $bases[2]['appSecret'] = $_ENV['SECRETS_SMN']??null;
+        // $bases[2]['appKey'] = $_ENV['APPK_MHL']??null;
+        // $bases[2]['appSecret'] = $_ENV['SECRETS_MHL']??null;
         
         $bases[3]['fieldKey'] = 'contact_E497C521-4275-48E7-B44E-7A057844B045';
         $bases[3]['title'] = 'GSU';
         $bases[3]['sigla'] = 'GSU';
         $bases[3]['integrar'] = $prop['contact_E497C521-4275-48E7-B44E-7A057844B045'] ?? null;
-        // $bases[3]['appKey'] = $_ENV['APPK_GSU']??null;
-        // $bases[3]['appSecret'] = $_ENV['SECRETS_GSU']??null;
-        $bases[3]['appKey'] = $_ENV['APPK_MSC']??null;
-        $bases[3]['appSecret'] = $_ENV['SECRETS_MSC']??null;
+        $bases[3]['appKey'] = $_ENV['APPK_GSU']??null;
+        $bases[3]['appSecret'] = $_ENV['SECRETS_GSU']??null;
+        // $bases[3]['appKey'] = $_ENV['APPK_MSC']??null;
+        // $bases[3]['appSecret'] = $_ENV['SECRETS_MSC']??null;
         //switch para uma base serve mas para as 4 base não pois ele vai verificar se existe base de faturamento em apenas uma das opções
         // switch($prop){
             
@@ -780,10 +780,10 @@ class ClientsFunctions{
         $omie = new stdClass();
         $omie->appKey = $decoded['appKey'];
         match($omie->appKey){
-            '4194053472609'=> $omie->appSecret =  $_ENV['SECRETS_DEMO'],
-            '5270544396117'=> $omie->appSecret =  $_ENV['SECRETS_DEMO2'],
-            '2597402735928'=> $omie->appSecret =  $_ENV['SECRETS_DEMO'],
-            '2337978328686'=> $omie->appSecret =  $_ENV['SECRETS_DEMO'],
+            '1120581879417'=> $omie->appSecret =  $_ENV['SECRETS_EPT'],
+            '146532853467'=> $omie->appSecret =  $_ENV['SECRETS_GTC'],
+            '146571186762'=> $omie->appSecret =  $_ENV['SECRETS_SMN'],
+            '171250162083'=> $omie->appSecret =  $_ENV['SECRETS_GSU'],
         };
         
         $cliente = new stdClass();
@@ -944,37 +944,38 @@ class ClientsFunctions{
     {
         $omie = new stdClass();
         switch($contact->appKey){
-            case '4194053472609': 
-                $omie->appKey = $_ENV['APPK_DEMO'];
-                $omie->appSecret = $_ENV['SECRETS_DEMO'];
+            case '1120581879417': 
+                // $omie->appKey = $_ENV['APPK_DEMO'];
+                $omie->appKey = $_ENV['APPK_EPT'];
+                $omie->appSecret = $_ENV['SECRETS_EPT'];
                 $contact->baseFaturamentoTitle = 'Engeparts';
                 $cOmie = [
                     'FieldKey'=>'contact_4F0C36B9-5990-42FB-AEBC-5DCFD7A837C3',
                     'StringValue'=>$contact->codigoClienteOmie,
                 ];
                 break;
-            case '5270544396117': 
-                $omie->appKey = $_ENV['APPK_DEMO2'];
-                $omie->appSecret = $_ENV['SECRETS_DEMO2'];
+            case '146532853467': 
+                $omie->appKey = $_ENV['APPK_GTC'];
+                $omie->appSecret = $_ENV['SECRETS_GTC'];
                 $contact->baseFaturamentoTitle = 'Gamatermic';
                 $cOmie = [
                     'FieldKey'=>'contact_6DB7009F-1E58-4871-B1E6-65534737C1D0',
                     'StringValue'=>$contact->codigoClienteOmie,
                 ];
                 break;
-            case '2597402735928':
-                $omie->appKey = $_ENV['APPK_MSC'];
-                $omie->appSecret = $_ENV['SECRETS_MSC']; 
+            case '146571186762':
+                $omie->appKey = $_ENV['APPK_SMN'];
+                $omie->appSecret = $_ENV['SECRETS_SMN']; 
                 $contact->baseFaturamentoTitle = 'Semin';
                 $cOmie = [
                     'FieldKey'=>'contact_AE3D1F66-44A8-4F88-AAA5-F10F05E662C2',
                     'StringValue'=>$contact->codigoClienteOmie,
                 ];
                 break;
-            case '2337978328686': 
+            case '171250162083': 
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_HML'];
-                $omie->appSecret = $_ENV['SECRETS_HML']; 
+                $omie->appKey = $_ENV['APPK_GSU'];
+                $omie->appSecret = $_ENV['SECRETS_GSU']; 
                 $contact->baseFaturametoTitle = 'GSU';
                     $cOmie = [
                     'FieldKey'=>'contact_07784D81-18E1-42DC-9937-AB37434176FB',
@@ -1194,19 +1195,19 @@ class ClientsFunctions{
         ];
         $integrarBase1 = [
             'FieldKey'=>'contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C',
-            'BoolValue'=>(isset($contact->appKey) && $contact->appKey === '4194053472609') ?  true :  false,
+            'BoolValue'=>(isset($contact->appKey) && $contact->appKey === '1120581879417') ?  true :  false,
         ];
         $integrarBase2 = [
             'FieldKey'=>'contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C',
-            'BoolValue'=>(isset($contact->appKey) && $contact->appKey === '5270544396117') ?  true :  false,
+            'BoolValue'=>(isset($contact->appKey) && $contact->appKey === '146532853467') ?  true :  false,
         ];
         $integrarBase3 = [
             'FieldKey'=>'contact_02AA406F-F955-4AE0-B380-B14301D1188B',
-            'BoolValue'=>(isset($contact->appKey) && $contact->appKey === '2597402735928') ?  true :  false,
+            'BoolValue'=>(isset($contact->appKey) && $contact->appKey === '146571186762') ?  true :  false,
         ];
         $integrarBase4 = [
             'FieldKey'=>'contact_E497C521-4275-48E7-B44E-7A057844B045',
-            'BoolValue'=>(isset($contact->appKey) && $contact->appKey === '2337978328686') ?  true :  false,
+            'BoolValue'=>(isset($contact->appKey) && $contact->appKey === '171250162083') ?  true :  false,
         ];
         
         $op[] = $ramo;

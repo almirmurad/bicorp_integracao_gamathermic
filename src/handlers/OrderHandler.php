@@ -147,40 +147,40 @@ class OrderHandler
         $order->baseFaturamento = $prop['order_94FD0EA3-9219-4E27-8BBC-87D7EB505CD9'];
         $omie = new Omie();
         switch ($order->baseFaturamento) {
+            case '420197140':
+                $order->baseFaturamentoTitle = 'ENGEPARTS';
+                $omie->baseFaturamentoTitle = 'ENGEPARTS';
+                $omie->target = 'EPT'; 
+                $omie->ncc = $_ENV['NCC_EPT'];
+                $omie->appSecret = $_ENV['SECRETS_EPT'];
+                $omie->appKey = $_ENV['APPK_EPT'];
+                break;
+
             case '420197141':
                 $order->baseFaturamentoTitle = 'GAMATERMIC';
                 $omie->baseFaturamentoTitle = 'GAMATERMIC'; 
-                $omie->target = 'DEMO2'; 
-                $omie->ncc = $_ENV['NCC_DEMO2'];
-                $omie->appSecret = $_ENV['SECRETS_DEMO2'];
-                $omie->appKey = $_ENV['APPK_DEMO2'];
+                $omie->target = 'GTC'; 
+                $omie->ncc = $_ENV['NCC_GTC'];
+                $omie->appSecret = $_ENV['SECRETS_GTC'];
+                $omie->appKey = $_ENV['APPK_GTC'];
                 break;
                 
             case '420197143':
                 $order->baseFaturamentoTitle = 'SEMIN';
                 $omie->baseFaturamentoTitle = 'SEMIN';
-                $omie->target = 'MSC'; 
-                $omie->ncc = $_ENV['NCC_MSC'];
-                $omie->appSecret = $_ENV['SECRETS_MSC'];
-                $omie->appKey = $_ENV['APPK_MSC'];
+                $omie->target = 'SMN'; 
+                $omie->ncc = $_ENV['NCC_SMN'];
+                $omie->appSecret = $_ENV['SECRETS_SMN'];
+                $omie->appKey = $_ENV['APPK_SMN'];
                 break;
                 
-            case '420197140':
-                $order->baseFaturamentoTitle = 'ENGEPARTS';
-                $omie->baseFaturamentoTitle = 'ENGEPARTS';
-                $omie->target = 'MHL'; 
-                $omie->ncc = $_ENV['NCC_DEMO'];
-                $omie->appSecret = $_ENV['SECRETS_DEMO'];
-                $omie->appKey = $_ENV['APPK_DEMO'];
-                break;
-
             case '420197142':
                 $order->baseFaturamentoTitle = 'GSU';
                 $omie->baseFaturamentoTitle = 'GSU';
                 $omie->target = 'MHL'; 
-                $omie->ncc = $_ENV['NCC_DEMO'];
-                $omie->appSecret = $_ENV['SECRETS_DEMO'];
-                $omie->appKey = $_ENV['APPK_DEMO'];
+                $omie->ncc = $_ENV['NCC_GSU'];
+                $omie->appSecret = $_ENV['SECRETS_GSU'];
+                $omie->appKey = $_ENV['APPK_GSU'];
                 break;
                 
                 default:

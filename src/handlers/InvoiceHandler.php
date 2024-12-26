@@ -71,11 +71,26 @@ class InvoiceHandler
         
 
         //pega a chave secreta para a base de faturamento vinda no faturamento
+        // switch($decoded['appKey']){
+        //     case 4194053472609:               
+        //         $omie->appSecret = $_ENV['SECRETS_DEMO'];
+        //         break;
+        //     }
         switch($decoded['appKey']){
-            case 4194053472609:               
-                $omie->appSecret = $_ENV['SECRETS_DEMO'];
+            case 1120581879417:               
+                $omie->appSecret = $_ENV['SECRETS_EPT'];
+                break;
+            case 146532853467:               
+                $omie->appSecret = $_ENV['SECRETS_GTC'];
+                break;
+            case 146571186762:               
+                $omie->appSecret = $_ENV['SECRETS_SMN'];
+                break;
+            case 171250162083:               
+                $omie->appSecret = $_ENV['SECRETS_GSU'];
                 break;
             }
+            
 
         // busca o pedido através id do pedido no omie retorna exceção se não encontra 
         // if(!$pedidoOmie = $this->omieServices->consultaPedidoOmie($omie, $decoded['event']['idPedido'])){throw new WebhookReadErrorException('Pedido '.$decoded['event']['idPedido'].' não encontrado no Omie ERP',1023);

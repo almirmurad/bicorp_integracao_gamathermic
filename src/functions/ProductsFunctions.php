@@ -84,20 +84,20 @@ class ProductsFunctions{
         $product = new stdClass();
 
         switch($decoded['appKey']){
-            case '4194053472609': 
+            case '1120581879417': 
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_DEMO'];
-                $omie->appSecret = $_ENV['SECRETS_DEMO'];
+                $omie->appKey = $_ENV['APPK_EPT'];
+                $omie->appSecret = $_ENV['SECRETS_EPT'];
                 $product->baseFaturamentoTitle = 'Engeparts';
                 // $cOmie = [
                 //     'FieldKey'=>'product_E57EE0E4-2668-4424-AB79-1579840719BE',
                 //     'StringValue'=>$product->codigoClienteOmie,
                 // ];
                 break;
-            case '5270544396117': 
+            case '146532853467': 
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_DEMO2'];
-                $omie->appSecret = $_ENV['SECRETS_DEMO2'];
+                $omie->appKey = $_ENV['APPK_GTC'];
+                $omie->appSecret = $_ENV['SECRETS_GTC'];
                 $product->baseFaturamentoTitle = 'Gamatermic';
                 // $cOmie = [
                 //     'FieldKey'=>'contact_6DB7009F-1E58-4871-B1E6-65534737C1D0',
@@ -105,20 +105,20 @@ class ProductsFunctions{
 
                 // ];
                 break;
-            case '2597402735928':
+            case '146571186762':
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_MSC'];
-                $omie->appSecret = $_ENV['SECRETS_MSC']; 
+                $omie->appKey = $_ENV['APPK_SMN'];
+                $omie->appSecret = $_ENV['SECRETS_SMN']; 
                 $product->baseFaturamentoTitle = 'Semin';
                 // $cOmie = [
                 //     'FieldKey'=>'contact_AE3D1F66-44A8-4F88-AAA5-F10F05E662C2',
                 //     'StringValue'=>$product->codigoClienteOmie,
                 // ];
                 break;
-            case 2337978328686: 
+            case '171250162083': 
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_HML'];
-                $omie->appSecret = $_ENV['SECRETS_HML']; 
+                $omie->appKey = $_ENV['APPK_GSU'];
+                $omie->appSecret = $_ENV['SECRETS_GSU']; 
                 $product->baseFaturamentoTitle = 'GSU';
                 // $cOmie = [
                 //     'FieldKey'=>'contact_07784D81-18E1-42DC-9937-AB37434176FB',
@@ -138,8 +138,7 @@ class ProductsFunctions{
         $product->cnpj_fabricante = $array['event_cnpj_fabricante'];
         $product->codigo = $array['event_codigo'];
         $product->codigo_familia = $array['event_codigo_familia'];
-        ($product->codigo_familia == 0 || $product->codigo_familia == null) ? $product->nome_familia = null :  
-        $product->nome_familia = $omieServices->getFamiliaById($product);
+        ($product->codigo_familia == 0 || $product->codigo_familia == null) ? $product->nome_familia = 'A DEFINIR' : $product->nome_familia = $omieServices->getFamiliaById($product);
         $product->codigo_produto = $array['event_codigo_produto'];
         $product->codigo_produto_integracao = $array['event_codigo_produto_integracao'];
         $product->combustivel_codigo_anp = $array['event_combustivel_codigo_anp'];
@@ -212,10 +211,10 @@ class ProductsFunctions{
     //     $decoded = json_decode($movement);
     //     $product = $ploomesServices->getProductById()
     //     switch($decoded['appKey']){
-    //         case '4194053472609': 
+    //         case '1120581879417': 
     //             $omie = new stdClass();
-    //             $omie->appKey = $_ENV['APPK_DEMO'];
-    //             $omie->appSecret = $_ENV['SECRETS_DEMO'];
+    //             $omie->appKey = $_ENV['APPK_EPT'];
+    //             $omie->appSecret = $_ENV['SECRETS_EPT'];
     //             $product->baseFaturamentoTitle = 'Engeparts';
     //             // $cOmie = [
     //             //     'FieldKey'=>'product_E57EE0E4-2668-4424-AB79-1579840719BE',
@@ -224,8 +223,8 @@ class ProductsFunctions{
     //             break;
     //         case '2335095664902': 
     //             $omie = new stdClass();
-    //             $omie->appKey = $_ENV['APPK_MHL'];
-    //             $omie->appSecret = $_ENV['SECRETS_MHL'];
+    //             $omie->appKey = $_ENV['APPK_GTC'];
+    //             $omie->appSecret = $_ENV['SECRETS_GTC'];
     //             $product->baseFaturamentoTitle = 'Gamatermic';
     //             // $cOmie = [
     //             //     'FieldKey'=>'contact_6DB7009F-1E58-4871-B1E6-65534737C1D0',
@@ -233,20 +232,20 @@ class ProductsFunctions{
 
     //             // ];
     //             break;
-    //         case '2597402735928':
+    //         case '146571186762':
     //             $omie = new stdClass();
-    //             $omie->appKey = $_ENV['APPK_MSC'];
-    //             $omie->appSecret = $_ENV['SECRETS_MSC']; 
+    //             $omie->appKey = $_ENV['APPK_SMN'];
+    //             $omie->appSecret = $_ENV['SECRETS_SMN']; 
     //             $product->baseFaturamentoTitle = 'Semin';
     //             // $cOmie = [
     //             //     'FieldKey'=>'contact_AE3D1F66-44A8-4F88-AAA5-F10F05E662C2',
     //             //     'StringValue'=>$product->codigoClienteOmie,
     //             // ];
     //             break;
-    //         case 2337978328686: 
+    //         case '171250162083': 
     //             $omie = new stdClass();
-    //             $omie->appKey = $_ENV['APPK_HML'];
-    //             $omie->appSecret = $_ENV['SECRETS_HML']; 
+    //             $omie->appKey = $_ENV['APPK_GSU'];
+    //             $omie->appSecret = $_ENV['SECRETS_GSU']; 
     //             $product->baseFaturamentoTitle = 'GSU';
     //             // $cOmie = [
     //             //     'FieldKey'=>'contact_07784D81-18E1-42DC-9937-AB37434176FB',
@@ -278,10 +277,10 @@ class ProductsFunctions{
     {
 
         switch($product->appKey){
-            case '4194053472609': 
+            case '1120581879417': 
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_DEMO'];
-                $omie->appSecret = $_ENV['SECRETS_DEMO'];
+                $omie->appKey = $_ENV['APPK_EPT'];
+                $omie->appSecret = $_ENV['SECRETS_EPT'];
                 $product->baseFaturamentoTitle = 'Engeparts';
                 $cOmie = [
                     'FieldKey'=>'product_0A53B875-0974-440F-B4CE-240E8F400B0F',
@@ -294,10 +293,10 @@ class ProductsFunctions{
                 ];
 
                 break;
-            case '5270544396117': 
+            case '146532853467': 
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_DEMO2'];
-                $omie->appSecret = $_ENV['SECRETS_DEMO2'];
+                $omie->appKey = $_ENV['APPK_GTC'];
+                $omie->appSecret = $_ENV['SECRETS_GTC'];
                 $product->baseFaturamentoTitle = 'Gamatermic';
                 $cOmie = [
                     'FieldKey'=>'product_E241BF1D-7622-45DF-9658-825331BD1C2D',
@@ -310,10 +309,10 @@ class ProductsFunctions{
                         'BigStringValue'=>$product->stock,
                 ];
                 break;
-            case '2597402735928':
+            case '146571186762':
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_MSC'];
-                $omie->appSecret = $_ENV['SECRETS_MSC']; 
+                $omie->appKey = $_ENV['APPK_SMN'];
+                $omie->appSecret = $_ENV['SECRETS_SMN']; 
                 $product->baseFaturamentoTitle = 'Semin';
                 $cOmie = [
                     'FieldKey'=>'product_429C894A-708E-4125-A434-2A70EDCAFED6',
@@ -325,10 +324,10 @@ class ProductsFunctions{
                         'BigStringValue'=>$product->stock,
                 ];
                 break;
-            case 2337978328686: 
+            case '171250162083': 
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_HML'];
-                $omie->appSecret = $_ENV['SECRETS_HML']; 
+                $omie->appKey = $_ENV['APPK_GSU'];
+                $omie->appSecret = $_ENV['SECRETS_GSU']; 
                 $product->baseFaturamentoTitle = 'GSU';
                 $cOmie = [
                     'FieldKey'=>'product_816E5031-2843-4E71-8721-E97185A98E77',
@@ -349,26 +348,26 @@ class ProductsFunctions{
         {
             case 'Engeparts':
                 $product->baseFaturamento['sigla'] =  'EPT';
-                $product->baseFaturamento['appKey'] =  $_ENV['APPK_DEMO'];
-                $product->baseFaturamento['appSecret'] =  $_ENV['SECRETS_DEMO'];
+                $product->baseFaturamento['appKey'] =  $_ENV['APPK_EPT'];
+                $product->baseFaturamento['appSecret'] =  $_ENV['SECRETS_EPT'];
                 $product->baseFaturamento['idOmie'] =   $product->codigo_produto;
                 break;
             case 'Gamatermic':
                 $product->baseFaturamento['sigla'] =  'GTC';
-                $product->baseFaturamento['appKey'] = $_ENV['APPK_DEMO2'];//substituir pelo de cada base do cliente
-                $product->baseFaturamento['appSecret'] = $_ENV['SECRETS_DEMO2'];//substituir pelo de cada base do cliente
+                $product->baseFaturamento['appKey'] = $_ENV['APPK_GTC'];//substituir pelo de cada base do cliente
+                $product->baseFaturamento['appSecret'] = $_ENV['SECRETS_GTC'];//substituir pelo de cada base do cliente
                 $product->baseFaturamento['idOmie'] = $product->codigo_produto;
                 break;
             case 'Semin':
                 $product->baseFaturamento['sigla'] = 'SMN';
-                $product->baseFaturamento['appKey'] = $_ENV['APPK_DEMO'];//substituir pelo de cada base do cliente
-                $product->baseFaturamento['appSecret'] =  $_ENV['SECRETS_DEMO'];//substituir pelo de cada base do cliente
+                $product->baseFaturamento['appKey'] = $_ENV['APPK_SMN'];//substituir pelo de cada base do cliente
+                $product->baseFaturamento['appSecret'] =  $_ENV['SECRETS_SMN'];//substituir pelo de cada base do cliente
                 $product->baseFaturamento['idOmie'] = $product->codigo_produto;
                 break;
             case 'GSU':
                 $product->baseFaturamento['sigla'] =  'GSU';
-                $product->baseFaturamento['appKey'] = $_ENV['APPK_DEMO'];//substituir pelo de cada base do cliente
-                $product->baseFaturamento['appSecret'] = $_ENV['SECRETS_DEMO'];//substituir pelo de cada base do cliente
+                $product->baseFaturamento['appKey'] = $_ENV['APPK_GSU'];//substituir pelo de cada base do cliente
+                $product->baseFaturamento['appSecret'] = $_ENV['SECRETS_GSU'];//substituir pelo de cada base do cliente
                 $product->baseFaturamento['idOmie'] = $product->codigo_produto;
                 break;
         }
@@ -402,9 +401,9 @@ class ProductsFunctions{
         if(!$pProduct){
             $data['Lists']=null;
         }else{
-
+           
             $marcador = $ploomesServices->getListByTagName($product->nome_familia);
-     
+
             if($marcador){
         
                 $data['Lists'] = [
@@ -436,12 +435,6 @@ class ProductsFunctions{
             }
 
         }
-
-        
-        
-
-        // $product->nome_familia;
-
         
         $op = [];
         $ncm = [
@@ -515,31 +508,31 @@ class ProductsFunctions{
         {
             $product->baseFaturamento[1]['title'] = 'Engeparts';
             $product->baseFaturamento[1]['sigla'] =  'EPT';
-            $product->baseFaturamento[1]['appKey'] =  $_ENV['APPK_DEMO'];
-            $product->baseFaturamento[1]['appSecret'] =  $_ENV['SECRETS_DEMO'];
+            $product->baseFaturamento[1]['appKey'] =  $_ENV['APPK_EPT'];
+            $product->baseFaturamento[1]['appSecret'] =  $_ENV['SECRETS_EPT'];
             $product->baseFaturamento[1]['idOmie'] =  $product->idEngeparts;
         }
         if(isset($product->idGamatermic) && $product->idGamatermic !== null)
         {
             $product->baseFaturamento[2]['title'] = 'Gamatermic';
             $product->baseFaturamento[2]['sigla'] =  'GTC';
-            $product->baseFaturamento[2]['appKey'] =  $_ENV['APPK_DEMO2'];//substituir pelo de cada base do cliente
-            $product->baseFaturamento[2]['appSecret'] =  $_ENV['SECRETS_DEMO2'];//substituir pelo de cada base do cliente
+            $product->baseFaturamento[2]['appKey'] =  $_ENV['APPK_GTC'];//substituir pelo de cada base do cliente
+            $product->baseFaturamento[2]['appSecret'] =  $_ENV['SECRETS_GTC'];//substituir pelo de cada base do cliente
             $product->baseFaturamento[2]['idOmie'] =  $product->idGamatermic;
         }
         if(isset($product->idSemin) && $product->idSemin !== null)
         {
             $product->baseFaturamento[3]['title'] = 'Semin';
             $product->baseFaturamento[3]['sigla'] =  'SMN';
-            $product->baseFaturamento[3]['appKey'] =  $_ENV['APPK_DEMO'];//substituir pelo de cada base do cliente
-            $product->baseFaturamento[3]['appSecret'] =  $_ENV['SECRETS_DEMO'];//substituir pelo de cada base do cliente
+            $product->baseFaturamento[3]['appKey'] =  $_ENV['APPK_SMN'];//substituir pelo de cada base do cliente
+            $product->baseFaturamento[3]['appSecret'] =  $_ENV['SECRETS_SMN'];//substituir pelo de cada base do cliente
             $product->baseFaturamento[3]['idOmie'] =  $product->idSemin;
         }
         if(isset($product->idGSU) && $product->idGSU !== null){
             $product->baseFaturamento[4]['title'] = 'GSU';
             $product->baseFaturamento[4]['sigla'] =  'GSU';
-            $product->baseFaturamento[4]['appKey'] = $_ENV['APPK_DEMO'];//substituir pelo de cada base do cliente
-            $product->baseFaturamento[4]['appSecret'] = $_ENV['SECRETS_DEMO'];//substituir pelo de cada base do cliente
+            $product->baseFaturamento[4]['appKey'] = $_ENV['APPK_GSU'];//substituir pelo de cada base do cliente
+            $product->baseFaturamento[4]['appSecret'] = $_ENV['SECRETS_GSU'];//substituir pelo de cada base do cliente
             $product->baseFaturamento[4]['idOmie'] =  $product->idGSU;
         };
 
@@ -571,7 +564,7 @@ class ProductsFunctions{
         $product->codigo = $stock['codigo'];
 
         switch($decoded['appKey']){
-            case '4194053472609': 
+            case '1120581879417': 
 
                 //tabela de estoque por base de faturamento
                 $stockTable = [
@@ -580,7 +573,7 @@ class ProductsFunctions{
                 ];
 
                 break;
-            case '5270544396117': 
+            case '146532853467': 
                 
                 // tabela de estoque por base de faturamento
                 $stockTable = [
@@ -588,7 +581,7 @@ class ProductsFunctions{
                         'BigStringValue'=>$table,
                 ];
                 break;
-            case '2597402735928':
+            case '146571186762':
                 
                 // tabela de estoque por base de faturamento
                 $stockTable = [
@@ -596,7 +589,7 @@ class ProductsFunctions{
                         'BigStringValue'=>$table,
                 ];
                 break;
-            case 2337978328686: 
+            case '171250162083': 
 
                 // tabela de estoque por base de faturamento
                 $stockTable = [

@@ -387,7 +387,7 @@ class OmieServices implements OmieManagerInterface{
         
         //informações adicionais
         $informacoes_adicionais = []; //informações adicionais por exemplo codigo_categoria = 1.01.03, codigo_conta_corrente = 123456789
-        $informacoes_adicionais['codigo_categoria'] = '1.01.01';//string
+        $informacoes_adicionais['codigo_categoria'] = '1.01.03';//string
         $informacoes_adicionais['codigo_conta_corrente'] = $omie->ncc;//int
         // $informacoes_adicionais['consumidor_final'] = 'S';//string
         // $informacoes_adicionais['enviar_email'] = 'N';//string

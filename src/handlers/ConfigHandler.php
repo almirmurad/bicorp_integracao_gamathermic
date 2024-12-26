@@ -5,57 +5,75 @@ use Dotenv\Dotenv;
 
 class ConfigHandler{
 
-    public static function configOmieMpr($SK='',$APPK='',$NCC=''){
+    public static function configOmieEpt($SK='',$APPK='',$NCC=''){
         
         $file = parse_ini_file('../.env');
         switch($file){
-            case isset($file['SECRETS_MPR']) && !empty($file['SECRETS_MPR']) && $file['SECRETS_MPR'] != $SK && $SK != '':
-                $file['SECRETS_MPR'] = $SK;
+            case isset($file['SECRETS_EPT']) && !empty($file['SECRETS_EPT']) && $file['SECRETS_EPT'] != $SK && $SK != '':
+                $file['SECRETS_EPT'] = $SK;
                 break;
-            case isset($file['APPK_MPR']) && !empty($file['APPK_MPR']) && $file['APPK_MPR'] != $APPK && $APPK !='':
-                $file['APPK_MPR'] = $APPK;
+            case isset($file['APPK_EPT']) && !empty($file['APPK_EPT']) && $file['APPK_EPT'] != $APPK && $APPK !='':
+                $file['APPK_EPT'] = $APPK;
                 break;
-            case isset($file['NCC_MPR']) && !empty($file['NCC_MPR']) && $file['NCC_MPR'] != $NCC && $NCC != $NCC:
-                $file['NCC_MPR'] = $NCC;
+            case isset($file['NCC_EPT']) && !empty($file['NCC_EPT']) && $file['NCC_EPT'] != $NCC && $NCC != $NCC:
+                $file['NCC_EPT'] = $NCC;
                 break;  
         }
-        $keys = array('SECRETS_MPR'=>$SK,'APPK_MPR'=>$APPK,'NCC_MPR'=>$NCC);
+        $keys = array('SECRETS_EPT'=>$SK,'APPK_EPT'=>$APPK,'NCC_EPT'=>$NCC);
         return Self::montaArray($file, $keys); 
 
 
     }
-    public static function configOmieMsc($SK='',$APPK='',$NCC=''){
+    public static function configOmieGtc($SK='',$APPK='',$NCC=''){
         $file = parse_ini_file('../.env');   
         switch($file){
-            case isset($file['SECRETS_MSC']) && !empty($file['SECRETS_MSC']) && $file['SECRETS_MSC'] != $SK && $SK != '':
-                $file['SECRETS_MSC'] = $SK;
+            case isset($file['SECRETS_GTC']) && !empty($file['SECRETS_GTC']) && $file['SECRETS_GTC'] != $SK && $SK != '':
+                $file['SECRETS_GTC'] = $SK;
                 break;
-            case isset($file['APPK_MSC']) && !empty($file['APPK_MSC']) && $file['APPK_MSC'] != $APPK && $APPK != '':
-                $file['APPK_MSC'] = $APPK;
+            case isset($file['APPK_GTC']) && !empty($file['APPK_GTC']) && $file['APPK_GTC'] != $APPK && $APPK != '':
+                $file['APPK_GTC'] = $APPK;
                 break;
-            case isset($file['NCC_MSC']) && !empty($file['NCC_MSC']) && $file['NCC_MSC'] != $NCC && $NCC != '':
-                $file['NCC_MSC'] = $NCC;
+            case isset($file['NCC_GTC']) && !empty($file['NCC_GTC']) && $file['NCC_GTC'] != $NCC && $NCC != '':
+                $file['NCC_GTC'] = $NCC;
                 break;  
         }
-        $keys = array('SECRETS_MSC'=>$SK,'APPK_MSC'=>$APPK,'NCC_MSC'=>$NCC);
+        $keys = array('SECRETS_GTC'=>$SK,'APPK_GTC'=>$APPK,'NCC_GTC'=>$NCC);
         return Self::montaArray($file, $keys);
     }
 
-    public static function configOmieMhl($SK='',$APPK='',$NCC=''){  
+    public static function configOmieSmn($SK='',$APPK='',$NCC=''){  
         $file = parse_ini_file('../.env');
         switch($file){  
-            case isset($file['SECRETS_MHL']) && !empty($file['SECRETS_MHL']) && $file['SECRETS_MHL'] != $SK && $SK !='':
-                $file['SECRETS_MHL'] = $SK;
+            case isset($file['SECRETS_SMN']) && !empty($file['SECRETS_SMN']) && $file['SECRETS_SMN'] != $SK && $SK !='':
+                $file['SECRETS_SMN'] = $SK;
                 break;
-            case isset($file['APPK_MHL']) && !empty($file['APPK_MHL']) && $file['APPK_MHL'] != $APPK && $APPK !='':
-                $file['APPK_MHL'] = $APPK;
+            case isset($file['APPK_SMN']) && !empty($file['APPK_SMN']) && $file['APPK_SMN'] != $APPK && $APPK !='':
+                $file['APPK_SMN'] = $APPK;
                 break;
-            case isset($file['NCC_MHL']) && !empty($file['NCC_MHL']) && $file['NCC_MHL'] != $NCC && $NCC != '':
-                $file['NCC_MHL'] = $NCC;
+            case isset($file['NCC_SMN']) && !empty($file['NCC_SMN']) && $file['NCC_SMN'] != $NCC && $NCC != '':
+                $file['NCC_SMN'] = $NCC;
                 break;  
             
         } 
-        $keys = array('SECRETS_MHL'=>$SK,'APPK_MHL'=>$APPK,'NCC_MHL'=>$NCC);
+        $keys = array('SECRETS_SMN'=>$SK,'APPK_SMN'=>$APPK,'NCC_SMN'=>$NCC);
+        return Self::montaArray($file, $keys);
+    }
+
+    public static function configOmieGsu($SK='',$APPK='',$NCC=''){  
+        $file = parse_ini_file('../.env');
+        switch($file){  
+            case isset($file['SECRETS_GSU']) && !empty($file['SECRETS_GSU']) && $file['SECRETS_GSU'] != $SK && $SK !='':
+                $file['SECRETS_GSU'] = $SK;
+                break;
+            case isset($file['APPK_GSU']) && !empty($file['APPK_GSU']) && $file['APPK_GSU'] != $APPK && $APPK !='':
+                $file['APPK_GSU'] = $APPK;
+                break;
+            case isset($file['NCC_GSU']) && !empty($file['NCC_GSU']) && $file['NCC_GSU'] != $NCC && $NCC != '':
+                $file['NCC_GSU'] = $NCC;
+                break;  
+            
+        } 
+        $keys = array('SECRETS_GSU'=>$SK,'APPK_GSU'=>$APPK,'NCC_GSU'=>$NCC);
         return Self::montaArray($file, $keys);
     }
 

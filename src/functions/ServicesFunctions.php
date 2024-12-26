@@ -49,20 +49,20 @@ class ServicesFunctions{
         $service = new stdClass();
 
         switch($decoded['appKey']){
-            case '4194053472609': 
+            case '1120581879417': 
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_DEMO'];
-                $omie->appSecret = $_ENV['SECRETS_DEMO'];
+                $omie->appKey = $_ENV['APPK_EPT'];
+                $omie->appSecret = $_ENV['SECRETS_EPT'];
                 $service->baseFaturamentoTitle = 'Engeparts';
                 // $cOmie = [
                 //     'FieldKey'=>'contact_4F0C36B9-5990-42FB-AEBC-5DCFD7A837C3',
                 //     'StringValue'=>$service->codigoClienteOmie,
                 // ];
                 break;
-            case '5270544396117': 
+            case '146532853467': 
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_DEMO2'];
-                $omie->appSecret = $_ENV['SECRETS_DEMO2'];
+                $omie->appKey = $_ENV['APPK_GTC'];
+                $omie->appSecret = $_ENV['SECRETS_GTC'];
                 $service->baseFaturamentoTitle = 'Gamatermic';
                 // $cOmie = [
                 //     'FieldKey'=>'contact_6DB7009F-1E58-4871-B1E6-65534737C1D0',
@@ -70,20 +70,20 @@ class ServicesFunctions{
 
                 // ];
                 break;
-            case '2597402735928':
+            case '146571186762':
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_MSC'];
-                $omie->appSecret = $_ENV['SECRETS_MSC']; 
+                $omie->appKey = $_ENV['APPK_SMN'];
+                $omie->appSecret = $_ENV['SECRETS_SMN']; 
                 $service->baseFaturamentoTitle = 'Semin';
                 // $cOmie = [
                 //     'FieldKey'=>'contact_AE3D1F66-44A8-4F88-AAA5-F10F05E662C2',
                 //     'StringValue'=>$service->codigoClienteOmie,
                 // ];
                 break;
-            case 2337978328686: 
+            case '171250162083': 
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_HML'];
-                $omie->appSecret = $_ENV['SECRETS_HML']; 
+                $omie->appKey = $_ENV['APPK_GSU'];
+                $omie->appSecret = $_ENV['SECRETS_GSU']; 
                 $service->baseFaturamentoTitle = 'GSU';
                 // $cOmie = [
                 //     'FieldKey'=>'contact_07784D81-18E1-42DC-9937-AB37434176FB',
@@ -144,20 +144,20 @@ class ServicesFunctions{
     {
        
         switch($service->appKey){
-            case '4194053472609': 
+            case '1120581879417': 
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_DEMO'];
-                $omie->appSecret = $_ENV['SECRETS_DEMO'];
+                $omie->appKey = $_ENV['APPK_EPT'];
+                $omie->appSecret = $_ENV['SECRETS_EPT'];
                 $service->baseFaturamentoTitle = 'Engeparts';
                 $cOmie = [
                     'FieldKey'=>'product_0A53B875-0974-440F-B4CE-240E8F400B0F',
                     'StringValue'=>$service->codServ,
                 ];
                 break;
-            case '5270544396117': 
+            case '146532853467': 
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_DEMO2'];
-                $omie->appSecret = $_ENV['SECRETS_DEMO2'];
+                $omie->appKey = $_ENV['APPK_GTC'];
+                $omie->appSecret = $_ENV['SECRETS_GTC'];
                 $service->baseFaturamentoTitle = 'Gamatermic';
                 $cOmie = [
                     'FieldKey'=>'product_E241BF1D-7622-45DF-9658-825331BD1C2D',
@@ -165,20 +165,20 @@ class ServicesFunctions{
 
                 ];
                 break;
-            case '2597402735928':
+            case '146571186762':
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_MSC'];
-                $omie->appSecret = $_ENV['SECRETS_MSC']; 
+                $omie->appKey = $_ENV['APPK_SMN'];
+                $omie->appSecret = $_ENV['SECRETS_SMN']; 
                 $service->baseFaturamentoTitle = 'Semin';
                 $cOmie = [
                     'FieldKey'=>'product_429C894A-708E-4125-A434-2A70EDCAFED6',
                     'StringValue'=>$service->codServ,
                 ];
                 break;
-            case 2337978328686: 
+            case '171250162083': 
                 $omie = new stdClass();
-                $omie->appKey = $_ENV['APPK_HML'];
-                $omie->appSecret = $_ENV['SECRETS_HML']; 
+                $omie->appKey = $_ENV['APPK_GSU'];
+                $omie->appSecret = $_ENV['SECRETS_GSU']; 
                 $service->baseFaturamentoTitle = 'GSU';
                 $cOmie = [
                     'FieldKey'=>'product_816E5031-2843-4E71-8721-E97185A98E77',
