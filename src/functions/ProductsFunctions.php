@@ -316,7 +316,7 @@ class ProductsFunctions{
                 $product->baseFaturamentoTitle = 'Semin';
                 $cOmie = [
                     'FieldKey'=>'product_429C894A-708E-4125-A434-2A70EDCAFED6',
-                    'IntegerValue'=>$product->codigo_produto,
+                    'StringValue'=>$product->codigo_produto,
                 ];
                 // tabela de estoque por base de faturamento
                 $stockTable = [
@@ -330,8 +330,8 @@ class ProductsFunctions{
                 $omie->appSecret = $_ENV['SECRETS_GSU']; 
                 $product->baseFaturamentoTitle = 'GSU';
                 $cOmie = [
-                    'FieldKey'=>'product_816E5031-2843-4E71-8721-E97185A98E77',
-                    'IntegerValue'=>123456,
+                    'FieldKey'=>'product_08A41D8E-F593-4B74-8CF8-20A924209A09',
+                    'StringValue'=>$product->codigo_produto,
 
                 ];
                 // tabela de estoque por base de faturamento

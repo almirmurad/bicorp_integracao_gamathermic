@@ -1193,22 +1193,38 @@ class ClientsFunctions{
             'FieldKey'=>'contact_33015EDD-B3A7-464E-81D0-5F38D31F604A',
             'BoolValue'=>(isset($contact->transferenciaPadrao) && $contact->transferenciaPadrao === 'S') ? true : false,
         ];
-        $integrarBase1 = [
-            'FieldKey'=>'contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C',
-            'BoolValue'=>(isset($contact->appKey) && $contact->appKey === '1120581879417') ?  true :  false,
-        ];
-        $integrarBase2 = [
-            'FieldKey'=>'contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C',
-            'BoolValue'=>(isset($contact->appKey) && $contact->appKey === '146532853467') ?  true :  false,
-        ];
-        $integrarBase3 = [
-            'FieldKey'=>'contact_02AA406F-F955-4AE0-B380-B14301D1188B',
-            'BoolValue'=>(isset($contact->appKey) && $contact->appKey === '146571186762') ?  true :  false,
-        ];
-        $integrarBase4 = [
-            'FieldKey'=>'contact_E497C521-4275-48E7-B44E-7A057844B045',
-            'BoolValue'=>(isset($contact->appKey) && $contact->appKey === '171250162083') ?  true :  false,
-        ];
+
+        switch($contact->appKey){
+
+            case '1120581879417':
+                $integrarBase1 = [
+                    'FieldKey'=>'contact_55D34FF5-2389-4FEE-947C-ACCC576DB85C',
+                    'BoolValue'=> true,
+                ];
+                $op[] = $integrarBase1;
+                break;
+            case '146532853467':
+                $integrarBase2 = [
+                    'FieldKey'=>'contact_32A7FEE7-C46A-40BE-BABD-2973A63C092C',
+                    'BoolValue'=> true,
+                ];
+                $op[] = $integrarBase2;
+                break;
+            case '146571186762':
+                $integrarBase3 = [
+                    'FieldKey'=>'contact_02AA406F-F955-4AE0-B380-B14301D1188B',
+                    'BoolValue'=> true,
+                ];
+                $op[] = $integrarBase3;
+                break;
+            case '171250162083':
+                $integrarBase4 = [
+                    'FieldKey'=>'contact_E497C521-4275-48E7-B44E-7A057844B045',
+                    'BoolValue'=> true,
+                ];
+                $op[] = $integrarBase4;
+                break;
+        }
         
         $op[] = $ramo;
         $op[] = $tipo;
@@ -1234,11 +1250,7 @@ class ClientsFunctions{
         $op[] = $cOmie;
         $op[] = $chavePix;
         $op[] = $transferenciaPadrao;
-        $op[] = $integrarBase1;
-        $op[] = $integrarBase2;
-        $op[] = $integrarBase3;
-        $op[] = $integrarBase4;
-   
+        
         $data['OtherProperties'] = $op;
         
         $json = json_encode($data,JSON_UNESCAPED_UNICODE);

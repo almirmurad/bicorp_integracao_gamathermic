@@ -540,9 +540,7 @@ class PloomesServices implements PloomesManagerInterface{
     //ATUALIZA CONTACT NO PLOOMES
     public function updatePloomesContact(string $json, int $idContact):bool
     {
-        // print_r($json);
-        //     print $idContact;
-        //     exit;
+    
         //CHAMADA CURL PRA CRIAR WEBHOOK NO PLOOMES
         $curl = curl_init();
 
