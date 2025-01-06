@@ -53,13 +53,13 @@ class InvoiceHandler
         $invoicing->authorEmail = $decoded['author']['email'];//email de quem faturou
         $invoicing->appKey = $decoded['appKey'];//id do app que faturou (base de faturamento)
         $invoicing->etapa = $decoded['event']['etapa']; // etapa do processo 60 = faturado
-        $invoicing->etapaDescr = $decoded['event']['etapaDescr']; // descrição da etapa 
-        $invoicing->dataFaturado = $decoded['event']['dataFaturado']; // data do faturamento
-        $invoicing->horaFaturado = $decoded['event']['horaFaturado']; // hora do faturamento
+        $invoicing->etapaDescr = $decoded['event']['etapaDescr'] ?? null; // descrição da etapa 
+        $invoicing->dataFaturado = $decoded['event']['dataFaturado'] ?? null; // data do faturamento
+        $invoicing->horaFaturado = $decoded['event']['horaFaturado'] ?? null; // hora do faturamento
         $invoicing->idCliente = $decoded['event']['idCliente']; // Id do Cliente Omie
-        $invoicing->idPedido = $decoded['event']['idPedido']; // Id do Pedido Omie
-        $invoicing->numeroPedido = $decoded['event']['numeroPedido']; // Numero do pedido
-        $invoicing->valorPedido = $decoded['event']['valorPedido']; // Valor Faturado
+        $invoicing->idPedido = $decoded['event']['idPedido'] ?? $decoded['event']['idOrdemServico']; // Id do Pedido Omie
+        $invoicing->numeroPedido = $decoded['event']['numeroPedido'] ?? $decoded['event']['numeroOrdemServico']; // Numero do pedido
+        $invoicing->valorPedido = $decoded['event']['valorPedido'] ?? $decoded['event']['valorOrdemServico']; // Valor Faturado
 
         $omie = new stdClass;//monta um objeto com informações a enviar ao omie
         $omie->appKey = $decoded['appKey'];
@@ -79,15 +79,19 @@ class InvoiceHandler
         switch($decoded['appKey']){
             case 1120581879417:               
                 $omie->appSecret = $_ENV['SECRETS_EPT'];
+                $invoicing->baseFaturamentoTitle = 'Engeparts';
                 break;
             case 146532853467:               
                 $omie->appSecret = $_ENV['SECRETS_GTC'];
+                $invoicing->baseFaturamentoTitle = 'Gamatermic';
                 break;
             case 146571186762:               
                 $omie->appSecret = $_ENV['SECRETS_SMN'];
+                $invoicing->baseFaturamentoTitle = 'Semin';
                 break;
             case 171250162083:               
                 $omie->appSecret = $_ENV['SECRETS_GSU'];
+                $invoicing->baseFaturamentoTitle = 'GSU';
                 break;
             }
             
@@ -101,16 +105,15 @@ class InvoiceHandler
         if($decoded['topic'] === 'VendaProduto.Faturada')
         {
             //consulta a nota fiscal no omie para retornar o numero da nota.            
-            $nfe = $this->omieServices->consultaNotaOmie($omie, $decoded['event']['idPedido'])?? throw new Exception('Nota fiscal não encontrada para o pedido: '.$decoded['event']['idPedido'], 1022);  
+            $nfe = $this->omieServices->consultaNotaOmie($omie, $decoded['event']['idPedido'])?? throw new Exception('Nota fiscal não encontrada para o pedido: '.$decoded['event']['idPedido'], 1022); 
             $invoicing->nNF =intval($nfe);
-            $content ='Nota Fiscal de Produto ('. intval($nfe).') emitida no Omie ERP';
+            $content ='Nota Fiscal de Produto ('. intval($nfe).') emitida no Omie ERP na base: '.$invoicing->baseFaturamentoTitle;
         }elseif($decoded['topic'] === 'OrdemServico.Faturada')
         {
-            print'ordem serviço';
             //consulta a nota fiscal no omie para retornar o numero da nota.            
-            $nfe = $this->omieServices->consultaNotaServico($omie, $decoded['event']['idPedido']) ?? throw new Exception('Nota fiscal não encontrada para o pedido: '.$decoded['event']['idPedido'], 1022);  
+            $nfe = $this->omieServices->consultaNotaServico($omie, $decoded['event']['idOrdemServico']) ?? throw new Exception('Nota fiscal não encontrada para o pedido: '.$decoded['event']['idOrdemServico'], 1022);  
             $invoicing->nNF =intval($nfe);
-            $content ='Nota Fiscal de Serviço ('. intval($nfe).') emitida no Omie ERP';
+            $content ='Nota Fiscal de Serviço ('. intval($nfe).') emitida no Omie ERP na base: '.$invoicing->baseFaturamentoTitle;
         }
 
 
@@ -127,6 +130,7 @@ class InvoiceHandler
                 'Title'=> 'Nota Fiscal emitida',
                 'Content'=> $content,
             ];
+
             //Cria interação no card específico 
             ($this->ploomesServices->createPloomesIteraction(json_encode($msg)))? $message['addInteraction'] = $frase : throw new InteracaoNaoAdicionadaException('Não foi possível adicionar a interação de nota fiscal emitida no card, possívelmente a venda foi criada direto no omie - '.$current,1025);
             //muda a etapa da venda específica para NF-Emitida stage Id 40042597

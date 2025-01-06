@@ -583,7 +583,7 @@ class OmieServices implements OmieManagerInterface{
             'call'=>'ListarNFSEs',
             'param'=>[
                     [
-                        'nNumeroOS'=>$idPedido,
+                        'nCodigoOS'=>$idPedido,
                     ]
                 ]
             ];
@@ -612,7 +612,8 @@ class OmieServices implements OmieManagerInterface{
         curl_close($curl);
         
         $nfe = json_decode($response, true);
-        return $nfe['nfseEncontradasArray']['nNumeroNFSe'] ?? 0;
+        
+        return $nfe['nfseEncontradas'][0]['Cabecalho']['nNumeroNFSe'] ?? 0;
     }
     //busca cliente pelo ID
     public function getClientById($omie, $contact)
