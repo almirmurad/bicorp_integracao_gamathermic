@@ -18,6 +18,7 @@ use src\models\Deal;
 use src\models\Homologacao_invoicing;
 use src\models\Manospr_invoicing;
 use src\models\Manossc_invoicing;
+use src\models\Webhook;
 use src\services\DatabaseServices;
 use src\services\OmieServices;
 use src\services\PloomesServices;
@@ -38,8 +39,24 @@ class InvoiceHandler
         $this->omieServices = $omieServices;
         $this->databaseServices = $databaseServices;
     }
+
+    public function saveInvoiceHook($json){
+
+        $decoded = json_decode($json, true);
+          
+        //infos do webhook
+        $webhook = new Webhook();
+        $webhook->json = $json; //webhook 
+        $webhook->status = 1; // recebido
+        $webhook->result = 'Rececibo';
+        $webhook->entity = $decoded['Entity'] ?? 'Invoices';
+        $webhook->origem = (!isset($decoded['Entity']))?'Omie':'Ploomes';
+        //salva o hook no banco
+        return ($id = $this->databaseServices->saveWebhook($webhook)) ? ['id'=>$id, 'msg' =>'Webhook Salvo com sucesso id = '.$id .'às '.$this->current] : 0;
+    }
+
     //LÊ O WEBHOOK E COM A NOTA FATURADA
-    public function readInvoiceHook($json)
+    public function startProcess($json)
     {   
         //data atual
         $current = $this->current;
@@ -97,25 +114,27 @@ class InvoiceHandler
             
 
         // busca o pedido através id do pedido no omie retorna exceção se não encontra 
-        // if(!$pedidoOmie = $this->omieServices->consultaPedidoOmie($omie, $decoded['event']['idPedido'])){throw new WebhookReadErrorException('Pedido '.$decoded['event']['idPedido'].' não encontrado no Omie ERP',1023);
-            
-        //busca o cnpj do cliente para consultar o contact id no ploomes
-        $cnpjClient = $this->omieServices->clienteCnpjOmie($omie);
+        // if(!$pedidoOmie = $this->omieServices->consultaPedidoOmie($omie, $decoded['event']['idPedido'])){throw new WebhookReadErrorException('Pedido '.$decoded['event']['idPedido'].' não encontrado no Omie ERP',1023);     
 
         if($decoded['topic'] === 'VendaProduto.Faturada')
         {
             //consulta a nota fiscal no omie para retornar o numero da nota.            
-            $nfe = $this->omieServices->consultaNotaOmie($omie, $decoded['event']['idPedido'])?? throw new Exception('Nota fiscal não encontrada para o pedido: '.$decoded['event']['idPedido'], 1022); 
+            $nfe = $this->omieServices->consultaNotaOmie($omie, $decoded['event']['idPedido']);
+            ($nfe) ? $nfe : throw new Exception('NF-e não encontrada (ou não foi faturada), para o pedido: '.$decoded['event']['idPedido'], 1022); 
             $invoicing->nNF =intval($nfe);
-            $content ='Nota Fiscal de Produto ('. intval($nfe).') emitida no Omie ERP na base: '.$invoicing->baseFaturamentoTitle;
+            $content ='NF-e ('. $invoicing->nNF .') emitida no Omie ERP na base: '.$invoicing->baseFaturamentoTitle;
+            
         }elseif($decoded['topic'] === 'OrdemServico.Faturada')
         {
             //consulta a nota fiscal no omie para retornar o numero da nota.            
-            $nfe = $this->omieServices->consultaNotaServico($omie, $decoded['event']['idOrdemServico']) ?? throw new Exception('Nota fiscal não encontrada para o pedido: '.$decoded['event']['idOrdemServico'], 1022);  
-            $invoicing->nNF =intval($nfe);
-            $content ='Nota Fiscal de Serviço ('. intval($nfe).') emitida no Omie ERP na base: '.$invoicing->baseFaturamentoTitle;
+            $nfse = $this->omieServices->consultaNotaServico($omie, $decoded['event']['idOrdemServico']);
+            ($nfse) ? $nfse : throw new Exception('NFS-e não encontrada (ou não foi faturada), OS número : '.$decoded['event']['idOrdemServico'], 1022);  
+            $invoicing->nNF =intval($nfse);
+            $content ='NFS-e ('. intval($nfse).') emitida no Omie ERP na base: '.$invoicing->baseFaturamentoTitle;
         }
 
+        //busca o cnpj do cliente para consultar o contact id no ploomes
+        $cnpjClient = $this->omieServices->clienteCnpjOmie($omie);
 
         if (!empty($cnpjClient)){
             //busca o contact_id artravés do cnpj do cliente do omie
@@ -130,9 +149,9 @@ class InvoiceHandler
                 'Title'=> 'Nota Fiscal emitida',
                 'Content'=> $content,
             ];
-
+           
             //Cria interação no card específico 
-            ($this->ploomesServices->createPloomesIteraction(json_encode($msg)))? $message['addInteraction'] = $frase : throw new InteracaoNaoAdicionadaException('Não foi possível adicionar a interação de nota fiscal emitida no card, possívelmente a venda foi criada direto no omie - '.$current,1025);
+            ($this->ploomesServices->createPloomesIteraction(json_encode($msg)))? $message['success'] = $frase : throw new WebhookReadErrorException('Não foi possível adicionar a interação de nota fiscal emitida no card, possívelmente a venda foi criada direto no omie - '.$current,1025);
             //muda a etapa da venda específica para NF-Emitida stage Id 40042597
 
         }

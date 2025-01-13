@@ -44,6 +44,7 @@ $router->post('/processNewService', 'ServiceController@processNewService'); //in
 //Invoices NFE
 $router->post('/invoiceIssue', 'InvoicingController@invoiceIssue');
 $router->post('/deletedInvoice', 'InvoicingController@deletedInvoice');
+$router->post('/processNewInvoice', 'InvoicingController@processNewInvoice');
 
 //Interactions
 $router->get('/interactions', 'InteractionController@index');
