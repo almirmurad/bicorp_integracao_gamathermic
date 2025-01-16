@@ -61,7 +61,7 @@ class PloomesServices implements PloomesManagerInterface{
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->baseApi . 'Contacts?$filter=Id+eq+' . $deal->contactId . '',
+            CURLOPT_URL => $this->baseApi . 'Contacts?$filter=Id+eq+' . $deal->contactId . '&$expand=OtherProperties',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -78,7 +78,7 @@ class PloomesServices implements PloomesManagerInterface{
         curl_close($curl);
 
         $responseCnpj = json_decode($responseCnpj, true);
-
+        
         $response = (!empty($responseCnpj['value'][0]['CNPJ'])) ? $responseCnpj['value'][0]['CNPJ'] : false;
        
         return $response;
@@ -253,7 +253,6 @@ class PloomesServices implements PloomesManagerInterface{
     //encontra cliente no ploomes pelo Id
     public function getClientById(string $id):array|null
     {
-
         $curl = curl_init();
 
         curl_setopt_array($curl, array(

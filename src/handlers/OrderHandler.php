@@ -129,9 +129,34 @@ class OrderHandler
             
         $order->id = $decoded['New']['Id']; //Id da order
         $order->orderNumber = $decoded['New']['OrderNumber']; // numero da venda
-        $order->contactId = $decoded['New']['ContactId']; // Id do Contato
+        $order->contactId = $decoded['New']['ContactId']; // Id do Contato,
+        
+        $contact = $this->ploomesServices->getClientById($order->contactId);
+        //busca o Id do cliente no contact do ploomes
+        $ids = [];
+        foreach($contact['OtherProperties'] as $op){
+            foreach($op as $k => $v){
+                if($v === "contact_6DB7009F-1E58-4871-B1E6-65534737C1D0"){
+                    $id = $op['StringValue'];
+                    $ids['IdGTC'] = $id;
+                }
+                if($v === "contact_4F0C36B9-5990-42FB-AEBC-5DCFD7A837C3"){
+                    $id = $op['StringValue'];
+                    $ids['IdEPT'] = $id;
+                }
+                if($v === "contact_AE3D1F66-44A8-4F88-AAA5-F10F05E662C2"){
+                    $id = $op['StringValue'];
+                    $ids['IdSMN'] = $id;
+                }
+                if($v === "contact_07784D81-18E1-42DC-9937-AB37434176FB"){
+                    $id = $op['StringValue'];
+                    $ids['IdGSU'] = $id;
+                }
+            }
+        }
+
         // Busca o CNPJ do contato 
-        ($contactCnpj = $this->ploomesServices->contactCnpj($order)) ? $contactCnpj : $m[] = 'Erro ao montar pedido para enviar ao Omie ERP: Cliente não informado ou não cadastrado no Omie ERP. Id do card Ploomes CRM: '.$decoded['New']['DealId'].' e pedido de venda Ploomes CRM: '.$decoded['New']['LastOrderId'].'em'.$current; //cnpj do cliente
+        // ($contactCnpj = $this->ploomesServices->contactCnpj($order)) ? $contactCnpj : $m[] = 'Erro ao montar pedido para enviar ao Omie ERP: Cliente não informado ou não cadastrado no Omie ERP. Id do card Ploomes CRM: '.$decoded['New']['DealId'].' e pedido de venda Ploomes CRM: '.$decoded['New']['LastOrderId'].'em'.$current; //cnpj do cliente
         $order->contactName = $decoded['New']['ContactName']; // Nome do Contato no Deal
         $order->personId = $decoded['New']['PersonId']; // Id do Contato
         $order->personName = $decoded['New']['PersonName']; // nome do contato
@@ -149,6 +174,7 @@ class OrderHandler
         switch ($order->baseFaturamento) {
             case '420197140':
                 $order->baseFaturamentoTitle = 'ENGEPARTS';
+                $order->idClienteOmie = $ids['IdEPT'];
                 $omie->baseFaturamentoTitle = 'ENGEPARTS';
                 $omie->target = 'EPT'; 
                 $omie->ncc = $_ENV['NCC_EPT'];
@@ -158,6 +184,7 @@ class OrderHandler
 
             case '420197141':
                 $order->baseFaturamentoTitle = 'GAMATERMIC';
+                $order->idClienteOmie = $ids['IdGTC'];
                 $omie->baseFaturamentoTitle = 'GAMATERMIC'; 
                 $omie->target = 'GTC'; 
                 $omie->ncc = $_ENV['NCC_GTC'];
@@ -167,6 +194,7 @@ class OrderHandler
                 
             case '420197143':
                 $order->baseFaturamentoTitle = 'SEMIN';
+                $order->idClienteOmie = $ids['IdSMN'];
                 $omie->baseFaturamentoTitle = 'SEMIN';
                 $omie->target = 'SMN'; 
                 $omie->ncc = $_ENV['NCC_SMN'];
@@ -176,6 +204,7 @@ class OrderHandler
                 
             case '420197142':
                 $order->baseFaturamentoTitle = 'GSU';
+                $order->idClienteOmie = $ids['IdGSU'];
                 $omie->baseFaturamentoTitle = 'GSU';
                 $omie->target = 'MHL'; 
                 $omie->ncc = $_ENV['NCC_GSU'];
@@ -212,7 +241,7 @@ class OrderHandler
         $id = $this->omieServices->insertProject($omie,  $order->projeto);
         $omie->codProjeto =(isset($id['codigo'])) ? $id['codigo'] : $m[] = 'Erro ao montar pedido para enviar ao Omie ERP: ' . $id['faultstring'];
         //pega o id do cliente do Omie através do CNPJ do contact do ploomes           
-        (!empty($idClienteOmie = $this->omieServices->clienteIdOmie($omie, $contactCnpj))) ? $order->idClienteOmie = $idClienteOmie : $m[] = 'Erro ao montar pedido para enviar ao Omie ERP: Id do cliente não encontrado no Omie ERP! Id do card Ploomes CRM: '.$order->dealId.' e pedido de venda Ploomes CRM: '.$order->id.' em: '.$current;
+        // (!empty($idClienteOmie = $this->omieServices->clienteIdOmie($omie, $contactCnpj))) ? $order->idClienteOmie = $idClienteOmie : $m[] = 'Erro ao montar pedido para enviar ao Omie ERP: Id do cliente não encontrado no Omie ERP! Id do card Ploomes CRM: '.$order->dealId.' e pedido de venda Ploomes CRM: '.$order->id.' em: '.$current;
         //pega o id do vendedor Omie através do email do vendedor do ploomes           
         (!empty($codVendedorOmie = $this->omieServices->vendedorIdOmie($omie, $mailVendedor))) ? $order->codVendedorOmie = $codVendedorOmie : null;//$m[] = 'Erro ao montar pedido para enviar ao Omie ERP: Id do vendedor não encontrado no Omie ERP!Id do card Ploomes CRM: '.$order->dealId.' e pedido de venda Ploomes CRM: '.$order->id.' em: '.$current;
         
