@@ -19,7 +19,7 @@ class ConfigController extends Controller {
     }
 
     public function index() {
-        $total = Deal::select('id')->count();        
+        $total = 0;        
         $data = [
             'pagina' => 'Configurações',
             'loggedUser'=>$this->loggedUser,

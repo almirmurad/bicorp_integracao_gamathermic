@@ -26,7 +26,7 @@ class HomeController extends Controller {
         }
         // print_r($this->loggedUser->permission);
         // exit;
-        $total = Deal::select('id')->count();      
+        $total = 0;      
         $data = [
             'pagina' => 'Dashboard',
             'loggedUser'=>$this->loggedUser,

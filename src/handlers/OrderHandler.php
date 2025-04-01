@@ -216,6 +216,8 @@ class OrderHandler
                 throw new PedidoInexistenteException ('Erro ao montar pedido para enviar ao Omie ERP: Base de faturamento não encontrada. Impossível fazer consultas no omie', 500);
                 break;
         }
+
+        
         //previsão de faturamento
         $order->previsaoFaturamento =(isset($prop['order_5ABC5118-2AA4-493A-B016-67E26C723DD1']) && !empty($prop['order_5ABC5118-2AA4-493A-B016-67E26C723DD1']))? $prop['order_5ABC5118-2AA4-493A-B016-67E26C723DD1'] : date('Y-m-d');//$m[] = 'Erro ao montar pedido para enviar ao Omie ERP: Previsão de Faturamento não foi preenchida';
         //template id (tipo de venda produtos ou serviços)

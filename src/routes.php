@@ -46,6 +46,14 @@ $router->post('/invoiceIssue', 'InvoicingController@invoiceIssue');
 $router->post('/deletedInvoice', 'InvoicingController@deletedInvoice');
 $router->post('/processNewInvoice', 'InvoicingController@processNewInvoice');
 
+//Nasajon
+$router->post('/erpClients', 'ContactController@nasajonClients');//Novo cliente no nasajon
+$router->post('/erpProducts', 'ProductController@nasajonProducts');//Novo produto no nasajon
+$router->post('/erpServices', 'ServiceController@erpClients'); //Novo serviço no nasajon
+
+
+
+
 //Interactions
 $router->get('/interactions', 'InteractionController@index');
 $router->post('/newInteraction', 'InteractionController@createInteraction');

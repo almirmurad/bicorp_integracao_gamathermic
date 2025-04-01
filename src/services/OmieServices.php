@@ -409,9 +409,9 @@ class OmieServices implements OmieManagerInterface{
         $newPedido['observacoes'] = $observacoes;
         $top['param'][]= $newPedido;
 
-       // $jsonPedido = json_encode($top, JSON_UNESCAPED_UNICODE);
-        // print_r($jsonPedido);
-        // exit;
+       $jsonPedido = json_encode($top, JSON_UNESCAPED_UNICODE);
+        print_r($jsonPedido);
+        exit;
         
         // $jsonOmie = json_encode($jsonOmie,JSON_UNESCAPED_UNICODE);
         $client = new Client([
