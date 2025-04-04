@@ -48,10 +48,119 @@ class ClientsFunctions{
         // exit;
         return $action;
     }
+    //processa o contato do CRM para o ERP
+    public static function processContact($json, $ploomesServices, $erpFormatter, $action):array
+    {
+
+        $contact = $erpFormatter->createObjectErpClientFromCrmData($json, $ploomesServices);
+        $messages = [
+            'success'=>[],
+            'error'=>[],
+        ];
+        
+        $current = date('d/m/Y H:i:s');
+        
+        foreach($contact->tenant as $k => $tnt)
+        {
+            
+            $tenant[$k] = new stdClass();
+            
+            if(isset($tnt['integrar']) &&  $tnt['integrar'] > 0){
+                $tenant[$k]->tenant = $tnt['title'];
+                $tenant[$k]->appSecret = $tnt['appSecret'];
+                $tenant[$k]->appKey = $tnt['appKey'];
+                $contact->tenant = $tenant[$k];
+
+                if($action === 'createCRMToERP'){
+                    //aqui manda pro formatter 
+                    $criaClienteOmie = $erpFormatter->createContactCrmToERP($contact); 
+    
+                    //verifica se criou o cliente no omie
+                    if (isset($criaClienteOmie['codigo_status']) && $criaClienteOmie['codigo_status'] == "0") {
+                        $match = match ($k) {
+                             0=> 'contact_4F0C36B9-5990-42FB-AEBC-5DCFD7A837C3',
+                             1=> 'contact_6DB7009F-1E58-4871-B1E6-65534737C1D0',
+                             2=> 'contact_AE3D1F66-44A8-4F88-AAA5-F10F05E662C2',
+                             3=> 'contact_07784D81-18E1-42DC-9937-AB37434176FB',
+                        };
+                        $codigoOmie = $criaClienteOmie['codigo_cliente_omie'];
+                        $array = [
+                            'TypeId'=>1,
+                            'OtherProperties'=>[
+                                [
+                                    'FieldKey'=>$match,
+                                    'StringValue'=>"$codigoOmie",
+                                ]
+                            ]
+                        ];
+                        $json = json_encode($array);
+                        
+                        //insere o id do omie no campo correspondente do cliente Ploomes
+                        $ploomesServices->updatePloomesContact($json, $contact->id);
+                        
+                        $message = 'Integração concluída com sucesso! Cliente Ploomes id: '.$contact->id.' gravados no Omie ERP com o numero: '.$criaClienteOmie['codigo_cliente_omie'].' em: '.$current;
+                        
+                        $messages['success'][]=$message;
+                        
+                    }else{
+                        //monta a mensagem para atualizar o card do ploomes
+                        $msg=[
+                            'ContactId' => $contact->id,
+                            'Content' => 'Erro ao gravar cliente no Omie: '. $criaClienteOmie['faultstring'].' na base '.$tenant[$k]->baseFaturamentoTitle.' Data = '.$current,
+                            'Title' => 'Erro ao Gravar cliente'
+                        ];
+                        
+                        //cria uma interação no card
+                        ($ploomesServices->createPloomesIteraction(json_encode($msg)))?$message = 'Erro ao gravar cliente no Omie base '.$tenant[$k]->baseFaturamentoTitle.': '. $criaClienteOmie['faultstring'].' Data = '.$current: $message = 'Erro ao gravar cliente no Omie base '.$tenant[$k]->baseFaturamentoTitle.': '. $criaClienteOmie['faultstring'].' e erro ao enviar mensagem no card do cliente do Ploomes Data = '.$current;
+    
+                        $messages['error'][]=$message;
+                    }       
+                }else{
+                    
+                   $alterar = $erpFormatter->updateContactCRMToERP($contact);
+
+                   if (isset($alterar['codigo_status']) && $alterar['codigo_status'] == "0") 
+                        {
+                            $message = 'Integração concluída com sucesso! Cliente Ploomes id: '.$contact->id.' alterado no Omie ERP ('.$tenant[$k]->baseFaturamentoTitle.') com o numero: '.$alterar['codigo_cliente_omie'].' e mensagem enviada com sucesso em: '.$current;
+
+                            
+                        }else{
+                           
+                            //monta a mensagem para atualizar o card do ploomes
+                            $msg=[
+                                'ContactId' => $contact->id,
+                                'Content' => 'Erro ao alterar cliente no Omie: '. $alterar['faultstring'].' na base '.$tenant[$k]->baseFaturamentoTitle.' Data = '.$current,
+                                'Title' => 'Erro ao alterar cliente'
+                            ];
+                            //cria uma interação no card
+                            ($ploomesServices->createPloomesIteraction(json_encode($msg)))?$message = 'Erro ao alterar cliente no Omie base '.$tenant[$k]->baseFaturamentoTitle.': '. $alterar['faultstring'].' Data = '.$current: $message = 'Erro ao alterar cliente no Omie base '.$tenant[$k]->baseFaturamentoTitle.': '. $alterar['faultstring'].' e erro ao enviar mensagem no card do cliente do Ploomes Data = '.$current;
+                            $messages['error'][]=$message;
+                        }
+                }
+              
+            }
+        }   
+
+        return $messages;
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //cria obj cliente
     //cria obj cliente
-    public static function createObj($json, $ploomesServices)
+    public static function createErpClientFromPloomesCrm($json, $ploomesServices, $erpFormatter)
     {
     
         //decodifica o json de clientes vindos do webhook
@@ -59,6 +168,8 @@ class ClientsFunctions{
         $decoded = json_decode($json,true);
 
         $cliente = $ploomesServices->getClientById($decoded['New']['Id']);
+
+        $erpFormatter->
         
         $contact = new Contact();        
     
@@ -939,7 +1050,7 @@ class ClientsFunctions{
         //     throw new WebhookReadErrorException('Impossível alterar, clinete não possui código de integração',500);
         // }
     }
-
+    
     public static function createPloomesContactFromOmieObject($contact, $ploomesServices, $omieServices)
     {
         $omie = new stdClass();
@@ -1258,5 +1369,7 @@ class ClientsFunctions{
         return $json;
 
     }
+
+
 
 }

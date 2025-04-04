@@ -2,27 +2,31 @@
 
 namespace src\handlers;
 
+use src\contracts\CrmFormattersInterface;
+use src\contracts\ErpFormattersInterface;
 use src\exceptions\ClienteInexistenteException;
 use src\exceptions\WebhookReadErrorException;
 use src\functions\ClientsFunctions;
 use src\models\Webhook;
 use src\services\ContactServices;
 use src\services\DatabaseServices;
-use src\services\OmieServices;
+
 use src\services\PloomesServices;
 use stdClass;
 
 class ClientHandler
 {
+    private ErpFormattersInterface $erpFormatter;
+    private CrmFormattersInterface $crmFormatter;
     private $current;
     private $ploomesServices;
-    private $omieServices;
     private $databaseServices;
 
-    public function __construct(PloomesServices $ploomesServices, OmieServices $omieServices, DatabaseServices $databaseServices)
+    public function __construct(PloomesServices $ploomesServices, DatabaseServices $databaseServices, $erpFormatter, $crmFormatter)
     {
         $this->ploomesServices = $ploomesServices;
-        $this->omieServices = $omieServices;
+        $this->erpFormatter = $erpFormatter;
+        $this->crmFormatter = $crmFormatter;
         $this->databaseServices = $databaseServices;
         $date = date('d/m/Y H:i:s');
         $this->current = $date;
@@ -50,59 +54,27 @@ class ClientHandler
     // public function startProcess($status, $entity)
     public function startProcess($json)
     {   
-        //inicia o processo de crição de cliente, caso de certo retorna mensagem de ok pra gravar em log, e caso de erro retorna falso
-        //$webhook = $this->databaseServices->getWebhook($status, $entity);
-        
-        //$status = 2; //processando
-        //$alterStatus = $this->databaseServices->alterStatusWebhook($webhook['id'], $status);
-        
-        //talvez o ideal fosse devolver ao controller o ok de que o processo foi iniciado e um novo processo deve ser inciado 
-        //if($alterStatus){
-            // $action = ClientsFunctions::findAction($webhook);
-            
-            $action = ClientsFunctions::findAction($json);
-            // print_r($action);
-            // exit;
-                          
-            if($action){
-                //se tiver action cria o objeto de contacs
-                switch($action){
-                    case 'createCRMToERP':
-                        $contact = ClientsFunctions::createObj($json, $this->ploomesServices);
-                        $process = ContactServices::createContact($contact);
-                        break;
-                    case 'updateCRMToERP':
-                        $contact = ClientsFunctions::createObj($json, $this->ploomesServices);
-                        $process = ContactServices::updateContactCRMToERP($contact);
-                        break;
-                    case 'deleteCRMToERP':
-                        $contact = ClientsFunctions::createOldObj($json, $this->ploomesServices);
-                        $process = ContactServices::deleteContact($contact);                    
-                        break;
-                    case 'createERPToCRM':
-                        $contact  = ClientsFunctions::createOmieObj($json, $this->omieServices);
-                        $process = ContactServices::createContactERP($contact);                   
-                        break;
-                    case 'updateERPToCRM':
-                        $contact  = ClientsFunctions::createOmieObj($json, $this->omieServices);
-                        $contactJson = ClientsFunctions::createPloomesContactFromOmieObject($contact, $this->ploomesServices, $this->omieServices);
-                        $process = ContactServices::updateContactERP($contactJson, $contact, $this->ploomesServices);                 
-                        break;
-                    case 'deleteERPToCRM':
-                        $decoded = json_decode($json, true);
+        $action = ClientsFunctions::findAction($json);
 
-                        $contact = new stdClass();
-                        $contact->cnpjCpf = $decoded['event']['cnpj_cpf'];
-                        $contact->nomeFantasia = $decoded['event']['nome_fantasia'];
-                        
-                        $process = ContactServices::deleteContactERP($contact, $this->ploomesServices);
-                    
-                        break;
-                } 
-            }
-            return self::response($json, $contact, $process);
-           // return $process;
-        // }
+        if($action){
+            //se tiver action cria o objeto de contacs
+            switch($action){
+                case 'createCRMToERP' || 'updateCRMToERP':
+                    $process = ClientsFunctions::processContact($json, $this->ploomesServices, $this->erpFormatter, $action);
+                    break;
+                case 'createERPToCRM':
+                    $contact  = ClientsFunctions::createOmieObj($json, $this->omieServices);
+                    $process = ContactServices::createContactERP($contact);                   
+                    break;
+                case 'updateERPToCRM':
+                    $contact  = ClientsFunctions::createOmieObj($json, $this->omieServices);
+                    $contactJson = ClientsFunctions::createPloomesContactFromOmieObject($contact, $this->ploomesServices, $this->omieServices);
+                    $process = ContactServices::updateContactERP($contactJson, $contact, $this->ploomesServices);                 
+                    break;
+            } 
+        }
+        return self::response($json, $contact, $process);
+
                  
     }
 
@@ -110,9 +82,9 @@ class ClientHandler
     public function response($json, $contact, $process)
     {
         $decoded = json_decode($json, true);
-        $origem = (!isset($decoded['Entity']))?'Omie':'Ploomes';
+        $origem = (!isset($decoded['Entity']))?'Nasajon':'Ploomes';
         //Quando a origem é omie x ploomes então apenas uma base para uma base
-        if($origem === 'Omie'){
+        if($origem === 'Nasajon'){
 
             if(!empty($process['error'])){
 

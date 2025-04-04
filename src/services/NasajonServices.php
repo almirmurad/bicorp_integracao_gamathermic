@@ -2,7 +2,6 @@
 
 namespace src\services;
 
-
 use src\functions\DiverseFunctions;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\CurlFactory;
@@ -10,7 +9,7 @@ use GuzzleHttp\Handler\CurlHandler;
 use src\contracts\ErpManagerInterface;
 use src\exceptions\WebhookReadErrorException;
 
-class OmieServices implements ErpManagerInterface{
+class NasajonServices implements ErpManagerInterface{
 
     public function clienteCnpjErp($order)
     {
@@ -711,95 +710,96 @@ class OmieServices implements ErpManagerInterface{
     }
 
     //Cria cliente no Omie ERP
-    public function criaClienteErp(object $omie, object $contact)
+    public function criaClienteErp(object $contact)
     {
-        // print_r($omie);
-        // print 'estamos em omie services';
-        // print_r($contact);
-        // exit;
-        $array = [
-            'app_key'=>$omie->appKey,
-            'app_secret'=>$omie->appSecret,
-            'call'=>'UpsertClienteCpfCnpj',
-            'param'=>[]
-        ];
+
+        // $array = [
+        //     'app_key'=>$omie->appKey,
+        //     'app_secret'=>$omie->appSecret,
+        //     'call'=>'UpsertClienteCpfCnpj',
+        //     'param'=>[]
+        // ];
         
-        $clienteJson = [];
-        // $clienteJson['codigo_cliente_integracao'] = $contact->id;
-        $clienteJson['razao_social'] = htmlspecialchars_decode($contact->legalName) ?? null; 
-        $clienteJson['nome_fantasia'] = htmlspecialchars_decode($contact->name) ?? null;
-        $clienteJson['cnpj_cpf'] = $contact->cnpj ?? $contact->cpf;
-        $clienteJson['email'] = $contact->email ?? null;
-        $clienteJson['homepage'] = $contact->website ?? null;
-        $clienteJson['telefone1_ddd'] = $contact->ddd1 ?? null;
-        $clienteJson['telefone1_numero'] = $contact->phone1 ?? null;
-        $clienteJson['telefone2_ddd'] = $contact->ddd2 ?? null;
-        $clienteJson['telefone2_numero'] = $contact->phone2 ?? null;
-        $clienteJson['contato'] = $contact->contato1 ?? null;
-        $clienteJson['endereco'] = $contact->streetAddress;
-        $clienteJson['endereco_numero'] = $contact->streetAddressNumber;
-        $clienteJson['bairro'] = $contact->neighborhood;
-        $clienteJson['complemento'] = $contact->streetAddressLine2 ?? null;
-        $clienteJson['estado'] = $contact->stateShort;//usar null para teste precisa pegar o codigo da sigla do estado na api omie
-        //$clienteJson['cidade'] = $contact->cityName;
-        $clienteJson['cidade_ibge'] = $contact->cityId;
-        // $clienteJson['cep'] = $contact->streetAdress ?? null;
-        $clienteJson['cep'] = $contact->zipCode;
-        $clienteJson['documento_exterior'] = $contact->documentoExterior ?? null;
-        $clienteJson['inativo'] = $contact->inativo ?? null;
-        $clienteJson['bloquear_exclusao'] = $contact->bloquearExclusao ?? null;
-        //inicio aba CNAE e Outros
-        $clienteJson['cnae'] = $contact->cnaeCode ?? null;
-        $clienteJson['inscricao_estadual'] = $contact->inscricaoEstadual ?? null;
-        $clienteJson['inscricao_municipal'] = $contact->inscricaoMunicipal ?? null;
-        $clienteJson['inscricao_suframa'] = $contact->inscricaoSuframa ?? null;
-        $clienteJson['optante_simples_nacional'] = $contact->simplesNacional ?? null;
-        $clienteJson['produtor_rural'] = $contact->produtorRural ?? null;
-        $clienteJson['contribuinte'] = $contact->contribuinte ?? null;
-        $clienteJson['tipo_atividade'] = $contact->ramoAtividade ?? null;
+        // $clienteJson = [];
+        // // $clienteJson['codigo_cliente_integracao'] = $contact->id;
+        // $clienteJson['razao_social'] = htmlspecialchars_decode($contact->legalName) ?? null; 
+        // $clienteJson['nome_fantasia'] = htmlspecialchars_decode($contact->name) ?? null;
+        // $clienteJson['cnpj_cpf'] = $contact->cnpj ?? $contact->cpf;
+        // $clienteJson['email'] = $contact->email ?? null;
+        // $clienteJson['homepage'] = $contact->website ?? null;
+        // $clienteJson['telefone1_ddd'] = $contact->ddd1 ?? null;
+        // $clienteJson['telefone1_numero'] = $contact->phone1 ?? null;
+        // $clienteJson['telefone2_ddd'] = $contact->ddd2 ?? null;
+        // $clienteJson['telefone2_numero'] = $contact->phone2 ?? null;
+        // $clienteJson['contato'] = $contact->contato1 ?? null;
+        // $clienteJson['endereco'] = $contact->streetAddress;
+        // $clienteJson['endereco_numero'] = $contact->streetAddressNumber;
+        // $clienteJson['bairro'] = $contact->neighborhood;
+        // $clienteJson['complemento'] = $contact->streetAddressLine2 ?? null;
+        // $clienteJson['estado'] = $contact->stateShort;//usar null para teste precisa pegar o codigo da sigla do estado na api omie
+        // //$clienteJson['cidade'] = $contact->cityName;
+        // $clienteJson['cidade_ibge'] = $contact->cityId;
+        // // $clienteJson['cep'] = $contact->streetAdress ?? null;
+        // $clienteJson['cep'] = $contact->zipCode;
+        // $clienteJson['documento_exterior'] = $contact->documentoExterior ?? null;
+        // $clienteJson['inativo'] = $contact->inativo ?? null;
+        // $clienteJson['bloquear_exclusao'] = $contact->bloquearExclusao ?? null;
+        // //inicio aba CNAE e Outros
+        // $clienteJson['cnae'] = $contact->cnaeCode ?? null;
+        // $clienteJson['inscricao_estadual'] = $contact->inscricaoEstadual ?? null;
+        // $clienteJson['inscricao_municipal'] = $contact->inscricaoMunicipal ?? null;
+        // $clienteJson['inscricao_suframa'] = $contact->inscricaoSuframa ?? null;
+        // $clienteJson['optante_simples_nacional'] = $contact->simplesNacional ?? null;
+        // $clienteJson['produtor_rural'] = $contact->produtorRural ?? null;
+        // $clienteJson['contribuinte'] = $contact->contribuinte ?? null;
+        // $clienteJson['tipo_atividade'] = $contact->ramoAtividade ?? null;
        
-        $clienteJson['valor_limite_credito'] = $contact->limiteCredito ?? null;
-        $clienteJson['observacao'] = $contact->observacao ?? null;
-        //fim aba CNAE e Outros
-        //inicio array dados bancários
-        $clienteJson['dadosBancarios'] =[];
-        $dadosBancarios =[];
-        $dadosBancarios['codigo_banco'] = $contact->cBanco ?? null;
-        $dadosBancarios['agencia'] = $contact->agencia ?? null;
-        $dadosBancarios['conta_corrente'] = $contact->nContaCorrente ?? null;
-        $dadosBancarios['doc_titular'] = $contact->docTitular ?? null;
-        $dadosBancarios['nome_titular'] = $contact->nomeTitular ?? null;
-        $dadosBancarios['transf_padrao'] = $contact->transferenciaPadrao ?? null;
-        $dadosBancarios['cChavePix'] = $contact->chavePix ?? null;
-        $clienteJson['dadosBancarios'][]=$dadosBancarios;
-        //fim array dados bancários
-        //inicio array recoja mendações
-        $clienteJson['recomendacoes'] =[];
-        $recomendacoes=[];//vendedor padrão
-        $recomendacoes['codigo_vendedor'] = $contact->cVendedorOmie ?? null;
-        $recomendacoes['codigo_transportadora'] = $contact->idTransportadora ?? null;
-        $clienteJson['recomendacoes'][] = $recomendacoes;
-        //fim array recomendações
+        // $clienteJson['valor_limite_credito'] = $contact->limiteCredito ?? null;
+        // $clienteJson['observacao'] = $contact->observacao ?? null;
+        // //fim aba CNAE e Outros
+        // //inicio array dados bancários
+        // $clienteJson['dadosBancarios'] =[];
+        // $dadosBancarios =[];
+        // $dadosBancarios['codigo_banco'] = $contact->cBanco ?? null;
+        // $dadosBancarios['agencia'] = $contact->agencia ?? null;
+        // $dadosBancarios['conta_corrente'] = $contact->nContaCorrente ?? null;
+        // $dadosBancarios['doc_titular'] = $contact->docTitular ?? null;
+        // $dadosBancarios['nome_titular'] = $contact->nomeTitular ?? null;
+        // $dadosBancarios['transf_padrao'] = $contact->transferenciaPadrao ?? null;
+        // $dadosBancarios['cChavePix'] = $contact->chavePix ?? null;
+        // $clienteJson['dadosBancarios'][]=$dadosBancarios;
+        // //fim array dados bancários
+        // //inicio array recoja mendações
+        // $clienteJson['recomendacoes'] =[];
+        // $recomendacoes=[];//vendedor padrão
+        // $recomendacoes['codigo_vendedor'] = $contact->cVendedorOmie ?? null;
+        // $recomendacoes['codigo_transportadora'] = $contact->idTransportadora ?? null;
+        // $clienteJson['recomendacoes'][] = $recomendacoes;
+        // //fim array recomendações
 
-        // $caracteristicas = [];
-        // //$caracteristicasCampo=[];
-        // //$caracteristicasConteudo=[];
-        // $caracteristicasCampo = 'Regiao';
-        // $caracteristicasConteudo = $contact->regiao;
-        // $caracteristicas['campo'] = $caracteristicasCampo;
-        // $caracteristicas['conteudo']=$caracteristicasConteudo;
-        //$clienteJson['caracteristicas'] = $caracteristicas;
-        //$clienteJson['tags']=[];
-        $clienteJson['tags']=$contact->tags;
+        // // $caracteristicas = [];
+        // // //$caracteristicasCampo=[];
+        // // //$caracteristicasConteudo=[];
+        // // $caracteristicasCampo = 'Regiao';
+        // // $caracteristicasConteudo = $contact->regiao;
+        // // $caracteristicas['campo'] = $caracteristicasCampo;
+        // // $caracteristicas['conteudo']=$caracteristicasConteudo;
+        // //$clienteJson['caracteristicas'] = $caracteristicas;
+        // //$clienteJson['tags']=[];
+        // $clienteJson['tags']=$contact->tags;
          
-        $array['param'][] = $clienteJson;
+        // $array['param'][] = $clienteJson;
 
-        $json = json_encode($array);     
+        $json = json_encode($contact);  
+        
+        print_r($json) .PHP_EOL;
+        print_r('criar') .PHP_EOL;
+        exit;
 
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://app.omie.com.br/api/v1/geral/clientes/',
+            CURLOPT_URL => 'https://api.nasajon.app/dados-mestre/erp3/2531/clientes',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -870,85 +870,87 @@ class OmieServices implements ErpManagerInterface{
     }
 
     //altera um cliente no OMIE com base nas difereças dos arrays Old e News do Ploomes
-    public function alteraCliente(object $omie, array $diff)
+    public function alteraCliente(object $contact)
     {   
-        $array = [
-            'app_key'=>$omie->appKey,
-            'app_secret'=>$omie->appSecret,
-            'call'=>'AlterarCliente',
-            'param'=>[]
-        ];
+        // $array = [
+        //     'app_key'=>$omie->appKey,
+        //     'app_secret'=>$omie->appSecret,
+        //     'call'=>'AlterarCliente',
+        //     'param'=>[]
+        // ];
     
-        $clienteJson = [];
+        // $clienteJson = [];
 
-        ($diff['idOmie'] === null)?$clienteJson['codigo_cliente_integracao'] = $diff['idIntegracao']:$clienteJson['codigo_cliente_omie'] = $diff['idOmie'];   
+        // ($diff['idOmie'] === null)?$clienteJson['codigo_cliente_integracao'] = $diff['idIntegracao']:$clienteJson['codigo_cliente_omie'] = $diff['idOmie'];   
         
-        $clienteJson['razao_social'] = htmlspecialchars_decode($diff['legalName']['new']) ?? null; 
-        $clienteJson['nome_fantasia'] = htmlspecialchars_decode($diff['name']['new']) ?? null;
-        $clienteJson['cnpj_cpf'] = $diff['cnpj']['new'] ?? $diff['cpf']['new'] ?? null;
-        $clienteJson['email'] = $diff['email']['new'] ?? null;
-        $clienteJson['homepage'] = $diff['website']['new'] ?? null;
-        $clienteJson['telefone1_ddd'] = $diff['ddd1']['new'] ?? null;
-        $clienteJson['telefone1_numero'] = $diff['phone1']['new'] ?? null;
-        $clienteJson['telefone2_ddd'] = $diff['ddd2']['new'] ?? null;
-        $clienteJson['telefone2_numero'] = $diff['phone2']['new'] ?? null;
-        $clienteJson['contato'] = $diff['contato1']['new'] ?? null;
-        $clienteJson['endereco'] = $diff['streetAddress']['new'] ?? null;
-        $clienteJson['endereco_numero'] = $diff['streetAddressNumber']['new'] ?? null;
-        $clienteJson['bairro'] = $diff['neighborhood']['new'] ?? null;
-        $clienteJson['complemento'] = $diff['streetAddressLine2']['new'] ?? null;
-        $clienteJson['estado'] = $diff['stateShort']['new'] ?? null;//usar null para teste precisa pegar o codigo da sigla do estado na api omie
-        //$clienteJson['cidade'] = $diff['cityName']['new'];
-        $clienteJson['cidade_ibge'] = $diff['cityId']['new'] ?? null;
-        // $clienteJson['cep'] = $diff['streetAdress']['new'] ?? null;
-        $clienteJson['cep'] = $diff['zipCode']['new'] ?? null;
-        $clienteJson['documento_exterior'] = $diff['documentoExterior']['new'] ?? null;
-        $clienteJson['inativo'] = $diff['inativo']['new'] ?? null;
-        $clienteJson['bloquear_exclusao'] = $diff['bloquearExclusao']['new'] ?? null;
-        //inicio aba CNAE e Outros
-        $clienteJson['cnae'] = $diff['cnaeCode']['new'] ?? null;//3091102 ?? null;
-        $clienteJson['inscricao_estadual'] = $diff['inscricaoEstadual']['new'] ?? null;
-        $clienteJson['inscricao_municipal'] = $diff['inscricaoMunicipal']['new'] ?? null;
-        $clienteJson['inscricao_suframa'] = $diff['inscricaoSuframa']['new'] ?? null;
-        $clienteJson['optante_simples_nacional'] = $diff['simplesNacional']['new'] ?? null;
-        $clienteJson['produtor_rural'] = $diff['produtorRural']['new'] ?? null;
-        $clienteJson['contribuinte'] = $diff['contribuinte']['new'] ?? null;
-        $clienteJson['tipo_atividade'] = $diff['ramoAtividade']['new'] ?? null;
-        $clienteJson['valor_limite_credito'] = $diff['limiteCredito']['new'] ?? null;
-        $clienteJson['observacao'] = $diff['observacao']['new'] ?? null;
-        //fim aba CNAE e Outros
-        //inicio array dados bancários
-        $clienteJson['dadosBancarios'] =[];
-        $dadosBancarios =[];
-        $dadosBancarios['codigo_banco'] = $diff['cBanco']['new'] ?? null;
-        $dadosBancarios['agencia'] = $diff['agencia']['new'] ?? null;
-        $dadosBancarios['conta_corrente'] = $diff['nContaCorrente']['new'] ?? null;
-        $dadosBancarios['doc_titular'] = $diff['docTitular']['new'] ?? null;
-        $dadosBancarios['nome_titular'] = $diff['nomeTitular']['new'] ?? null;
-        $dadosBancarios['transf_padrao'] = $diff['transferenciaPadrao']['new'] ?? null;
-        $dadosBancarios['cChavePix'] = $diff['chavePix']['new'] ?? null;
-        $clienteJson['dadosBancarios'][] =array_filter($dadosBancarios); 
-        //fim array dados bancários
-        //inicio array recoja mendações
-        $clienteJson['recomendacoes'] = [];
-        $recomendacoes = [];//vendedor padrão
+        // $clienteJson['razao_social'] = htmlspecialchars_decode($diff['legalName']['new']) ?? null; 
+        // $clienteJson['nome_fantasia'] = htmlspecialchars_decode($diff['name']['new']) ?? null;
+        // $clienteJson['cnpj_cpf'] = $diff['cnpj']['new'] ?? $diff['cpf']['new'] ?? null;
+        // $clienteJson['email'] = $diff['email']['new'] ?? null;
+        // $clienteJson['homepage'] = $diff['website']['new'] ?? null;
+        // $clienteJson['telefone1_ddd'] = $diff['ddd1']['new'] ?? null;
+        // $clienteJson['telefone1_numero'] = $diff['phone1']['new'] ?? null;
+        // $clienteJson['telefone2_ddd'] = $diff['ddd2']['new'] ?? null;
+        // $clienteJson['telefone2_numero'] = $diff['phone2']['new'] ?? null;
+        // $clienteJson['contato'] = $diff['contato1']['new'] ?? null;
+        // $clienteJson['endereco'] = $diff['streetAddress']['new'] ?? null;
+        // $clienteJson['endereco_numero'] = $diff['streetAddressNumber']['new'] ?? null;
+        // $clienteJson['bairro'] = $diff['neighborhood']['new'] ?? null;
+        // $clienteJson['complemento'] = $diff['streetAddressLine2']['new'] ?? null;
+        // $clienteJson['estado'] = $diff['stateShort']['new'] ?? null;//usar null para teste precisa pegar o codigo da sigla do estado na api omie
+        // //$clienteJson['cidade'] = $diff['cityName']['new'];
+        // $clienteJson['cidade_ibge'] = $diff['cityId']['new'] ?? null;
+        // // $clienteJson['cep'] = $diff['streetAdress']['new'] ?? null;
+        // $clienteJson['cep'] = $diff['zipCode']['new'] ?? null;
+        // $clienteJson['documento_exterior'] = $diff['documentoExterior']['new'] ?? null;
+        // $clienteJson['inativo'] = $diff['inativo']['new'] ?? null;
+        // $clienteJson['bloquear_exclusao'] = $diff['bloquearExclusao']['new'] ?? null;
+        // //inicio aba CNAE e Outros
+        // $clienteJson['cnae'] = $diff['cnaeCode']['new'] ?? null;//3091102 ?? null;
+        // $clienteJson['inscricao_estadual'] = $diff['inscricaoEstadual']['new'] ?? null;
+        // $clienteJson['inscricao_municipal'] = $diff['inscricaoMunicipal']['new'] ?? null;
+        // $clienteJson['inscricao_suframa'] = $diff['inscricaoSuframa']['new'] ?? null;
+        // $clienteJson['optante_simples_nacional'] = $diff['simplesNacional']['new'] ?? null;
+        // $clienteJson['produtor_rural'] = $diff['produtorRural']['new'] ?? null;
+        // $clienteJson['contribuinte'] = $diff['contribuinte']['new'] ?? null;
+        // $clienteJson['tipo_atividade'] = $diff['ramoAtividade']['new'] ?? null;
+        // $clienteJson['valor_limite_credito'] = $diff['limiteCredito']['new'] ?? null;
+        // $clienteJson['observacao'] = $diff['observacao']['new'] ?? null;
+        // //fim aba CNAE e Outros
+        // //inicio array dados bancários
+        // $clienteJson['dadosBancarios'] =[];
+        // $dadosBancarios =[];
+        // $dadosBancarios['codigo_banco'] = $diff['cBanco']['new'] ?? null;
+        // $dadosBancarios['agencia'] = $diff['agencia']['new'] ?? null;
+        // $dadosBancarios['conta_corrente'] = $diff['nContaCorrente']['new'] ?? null;
+        // $dadosBancarios['doc_titular'] = $diff['docTitular']['new'] ?? null;
+        // $dadosBancarios['nome_titular'] = $diff['nomeTitular']['new'] ?? null;
+        // $dadosBancarios['transf_padrao'] = $diff['transferenciaPadrao']['new'] ?? null;
+        // $dadosBancarios['cChavePix'] = $diff['chavePix']['new'] ?? null;
+        // $clienteJson['dadosBancarios'][] =array_filter($dadosBancarios); 
+        // //fim array dados bancários
+        // //inicio array recoja mendações
+        // $clienteJson['recomendacoes'] = [];
+        // $recomendacoes = [];//vendedor padrão
 
-        $recomendacoes['codigo_vendedor'] = $diff['cVendedorOmie'] ?? null;
-        $recomendacoes['codigo_transportadora']= null;//6967396742;// $diff['ownerId']['new'] ?? null;
-        $clienteJson['recomendacoes'][] = array_filter($recomendacoes);
+        // $recomendacoes['codigo_vendedor'] = $diff['cVendedorOmie'] ?? null;
+        // $recomendacoes['codigo_transportadora']= null;//6967396742;// $diff['ownerId']['new'] ?? null;
+        // $clienteJson['recomendacoes'][] = array_filter($recomendacoes);
         
-        //fim array recomendações
-        $tags =[];
-        $tags[]['tag'] = $diff['tags.0']['new'] ?? null;
-        $clienteJson['tags']=$tags;
+        // //fim array recomendações
+        // $tags =[];
+        // $tags[]['tag'] = $diff['tags.0']['new'] ?? null;
+        // $clienteJson['tags']=$tags;
     
             
-        $array['param'][] = array_filter($clienteJson);
-
+        // $array['param'][] = array_filter($clienteJson);
         
-        $json = json_encode($array);
+        $json = json_encode($contact);
+        print_r($json) .PHP_EOL;
+        print_r('alterar') .PHP_EOL;
+        exit;
         // print_r($json);
-            print_r($array);
+            // print_r($array);
         // print_r($diff);
 
             exit;
@@ -981,97 +983,98 @@ class OmieServices implements ErpManagerInterface{
     }
 
     //altera um cliente no OMIE com base nas difereças dos arrays Old e News do Ploomes
-    public function alteraClienteCRMToERP(object $omie, object $contact)
+    public function alteraClienteCRMToERP(object $contact)
     {   
-        $array = [
-            'app_key'=>$omie->appKey,
-            'app_secret'=>$omie->appSecret,
-            'call'=>'UpsertClienteCpfCnpj',
-            'param'=>[]
-        ];
+        
+        // $array = [
+        //     'app_key'=>$omie->appKey,
+        //     'app_secret'=>$omie->appSecret,
+        //     'call'=>'UpsertClienteCpfCnpj',
+        //     'param'=>[]
+        // ];
     
-        $clienteJson = [];
+        // $clienteJson = [];
 
-        // if(empty($contact->idOmie) || $contact->idOmie === null)
-        // {
-        //         $clienteJson['codigo_cliente_integracao'] = $contact->idIntegracao;
-        //     }
-        // else{
-        //     $clienteJson['codigo_cliente_omie'] = $contact->idOmie;        
-        // } 
-        // $clienteJson['cVendedorOmie'] = $contact->cVendedorOmie;
+        // // if(empty($contact->idOmie) || $contact->idOmie === null)
+        // // {
+        // //         $clienteJson['codigo_cliente_integracao'] = $contact->idIntegracao;
+        // //     }
+        // // else{
+        // //     $clienteJson['codigo_cliente_omie'] = $contact->idOmie;        
+        // // } 
+        // // $clienteJson['cVendedorOmie'] = $contact->cVendedorOmie;
 
 
-        $clienteJson['razao_social'] = htmlspecialchars_decode($contact->legalName) ?? null; 
-        $clienteJson['nome_fantasia'] = htmlspecialchars_decode($contact->name) ?? null;
-        $clienteJson['cnpj_cpf'] = $contact->cnpj ?? $contact->cpf ?? null;
-        $clienteJson['email'] = $contact->email ?? null;
-        $clienteJson['homepage'] = $contact->website ?? null;
-        $clienteJson['telefone1_ddd'] = $contact->ddd1 ?? null;
-        $clienteJson['telefone1_numero'] = $contact->phone1 ?? null;
-        $clienteJson['telefone2_ddd'] = $contact->ddd2 ?? null;
-        $clienteJson['telefone2_numero'] = $contact->phone2 ?? null;
-        $clienteJson['contato'] = $contact->contato1 ?? null;
-        $clienteJson['endereco'] = $contact->streetAddress ?? null;
-        $clienteJson['endereco_numero'] = $contact->streetAddressNumber ?? null;
-        $clienteJson['bairro'] = $contact->neighborhood ?? null;
-        $clienteJson['complemento'] = $contact->streetAddressLine2 ?? null;
-        $clienteJson['estado'] = $contact->stateShort ?? null;//usar null para teste precisa pegar o codigo da sigla do estado na api omie
-        //$clienteJson['cidade'] = $contact->cityName;
-        $clienteJson['cidade_ibge'] = $contact->cityId ?? null;
-        // $clienteJson['cep'] = $contact->streetAdress ?? null;
-        $clienteJson['cep'] = $contact->zipCode ?? null;
-        $clienteJson['documento_exterior'] = $contact->documentoExterior ?? null;
-        $clienteJson['inativo'] = $contact->inativo ?? null;
-        $clienteJson['bloquear_exclusao'] = $contact->bloquearExclusao ?? null;
-        //inicio aba CNAE e Outros
-        $clienteJson['cnae'] = $contact->cnaeCode ?? null;//3091102 ?? null;
-        $clienteJson['inscricao_estadual'] = $contact->inscricaoEstadual ?? null;
-        $clienteJson['inscricao_municipal'] = $contact->inscricaoMunicipal ?? null;
-        $clienteJson['inscricao_suframa'] = $contact->inscricaoSuframa ?? null;
-        $clienteJson['optante_simples_nacional'] = $contact->simplesNacional ?? null;
-        $clienteJson['produtor_rural'] = $contact->produtorRural ?? null;
-        $clienteJson['contribuinte'] = $contact->contribuinte ?? null;
-        $clienteJson['tipo_atividade'] = $contact->ramoAtividade ?? null;
-        $clienteJson['valor_limite_credito'] = $contact->limiteCredito ?? null;
-        $clienteJson['observacao'] = $contact->observacao ?? null;
-        //fim aba CNAE e Outros
-        //inicio array dados bancários
-        $clienteJson['dadosBancarios'] =[];
-        $dadosBancarios =[];
-        $dadosBancarios['codigo_banco'] = $contact->cBanco ?? null;
-        $dadosBancarios['agencia'] = $contact->agencia ?? null;
-        $dadosBancarios['conta_corrente'] = $contact->nContaCorrente ?? null;
-        $dadosBancarios['doc_titular'] = $contact->docTitular ?? null;
-        $dadosBancarios['nome_titular'] = $contact->nomeTitular ?? null;
-        $dadosBancarios['transf_padrao'] = $contact->transferenciaPadrao ?? null;
-        $dadosBancarios['cChavePix'] = $contact->chavePix ?? null;
-        $clienteJson['dadosBancarios'][] =array_filter($dadosBancarios); 
-        //fim array dados bancários
-        //inicio array recoja mendações
-        $clienteJson['recomendacoes'] = [];
-        $recomendacoes = [];//vendedor padrão
+        // $clienteJson['razao_social'] = htmlspecialchars_decode($contact->legalName) ?? null; 
+        // $clienteJson['nome_fantasia'] = htmlspecialchars_decode($contact->name) ?? null;
+        // $clienteJson['cnpj_cpf'] = $contact->cnpj ?? $contact->cpf ?? null;
+        // $clienteJson['email'] = $contact->email ?? null;
+        // $clienteJson['homepage'] = $contact->website ?? null;
+        // $clienteJson['telefone1_ddd'] = $contact->ddd1 ?? null;
+        // $clienteJson['telefone1_numero'] = $contact->phone1 ?? null;
+        // $clienteJson['telefone2_ddd'] = $contact->ddd2 ?? null;
+        // $clienteJson['telefone2_numero'] = $contact->phone2 ?? null;
+        // $clienteJson['contato'] = $contact->contato1 ?? null;
+        // $clienteJson['endereco'] = $contact->streetAddress ?? null;
+        // $clienteJson['endereco_numero'] = $contact->streetAddressNumber ?? null;
+        // $clienteJson['bairro'] = $contact->neighborhood ?? null;
+        // $clienteJson['complemento'] = $contact->streetAddressLine2 ?? null;
+        // $clienteJson['estado'] = $contact->stateShort ?? null;//usar null para teste precisa pegar o codigo da sigla do estado na api omie
+        // //$clienteJson['cidade'] = $contact->cityName;
+        // $clienteJson['cidade_ibge'] = $contact->cityId ?? null;
+        // // $clienteJson['cep'] = $contact->streetAdress ?? null;
+        // $clienteJson['cep'] = $contact->zipCode ?? null;
+        // $clienteJson['documento_exterior'] = $contact->documentoExterior ?? null;
+        // $clienteJson['inativo'] = $contact->inativo ?? null;
+        // $clienteJson['bloquear_exclusao'] = $contact->bloquearExclusao ?? null;
+        // //inicio aba CNAE e Outros
+        // $clienteJson['cnae'] = $contact->cnaeCode ?? null;//3091102 ?? null;
+        // $clienteJson['inscricao_estadual'] = $contact->inscricaoEstadual ?? null;
+        // $clienteJson['inscricao_municipal'] = $contact->inscricaoMunicipal ?? null;
+        // $clienteJson['inscricao_suframa'] = $contact->inscricaoSuframa ?? null;
+        // $clienteJson['optante_simples_nacional'] = $contact->simplesNacional ?? null;
+        // $clienteJson['produtor_rural'] = $contact->produtorRural ?? null;
+        // $clienteJson['contribuinte'] = $contact->contribuinte ?? null;
+        // $clienteJson['tipo_atividade'] = $contact->ramoAtividade ?? null;
+        // $clienteJson['valor_limite_credito'] = $contact->limiteCredito ?? null;
+        // $clienteJson['observacao'] = $contact->observacao ?? null;
+        // //fim aba CNAE e Outros
+        // //inicio array dados bancários
+        // $clienteJson['dadosBancarios'] =[];
+        // $dadosBancarios =[];
+        // $dadosBancarios['codigo_banco'] = $contact->cBanco ?? null;
+        // $dadosBancarios['agencia'] = $contact->agencia ?? null;
+        // $dadosBancarios['conta_corrente'] = $contact->nContaCorrente ?? null;
+        // $dadosBancarios['doc_titular'] = $contact->docTitular ?? null;
+        // $dadosBancarios['nome_titular'] = $contact->nomeTitular ?? null;
+        // $dadosBancarios['transf_padrao'] = $contact->transferenciaPadrao ?? null;
+        // $dadosBancarios['cChavePix'] = $contact->chavePix ?? null;
+        // $clienteJson['dadosBancarios'][] =array_filter($dadosBancarios); 
+        // //fim array dados bancários
+        // //inicio array recoja mendações
+        // $clienteJson['recomendacoes'] = [];
+        // $recomendacoes = [];//vendedor padrão
 
-        $recomendacoes['codigo_vendedor'] = $contact->cVendedorOmie ?? null;
-        $recomendacoes['codigo_transportadora']=$contact->cTransportadora ?? null;//6967396742;// $contact->ownerId ?? null;
-        $clienteJson['recomendacoes'][] = array_filter($recomendacoes);
+        // $recomendacoes['codigo_vendedor'] = $contact->cVendedorOmie ?? null;
+        // $recomendacoes['codigo_transportadora']=$contact->cTransportadora ?? null;//6967396742;// $contact->ownerId ?? null;
+        // $clienteJson['recomendacoes'][] = array_filter($recomendacoes);
         
-        //fim array recomendações
+        // //fim array recomendações
         
-        $clienteJson['tags']=$contact->tags ?? null;
+        // $clienteJson['tags']=$contact->tags ?? null;
         
             
-        $array['param'][] = array_filter($clienteJson);
+        // $array['param'][] = array_filter($clienteJson);
 
         
 
         
-        $json = json_encode($array);
+        $json = json_encode($contact);
         // print_r($omie);
         // print_r($contact);
-        // print_r($clienteJson);
-        // print_r($json);
-        //  exit;
+        print_r($json);
+        print_r('alterar');
+         exit;
 
         $curl = curl_init();
 

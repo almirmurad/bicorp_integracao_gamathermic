@@ -3,6 +3,8 @@ namespace src\controllers;
 
 use core\Controller;
 use src\exceptions\WebhookReadErrorException;
+use src\factories\CrmFormatterFactory;
+use src\factories\ErpFormatterFactory;
 use src\handlers\ClientHandler;
 use src\handlers\LoginHandler;
 use src\services\DatabaseServices;
@@ -17,6 +19,8 @@ class ContactController extends Controller {
     private $omieServices;
     private $databaseServices;
     private $rabbitMQServices;
+    private $crm;
+    private $erp;
 
 
     public function __construct()
@@ -29,10 +33,21 @@ class ContactController extends Controller {
         }
 
         $this->ploomesServices = new PloomesServices();
-        $this->omieServices = new OmieServices();
         $this->databaseServices = new DatabaseServices();
-        $this->rabbitMQServices = new RabbitMQServices();
+        //$this->rabbitMQServices = new RabbitMQServices();
+        $this->erp = strtolower($_ENV['ERP']);
+        $this->crm = strtolower($_ENV['CRM']);
 
+    }
+
+    private function getClientHandler($erp, $crm): ClientHandler
+    {
+        $erpFormatter = ErpFormatterFactory::create($erp);
+        $crmFormatter = CrmFormatterFactory::create($crm);
+      
+        $clienteHandler = new ClientHandler($this->ploomesServices, $this->databaseServices, $erpFormatter, $crmFormatter);
+
+        return $clienteHandler;
     }
 
     //Ploomes
@@ -40,11 +55,11 @@ class ContactController extends Controller {
     public function ploomesContacts()
     {
         $json = file_get_contents('php://input');
-
+     
         try{
             
-            $clienteHandler = new ClientHandler($this->ploomesServices, $this->omieServices, $this->databaseServices);
-
+            $clienteHandler = $this->getClientHandler($this->erp, $this->crm);
+               
             $response = $clienteHandler->saveClientHook($json);
             // $rk = origem.entidade.ação
             $rk = array('Ploomes','Contacts');
@@ -81,7 +96,6 @@ class ContactController extends Controller {
              return print $message['status_message'];         
         }        
     }
-
     //processa contatos e clientes do ploomes ou do Omie
     public function processNewContact()
     {
@@ -90,9 +104,7 @@ class ContactController extends Controller {
         $message = [];
         // processa o webhook 
         try{
-            
-            $clienteHandler = new ClientHandler($this->ploomesServices, $this->omieServices, $this->databaseServices);
-            
+            $clienteHandler = $this->getClientHandler($this->erp, $this->crm);            
             $response = $clienteHandler->startProcess($json);
 
             $message =[
@@ -196,7 +208,7 @@ class ContactController extends Controller {
 
     public function nasajonClients(){
 
-         // Definir cabeçalhos CORS
+        // Definir cabeçalhos CORS
         header("Access-Control-Allow-Origin: *");
         header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
         header("Access-Control-Allow-Headers: Content-Type, Authorization");

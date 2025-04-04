@@ -1,0 +1,1508 @@
+[
+    {
+        "codigo": "132",
+        "nome": "AFEGANISTAO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "175",
+        "nome": "ALBANIA, REPUBLICA DA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "230",
+        "nome": "ALEMANHA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "310",
+        "nome": "BURKINA FASO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "370",
+        "nome": "ANDORRA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "400",
+        "nome": "ANGOLA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "418",
+        "nome": "ANGUILLA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "434",
+        "nome": "ANTIGUA E BARBUDA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "477",
+        "nome": "ANTILHAS HOLANDESAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "531",
+        "nome": "ARABIA SAUDITA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "590",
+        "nome": "ARGELIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "639",
+        "nome": "ARGENTINA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "647",
+        "nome": "ARMENIA, REPUBLICA DA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "655",
+        "nome": "ARUBA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "698",
+        "nome": "AUSTRALIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "728",
+        "nome": "AUSTRIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "736",
+        "nome": "AZERBAIJAO, REPUBLICA DO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "779",
+        "nome": "BAHAMAS, ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "809",
+        "nome": "BAHREIN, ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "817",
+        "nome": "BANGLADESH",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "833",
+        "nome": "BARBADOS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "850",
+        "nome": "BELARUS, REPUBLICA DA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "876",
+        "nome": "BELGICA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "884",
+        "nome": "BELIZE",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "906",
+        "nome": "BERMUDAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "930",
+        "nome": "MIANMAR (BIRMANIA)",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "973",
+        "nome": "BOLIVIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "981",
+        "nome": "BOSNIA-HERZEGOVINA (REPUBLICA DA)",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1015",
+        "nome": "BOTSUANA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1058",
+        "nome": "BRASIL",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1082",
+        "nome": "BRUNEI",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1112",
+        "nome": "BULGARIA, REPUBLICA DA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1155",
+        "nome": "BURUNDI",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1198",
+        "nome": "BUTAO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1279",
+        "nome": "CABO VERDE, REPUBLICA DE",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1376",
+        "nome": "CAYMAN, ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1414",
+        "nome": "CAMBOJA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1457",
+        "nome": "CAMAROES",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1490",
+        "nome": "CANADA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1504",
+        "nome": "GUERNSEY, ILHA DO CANAL (INCLUI ALDERNEY E SARK)",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1508",
+        "nome": "JERSEY, ILHA DO CANAL",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1511",
+        "nome": "CANARIAS, ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1538",
+        "nome": "CAZAQUISTAO, REPUBLICA DO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1546",
+        "nome": "CATAR",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1589",
+        "nome": "CHILE",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1600",
+        "nome": "CHINA, REPUBLICA POPULAR",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1619",
+        "nome": "FORMOSA (TAIWAN)",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1635",
+        "nome": "CHIPRE",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1651",
+        "nome": "COCOS(KEELING),ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1694",
+        "nome": "COLOMBIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1732",
+        "nome": "COMORES, ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1775",
+        "nome": "CONGO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1830",
+        "nome": "COOK, ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1872",
+        "nome": "COREIA, REP.POP.DEMOCRATICA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1902",
+        "nome": "COREIA, REPUBLICA DA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1937",
+        "nome": "COSTA DO MARFIM",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1953",
+        "nome": "CROACIA (REPUBLICA DA)",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1961",
+        "nome": "COSTA RICA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1988",
+        "nome": "COVEITE",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "1996",
+        "nome": "CUBA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2291",
+        "nome": "BENIN",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2321",
+        "nome": "DINAMARCA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2356",
+        "nome": "DOMINICA,ILHA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2399",
+        "nome": "EQUADOR",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2402",
+        "nome": "EGITO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2437",
+        "nome": "ERITREIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2445",
+        "nome": "EMIRADOS ARABES UNIDOS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2453",
+        "nome": "ESPANHA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2461",
+        "nome": "ESLOVENIA, REPUBLICA DA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2470",
+        "nome": "ESLOVACA, REPUBLICA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2496",
+        "nome": "ESTADOS UNIDOS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2518",
+        "nome": "ESTONIA, REPUBLICA DA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2534",
+        "nome": "ETIOPIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2550",
+        "nome": "FALKLAND (ILHAS MALVINAS)",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2593",
+        "nome": "FEROE, ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2674",
+        "nome": "FILIPINAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2712",
+        "nome": "FINLANDIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2755",
+        "nome": "FRANCA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2810",
+        "nome": "GABAO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2852",
+        "nome": "GAMBIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2895",
+        "nome": "GANA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2917",
+        "nome": "GEORGIA, REPUBLICA DA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2933",
+        "nome": "GIBRALTAR",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "2976",
+        "nome": "GRANADA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3018",
+        "nome": "GRECIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3050",
+        "nome": "GROENLANDIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3093",
+        "nome": "GUADALUPE",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3131",
+        "nome": "GUAM",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3174",
+        "nome": "GUATEMALA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3255",
+        "nome": "GUIANA FRANCESA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3298",
+        "nome": "GUINE",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3310",
+        "nome": "GUINE-EQUATORIAL",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3344",
+        "nome": "GUINE-BISSAU",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3379",
+        "nome": "GUIANA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3417",
+        "nome": "HAITI",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3450",
+        "nome": "HONDURAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3514",
+        "nome": "HONG KONG",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3557",
+        "nome": "HUNGRIA, REPUBLICA DA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3573",
+        "nome": "IEMEN",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3595",
+        "nome": "MAN, ILHA DE",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3611",
+        "nome": "INDIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3654",
+        "nome": "INDONESIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3697",
+        "nome": "IRAQUE",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3727",
+        "nome": "IRA, REPUBLICA ISLAMICA DO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3751",
+        "nome": "IRLANDA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3794",
+        "nome": "ISLANDIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3832",
+        "nome": "ISRAEL",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3867",
+        "nome": "ITALIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3913",
+        "nome": "JAMAICA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3964",
+        "nome": "JOHNSTON, ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "3999",
+        "nome": "JAPAO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4030",
+        "nome": "JORDANIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4111",
+        "nome": "KIRIBATI",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4200",
+        "nome": "LAOS, REP.POP.DEMOCR.DO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4260",
+        "nome": "LESOTO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4278",
+        "nome": "LETONIA, REPUBLICA DA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4316",
+        "nome": "LIBANO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4340",
+        "nome": "LIBERIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4383",
+        "nome": "LIBIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4405",
+        "nome": "LIECHTENSTEIN",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4421",
+        "nome": "LITUANIA, REPUBLICA DA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4456",
+        "nome": "LUXEMBURGO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4472",
+        "nome": "MACAU",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4499",
+        "nome": "MACEDONIA, ANT.REP.IUGOSLAVA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4502",
+        "nome": "MADAGASCAR",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4525",
+        "nome": "MADEIRA, ILHA DA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4553",
+        "nome": "MALASIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4588",
+        "nome": "MALAVI",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4618",
+        "nome": "MALDIVAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4642",
+        "nome": "MALI",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4677",
+        "nome": "MALTA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4723",
+        "nome": "MARIANAS DO NORTE",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4740",
+        "nome": "MARROCOS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4766",
+        "nome": "MARSHALL,ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4774",
+        "nome": "MARTINICA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4855",
+        "nome": "MAURICIO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4880",
+        "nome": "MAURITANIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4901",
+        "nome": "MIDWAY, ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4936",
+        "nome": "MEXICO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4944",
+        "nome": "MOLDAVIA, REPUBLICA DA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4952",
+        "nome": "MONACO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4979",
+        "nome": "MONGOLIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4985",
+        "nome": "MONTENEGRO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4995",
+        "nome": "MICRONESIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5010",
+        "nome": "MONTSERRAT,ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5053",
+        "nome": "MOCAMBIQUE",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5070",
+        "nome": "NAMIBIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5088",
+        "nome": "NAURU",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5118",
+        "nome": "CHRISTMAS,ILHA (NAVIDAD)",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5177",
+        "nome": "NEPAL",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5215",
+        "nome": "NICARAGUA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5258",
+        "nome": "NIGER",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5282",
+        "nome": "NIGERIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5312",
+        "nome": "NIUE,ILHA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5355",
+        "nome": "NORFOLK,ILHA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5380",
+        "nome": "NORUEGA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5428",
+        "nome": "NOVA CALEDONIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5452",
+        "nome": "PAPUA NOVA GUINE",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5487",
+        "nome": "NOVA ZELANDIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5517",
+        "nome": "VANUATU",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5568",
+        "nome": "OMA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5665",
+        "nome": "PACIFICO,ILHAS DO (POSSESSAO DOS EUA)",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5738",
+        "nome": "PAISES BAIXOS (HOLANDA)",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5754",
+        "nome": "PALAU",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5762",
+        "nome": "PAQUISTAO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5800",
+        "nome": "PANAMA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5860",
+        "nome": "PARAGUAI",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5894",
+        "nome": "PERU",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5932",
+        "nome": "PITCAIRN,ILHA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5991",
+        "nome": "POLINESIA FRANCESA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6033",
+        "nome": "POLONIA, REPUBLICA DA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6076",
+        "nome": "PORTUGAL",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6114",
+        "nome": "PORTO RICO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6238",
+        "nome": "QUENIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6254",
+        "nome": "QUIRGUIZ, REPUBLICA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6289",
+        "nome": "REINO UNIDO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6408",
+        "nome": "REPUBLICA CENTRO-AFRICANA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6475",
+        "nome": "REPUBLICA DOMINICANA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6602",
+        "nome": "REUNIAO, ILHA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6653",
+        "nome": "ZIMBABUE",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6700",
+        "nome": "ROMENIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6750",
+        "nome": "RUANDA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6769",
+        "nome": "RUSSIA, FEDERACAO DA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6777",
+        "nome": "SALOMAO, ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6781",
+        "nome": "SAINT KITTS E NEVIS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6858",
+        "nome": "SAARA OCIDENTAL",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6874",
+        "nome": "EL SALVADOR",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6904",
+        "nome": "SAMOA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6912",
+        "nome": "SAMOA AMERICANA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6955",
+        "nome": "SAO CRISTOVAO E NEVES,ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "6971",
+        "nome": "SAN MARINO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7005",
+        "nome": "SAO PEDRO E MIQUELON",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7056",
+        "nome": "SAO VICENTE E GRANADINAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7102",
+        "nome": "SANTA HELENA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7153",
+        "nome": "SANTA LUCIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7200",
+        "nome": "SAO TOME E PRINCIPE, ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7285",
+        "nome": "SENEGAL",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7315",
+        "nome": "SEYCHELLES",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7358",
+        "nome": "SERRA LEOA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7370",
+        "nome": "SERVIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7412",
+        "nome": "CINGAPURA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7447",
+        "nome": "SIRIA, REPUBLICA ARABE DA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7480",
+        "nome": "SOMALIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7501",
+        "nome": "SRI LANKA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7544",
+        "nome": "SUAZILANDIA",
+        "data_inicio": "01012009",
+        "data_fim": "19072018"
+    },
+    {
+        "codigo": "7560",
+        "nome": "AFRICA DO SUL",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7595",
+        "nome": "SUDAO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7641",
+        "nome": "SUECIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7676",
+        "nome": "SUICA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7706",
+        "nome": "SURINAME",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7722",
+        "nome": "TADJIQUISTAO, REPUBLICA DO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7765",
+        "nome": "TAILANDIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7803",
+        "nome": "TANZANIA, REP.UNIDA DA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7820",
+        "nome": "TERRITORIO BRIT.OC.INDICO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7838",
+        "nome": "DJIBUTI",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7889",
+        "nome": "CHADE",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7919",
+        "nome": "TCHECA, REPUBLICA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7951",
+        "nome": "TIMOR LESTE",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8001",
+        "nome": "TOGO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8052",
+        "nome": "TOQUELAU,ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8109",
+        "nome": "TONGA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8150",
+        "nome": "TRINIDAD E TOBAGO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8206",
+        "nome": "TUNISIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8230",
+        "nome": "TURCAS E CAICOS,ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8249",
+        "nome": "TURCOMENISTAO, REPUBLICA DO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8273",
+        "nome": "TURQUIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8281",
+        "nome": "TUVALU",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8311",
+        "nome": "UCRANIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8338",
+        "nome": "UGANDA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8451",
+        "nome": "URUGUAI",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8478",
+        "nome": "UZBEQUISTAO, REPUBLICA DO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8486",
+        "nome": "VATICANO, EST.DA CIDADE DO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8508",
+        "nome": "VENEZUELA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8583",
+        "nome": "VIETNA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8630",
+        "nome": "VIRGENS,ILHAS (BRITANICAS)",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8664",
+        "nome": "VIRGENS,ILHAS (E.U.A.)",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8702",
+        "nome": "FIJI",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8737",
+        "nome": "WAKE, ILHA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8885",
+        "nome": "CONGO, REPUBLICA DEMOCRATICA DO",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8907",
+        "nome": "ZAMBIA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "8958",
+        "nome": "ZONA DO CANAL DO PANAMA",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "7600",
+        "nome": "SUDAO DO SUL",
+        "data_inicio": "01072011",
+        "data_fim": null
+    },
+    {
+        "codigo": "4235",
+        "nome": "LEBUAN,ILHAS",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "4885",
+        "nome": "MAYOTTE (ILHAS FRANCESAS)",
+        "data_inicio": "01012009",
+        "data_fim": null
+    },
+    {
+        "codigo": "5780",
+        "nome": "PALESTINA",
+        "data_inicio": "29112012",
+        "data_fim": null
+    },
+    {
+        "codigo": "2003",
+        "nome": "CURA�AO",
+        "data_inicio": "07122015",
+        "data_fim": null
+    },
+    {
+        "codigo": "699",
+        "nome": "S�O MARTINHO, ILHA DE (PARTE HOLANDESA)",
+        "data_inicio": "01012017",
+        "data_fim": "31122019"
+    },
+    {
+        "codigo": "6998",
+        "nome": "SAO MARTINHO, ILHA DE (PARTE HOLANDESA)",
+        "data_inicio": "01012020",
+        "data_fim": null
+    },
+    {
+        "codigo": "6980",
+        "nome": "SAO MARTINHO, ILHA DE (PARTE FRANCESA)",
+        "data_inicio": "01012017",
+        "data_fim": null
+    },
+    {
+        "codigo": "7544",
+        "nome": "ESWATINI",
+        "data_inicio": "20072018",
+        "data_fim": null
+    },
+    {
+        "codigo": "0990",
+        "nome": "BONAIRE, SAINT EUSTATIUS E SABA",
+        "data_inicio": "01012017",
+        "data_fim": null
+    }
+]

@@ -175,5 +175,68 @@ class DiverseFunctions{
     //     return $diferencas;
     // }
 
+    //busca o código do IBGE pelo nome e uf da cidade
+    function getIbgeByCity($cidade, $uf) {
+        $cidade = strtolower(trim($cidade));
+        $uf = strtoupper(trim($uf));
+    
+        $url = "https://servicodados.ibge.gov.br/api/v1/localidades/municipios";
+    
+        $response = file_get_contents($url);
+        if (!$response) {
+            return "Erro ao buscar dados do IBGE.";
+        }
+    
+        $municipios = json_decode($response, true);
+    
+        foreach ($municipios as $municipio) {
+            if (strtolower($municipio['nome']) === $cidade && strtoupper($municipio['microrregiao']['mesorregiao']['UF']['sigla']) === $uf) {
+                return $municipio['id']; // Código IBGE
+            }
+        }
+    
+        return "Município não encontrado.";
+    }
+
+    //busca o código IBGE da cidade pelo CEP
+    function getIbgeByCep($cep) {
+        $cep = preg_replace('/\D/', '', $cep); // Remove caracteres não numéricos
+        if (strlen($cep) !== 8) {
+            return "CEP inválido.";
+        }
+    
+        $url = "https://viacep.com.br/ws/{$cep}/json/";
+    
+        $response = file_get_contents($url);
+        if (!$response) {
+            return "Erro ao buscar dados do ViaCEP.";
+        }
+    
+        $dados = json_decode($response, true);
+    
+        if (isset($dados['ibge'])) {
+            return $dados['ibge']; // Código IBGE
+        }
+    
+        return "IBGE não encontrado para esse CEP.";
+    }
+
+    public static function getCountrySpedCode($country){
+        $dir = ($_SERVER['DOCUMENT_ROOT'] . $_ENV['BASE_DIR'] );
+        $countries = file_get_contents($dir . '/assets/paises.json');
+        $all = json_decode($countries, true);
+        
+        foreach($all as $data){
+
+            if(strtolower($data['nome']) === strtolower($country)){
+
+                return $data['codigo'];
+
+            }
+
+        }
+
+    }
+
 
 }

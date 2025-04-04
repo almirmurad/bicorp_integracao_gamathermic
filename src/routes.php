@@ -3,65 +3,66 @@ use core\Router;
 
 $router = new Router();
 $router->get('/', 'HomeController@index');
-
+//
+//ping
+//
+$router->get('/ping', 'TestController@ping');
 //Dashboard
 $router->get('/dashboard', 'DashboardController@index');
-
-//login-logout no painel
+//
+//login-logout no gerenciador
 $router->get('/login', 'LoginController@signin'); 
 $router->post('/login', 'LoginController@signinAction');
 $router->get('/logout', 'LoginController@signout'); 
-
-//webhooks
+//
+//webhooks "Gerencia os webhooks no ploomes através do gerenciador"
 $router->get('/integrar', 'IntegracaoController@index');
 $router->post('/integrar', 'IntegracaoController@integraAction');
 $router->get('/getAll', 'IntegracaoController@getAll');
 $router->get('/delHook/{id}', 'IntegracaoController@delHook');
-
-//Orders
-//https://gamatermic.bicorp.online/public/ploomesOrder
-$router->post('/ploomesOrder', 'OrderController@ploomesOrder');//novo pedido no omie
-$router->post('/processNewOrder', 'OrderController@processNewOrder');
-
-//contacts ploomes clientes Omie
+//
+//contacts ploomes clientes Nasajon Integração Bilateral
+//
+//Ploomes CRM 
 //https://gamatermic.bicorp.online/public/ploomesContacts
 $router->post('/ploomesContacts', 'ContactController@ploomesContacts');//Novo cliente no ploomes
-//https://gamatermic.bicorp.online/public/omieClients
-$router->post('/omieClients', 'ContactController@omieClients');//Novo cliente no omie
+//
+//Nasajon ERP
+$router->post('/erpClients', 'ContactController@nasajonClients');//Novo cliente no nasajon
+//
+//processa o contato de ambos os lados
 $router->post('/processNewContact', 'ContactController@processNewContact'); //inicia o processo com cron job
-
-//products
-//https://gamatermic.bicorp.online/public/ploomesProducts
-//https://gamatermic.bicorp.online/public/omieProducts
-$router->post('/omieProducts', 'ProductController@omieProducts');//Novo produto no Omie
+//
+//products "produtos são enviados do ERP ao CRM Integração Unilateral
+//https://gamatermic.bicorp.online/public/
+$router->post('/erpProducts', 'ProductController@nasajonProducts');//Novo produto no nasajon
+//processa o produto ERP para CRM
 $router->post('/processNewProduct', 'ProductController@processNewProduct'); //inicia o processo com cron job
-// $router->post('/ploomesProducts', 'ProductController@ploomesProducts'); //Novo produto no ploomes
-
-//services
-$router->post('/omieServices', 'ServiceController@omieServices');//Novo cliente no ploomes
+//
+//services "services são enviados do ERP ao CRM Integração Unilateral"
+$router->post('/erpServices', 'ServiceController@erpClients'); //Novo serviço no nasajon
+//processa o serviço ERP para CRM
 $router->post('/processNewService', 'ServiceController@processNewService'); //inicia o processo com cron job
-
-//Invoices NFE
+//
+//Orders "Pedidos são enviados do CRM ao ERP Integração Unilateral"
+//https://gamatermic.bicorp.online/public/ploomesOrder
+$router->post('/ploomesOrder', 'OrderController@ploomesOrder');//novo pedido no ploomes
+//processa o pedido CRM para ERP
+$router->post('/processNewOrder', 'OrderController@processNewOrder');
+//
+//Invoices NFE "Envia notificações ao ploomes da nota fiscal emitida"
 $router->post('/invoiceIssue', 'InvoicingController@invoiceIssue');
 $router->post('/deletedInvoice', 'InvoicingController@deletedInvoice');
 $router->post('/processNewInvoice', 'InvoicingController@processNewInvoice');
-
-//Nasajon
-$router->post('/erpClients', 'ContactController@nasajonClients');//Novo cliente no nasajon
-$router->post('/erpProducts', 'ProductController@nasajonProducts');//Novo produto no nasajon
-$router->post('/erpServices', 'ServiceController@erpClients'); //Novo serviço no nasajon
-
-
-
-
-//Interactions
+//
+//Interactions "Envia as mensagens ao Ploomes"
 $router->get('/interactions', 'InteractionController@index');
 $router->post('/newInteraction', 'InteractionController@createInteraction');
-
+//
 //Configurações
 $router->get('/configs', 'ConfigController@index');
 $router->post('/define', 'ConfigController@defineConfig');
-
+//
 //permissões
 $router->get('/permissions', 'PermissionController@index');
 $router->get('/addPermissionGroup', 'PermissionController@addPermissionGroup');
@@ -69,7 +70,7 @@ $router->get('/delGroupPermission/{id}', 'PermissionController@delGroupPermissio
 $router->post('/addPermissionGroupAction', 'PermissionController@addPermissionGroupAction');
 $router->get('/editPermissionGroup/{id}', 'PermissionController@editPermissionGroup');
 $router->post('/editPermissionGroupAction/{id}', 'PermissionController@editPermissionGroupAction');
-
+//
 //Users
 $router->get('/users', 'UserController@listUsers');
 $router->get('/addUser','UserController@addUser');
